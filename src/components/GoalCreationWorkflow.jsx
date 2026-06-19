@@ -4,10 +4,10 @@ import { X, ChevronRight, Star, Plane, Home, Car, Sparkles, CalendarDays, Check 
 import { base44 } from '@/api/base44Client';
 
 const GOAL_TYPES = [
-  { value: 'vacation', label: 'Go on Vacation', icon: Plane },
-  { value: 'buyHome', label: 'Buy a Home', icon: Home },
-  { value: 'newCar', label: 'Buy a new car', icon: Car },
-  { value: 'other', label: 'Something else', icon: Sparkles },
+  { value: 'vacation', label: 'Go on Vacation', icon: Plane, image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop' },
+  { value: 'buyHome', label: 'Buy a Home', icon: Home, image: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&auto=format&fit=crop' },
+  { value: 'newCar', label: 'Buy a new car', icon: Car, image: 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&auto=format&fit=crop' },
+  { value: 'other', label: 'Something else', icon: Sparkles, image: 'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=800&auto=format&fit=crop' },
 ];
 
 const STEPS = ['GoalType', 'BasePoints100', 'BasePoints150', 'Target', 'GoalName', 'GoalDate', 'Summary', 'LinkAccounts', 'Baseplan'];
@@ -38,6 +38,7 @@ export default function GoalCreationWorkflow({ user, onClose, onCreated }) {
 
   const handleSubmit = async () => {
     setSaving(true);
+    const selectedType = GOAL_TYPES.find(t => t.value === goalType);
     await base44.entities.SavingsGoal.create({
       user_id: user.id,
       name: goalName.trim(),
@@ -48,6 +49,7 @@ export default function GoalCreationWorkflow({ user, onClose, onCreated }) {
       target_date: targetDate,
       source: 'workflow',
       pending_points: pendingPoints,
+      image_url: selectedType?.image || null,
       is_completed: false,
     });
     setSaving(false);
