@@ -1,7 +1,18 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { Lock, CheckCircle, Flame, Star, ChevronRight, Zap, BookOpen } from 'lucide-react';
+import { Lock, CheckCircle, Flame, Star, ChevronRight, Zap, BookOpen, PiggyBank, TrendingUp, CreditCard, FileText, Unlock, Shield, Umbrella, Wallet } from 'lucide-react';
+
+const TOPIC_ICONS = {
+  budgeting: Wallet,
+  investing: TrendingUp,
+  credit: CreditCard,
+  taxes: FileText,
+  saving: PiggyBank,
+  debt: Unlock,
+  insurance: Umbrella,
+  retirement: Shield,
+};
 
 const TOPIC_COLORS = {
   budgeting: 'from-teal-500 to-emerald-500',
@@ -14,16 +25,7 @@ const TOPIC_COLORS = {
   retirement: 'from-amber-500 to-yellow-500',
 };
 
-const TOPIC_EMOJIS = {
-  budgeting: '💵',
-  investing: '📈',
-  credit: '💳',
-  taxes: '🧾',
-  saving: '🐷',
-  debt: '🔓',
-  insurance: '🛡️',
-  retirement: '🏖️',
-};
+
 
 export default function Learn() {
   const [modules, setModules] = useState([]);
@@ -145,7 +147,7 @@ export default function Learn() {
               const unlocked = isModuleUnlocked(index);
               const completedCount = getModuleProgress(module.id);
               const colorClass = TOPIC_COLORS[module.topic_tag] || 'from-primary to-primary';
-              const emoji = TOPIC_EMOJIS[module.topic_tag] || '📖';
+              const TopicIcon = TOPIC_ICONS[module.topic_tag] || BookOpen;
 
               return (
                 <div key={module.id} className="relative pl-20">
@@ -157,7 +159,7 @@ export default function Learn() {
                         : 'bg-secondary text-muted-foreground grayscale'
                     }`}
                   >
-                    {unlocked ? emoji : <Lock className="w-6 h-6 text-muted-foreground" />}
+                    {unlocked ? <TopicIcon className="w-7 h-7 text-white" /> : <Lock className="w-6 h-6 text-muted-foreground" />}
                     {completedCount > 0 && (
                       <div className="absolute -top-1 -right-1 w-5 h-5 bg-primary rounded-full flex items-center justify-center">
                         <CheckCircle className="w-3 h-3 text-primary-foreground" />

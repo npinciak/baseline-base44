@@ -1,20 +1,20 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { Zap, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Zap, ArrowRight, ArrowLeft, PiggyBank, Unlock, TrendingUp, Award, BookOpen, Sprout, GraduationCap, BarChart2 } from 'lucide-react';
 
 const GOALS = [
-  { value: 'save_money', label: 'Save More Money', emoji: '💰' },
-  { value: 'get_out_of_debt', label: 'Get Out of Debt', emoji: '🔓' },
-  { value: 'invest', label: 'Start Investing', emoji: '📈' },
-  { value: 'build_credit', label: 'Build My Credit', emoji: '🏆' },
-  { value: 'understand_basics', label: 'Understand the Basics', emoji: '📚' },
+  { value: 'save_money', label: 'Save More Money', icon: PiggyBank },
+  { value: 'get_out_of_debt', label: 'Get Out of Debt', icon: Unlock },
+  { value: 'invest', label: 'Start Investing', icon: TrendingUp },
+  { value: 'build_credit', label: 'Build My Credit', icon: Award },
+  { value: 'understand_basics', label: 'Understand the Basics', icon: BookOpen },
 ];
 
 const LEVELS = [
-  { value: 'complete_beginner', label: 'Complete Beginner', desc: 'Money is confusing to me', emoji: '🌱' },
-  { value: 'some_knowledge', label: 'Some Knowledge', desc: 'I know the basics but want more', emoji: '🌿' },
-  { value: 'intermediate', label: 'Intermediate', desc: 'I manage money but want to optimize', emoji: '🌳' },
+  { value: 'complete_beginner', label: 'Complete Beginner', desc: 'Money is confusing to me', icon: Sprout },
+  { value: 'some_knowledge', label: 'Some Knowledge', desc: 'I know the basics but want more', icon: GraduationCap },
+  { value: 'intermediate', label: 'Intermediate', desc: 'I manage money but want to optimize', icon: BarChart2 },
 ];
 
 export default function Onboarding() {
@@ -86,7 +86,7 @@ export default function Onboarding() {
                       : 'border-border bg-card text-foreground hover:border-primary/40'
                   }`}
                 >
-                  <span className="text-2xl">{g.emoji}</span>
+                  <g.icon className="w-5 h-5 text-primary shrink-0" />
                   <span className="font-medium">{g.label}</span>
                 </button>
               ))}
@@ -116,7 +116,7 @@ export default function Onboarding() {
                       : 'border-border bg-card text-foreground hover:border-primary/40'
                   }`}
                 >
-                  <span className="text-2xl">{l.emoji}</span>
+                  <l.icon className="w-5 h-5 text-primary shrink-0" />
                   <div>
                     <p className="font-medium">{l.label}</p>
                     <p className="text-xs text-muted-foreground">{l.desc}</p>
