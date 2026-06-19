@@ -1,31 +1,110 @@
 import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Target, Plus, X, Pencil, CheckCircle, Trash2 } from 'lucide-react';
+import { Target, Plus, X, Pencil, CheckCircle, Trash2, AlertTriangle, Link } from 'lucide-react';
 import GoalCreationWorkflow from '@/components/GoalCreationWorkflow';
+import { formatDistanceToNow } from 'date-fns';
 
-const EMPTY_FORM = { name: '', description: '', target_amount: '', saved_amount: '', target_date: '', image_url: '' };
+const EMPTY_FORM = { name: '', description: '', target_amount: '', saved_amount: '', target_date: '', image_url: '', goal_type: '' };
+
+function LinkedBalanceRow({ balance, syncedAt }) {
+  if (!balance || balance <= 0) return null;
+  const syncLabel = syncedAt
+    ? `synced ${formatDistanceToNow(new Date(syncedAt), { addSuffix: true })}`
+    : '';
+  return (
+    <div className="flex items-center gap-1.5 mt-2 text-xs text-muted-foreground">
+      <Link className="w-3 h-3 text-primary" />
+      <span>Linked: <span className="text-foreground font-semibold">${parseFloat(balance).toLocaleString()}</span>
+        {syncLabel && <span> · {syncLabel}</span>}
+      </span>
+    </div>
+  );
+}
 
 export default function Goals() {
   const [user, setUser] = useState(null);
+  const [userProfileId, setUserProfileId] = useState(null);
   const [goals, setGoals] = useState([]);
   const [userStats, setUserStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [supabaseError, setSupabaseError] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showWorkflow, setShowWorkflow] = useState(false);
   const [editingGoal, setEditingGoal] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
 
+  const mergeGoals = (supabaseGoals, base44Goals) => {
+    // Supabase goals take precedence; deduplicate via base44 source = supabase id
+    const supabaseIds = new Set(supabaseGoals.map(g => g.id));
+    const base44Only = base44Goals.filter(g => !g.source || !supabaseIds.has(g.source));
+
+    return [
+      ...supabaseGoals.map(sg => {
+        const b44 = base44Goals.find(g => g.source === sg.id);
+        return {
+          _supabaseId: sg.id,
+          _base44Id: b44?.id || null,
+          id: sg.id, // use supabase id as display key
+          name: sg.name,
+          description: b44?.description || '',
+          goal_type: sg.goal_type,
+          image_url: sg.image,
+          target_amount: sg.target_amount,
+          saved_amount: sg.current_amount,
+          target_date: sg.target_date,
+          currency_code: sg.currency_code,
+          is_completed: b44?.is_completed || false,
+          linked_accounts_balance: sg.linked_accounts_balance,
+          last_balance_sync_at: sg.last_balance_sync_at,
+          _source: 'supabase',
+        };
+      }),
+      ...base44Only.map(g => ({
+        _supabaseId: null,
+        _base44Id: g.id,
+        id: g.id,
+        name: g.name,
+        description: g.description || '',
+        goal_type: g.goal_type,
+        image_url: g.image_url,
+        target_amount: g.target_amount,
+        saved_amount: g.saved_amount || 0,
+        target_date: g.target_date,
+        currency_code: 'USD',
+        is_completed: g.is_completed || false,
+        linked_accounts_balance: null,
+        last_balance_sync_at: null,
+        _source: 'base44',
+      })),
+    ];
+  };
+
+  const loadGoals = async (u, statsArr) => {
+    let supabaseGoals = [];
+    let profileId = null;
+    try {
+      const res = await base44.functions.invoke('getSupabaseGoals', {});
+      supabaseGoals = res.data.goals || [];
+      profileId = res.data.userProfileId;
+      setUserProfileId(profileId);
+      setSupabaseError(false);
+    } catch {
+      setSupabaseError(true);
+    }
+
+    const b44Goals = await base44.entities.SavingsGoal.filter({ user_id: u.id }, '-created_date', 50);
+    setGoals(mergeGoals(supabaseGoals, b44Goals));
+
+    if (statsArr && statsArr.length > 0) setUserStats(statsArr[0]);
+  };
+
   useEffect(() => {
     const init = async () => {
       const u = await base44.auth.me();
       setUser(u);
-      const [g, statsArr] = await Promise.all([
-        base44.entities.SavingsGoal.filter({ user_id: u.id }, '-created_date', 50),
-        base44.entities.UserStats.filter({ user_id: u.id }),
-      ]);
-      setGoals(g);
-      if (statsArr.length > 0) setUserStats(statsArr[0]);
+      const statsArr = await base44.entities.UserStats.filter({ user_id: u.id });
+      await loadGoals(u, statsArr);
     };
     init().finally(() => setLoading(false));
   }, []);
@@ -42,12 +121,8 @@ export default function Goals() {
   };
 
   const handleWorkflowCreated = async () => {
-    const [updated, statsArr] = await Promise.all([
-      base44.entities.SavingsGoal.filter({ user_id: user.id }, '-created_date', 50),
-      base44.entities.UserStats.filter({ user_id: user.id }),
-    ]);
-    setGoals(updated);
-    if (statsArr.length > 0) setUserStats(statsArr[0]);
+    const statsArr = await base44.entities.UserStats.filter({ user_id: user.id });
+    await loadGoals(user, statsArr);
     setShowWorkflow(false);
   };
 
@@ -60,6 +135,7 @@ export default function Goals() {
       saved_amount: goal.saved_amount || 0,
       target_date: goal.target_date || '',
       image_url: goal.image_url || '',
+      goal_type: goal.goal_type || '',
     });
     setShowModal(true);
   };
@@ -67,34 +143,92 @@ export default function Goals() {
   const handleSave = async () => {
     if (!form.name || !form.target_amount) return;
     setSaving(true);
-    const data = {
-      name: form.name,
-      description: form.description,
-      target_amount: parseFloat(form.target_amount),
-      saved_amount: parseFloat(form.saved_amount) || 0,
-      target_date: form.target_date || undefined,
-      image_url: form.image_url || undefined,
-      is_completed: editingGoal ? editingGoal.is_completed : false,
-    };
+
     if (editingGoal) {
-      await base44.entities.SavingsGoal.update(editingGoal.id, data);
+      // Update Supabase if we have a supabase id
+      if (editingGoal._supabaseId) {
+        await base44.functions.invoke('updateSupabaseGoal', {
+          supabaseGoalId: editingGoal._supabaseId,
+          name: form.name,
+          goal_type: form.goal_type || null,
+          image: form.image_url || null,
+          target_amount: parseFloat(form.target_amount),
+          current_amount: parseFloat(form.saved_amount) || 0,
+          target_date: form.target_date || null,
+        });
+      }
+      // Update Base44
+      if (editingGoal._base44Id) {
+        await base44.entities.SavingsGoal.update(editingGoal._base44Id, {
+          name: form.name,
+          description: form.description,
+          target_amount: parseFloat(form.target_amount),
+          saved_amount: parseFloat(form.saved_amount) || 0,
+          target_date: form.target_date || undefined,
+          image_url: form.image_url || undefined,
+        });
+      }
     } else {
-      await base44.entities.SavingsGoal.create({ ...data, user_id: user.id });
+      // Create in Supabase first
+      let supabaseId = null;
+      if (userProfileId) {
+        const res = await base44.functions.invoke('createSupabaseGoal', {
+          name: form.name,
+          goal_type: form.goal_type || null,
+          image: form.image_url || null,
+          target_amount: parseFloat(form.target_amount),
+          current_amount: parseFloat(form.saved_amount) || 0,
+          target_date: form.target_date || null,
+          currency_code: 'USD',
+          userProfileId,
+        });
+        supabaseId = res.data?.goal?.id || null;
+      }
+      // Create in Base44
+      await base44.entities.SavingsGoal.create({
+        user_id: user.id,
+        name: form.name,
+        description: form.description,
+        target_amount: parseFloat(form.target_amount),
+        saved_amount: parseFloat(form.saved_amount) || 0,
+        target_date: form.target_date || undefined,
+        image_url: form.image_url || undefined,
+        is_completed: false,
+        source: supabaseId || undefined,
+      });
     }
-    const updated = await base44.entities.SavingsGoal.filter({ user_id: user.id }, '-created_date', 50);
-    setGoals(updated);
+
+    const statsArr = await base44.entities.UserStats.filter({ user_id: user.id });
+    await loadGoals(user, statsArr);
     setShowModal(false);
     setSaving(false);
   };
 
   const handleDelete = async (goal) => {
     if (!confirm(`Delete "${goal.name}"? This cannot be undone.`)) return;
-    await base44.entities.SavingsGoal.delete(goal.id);
+
+    // Delete from Supabase
+    if (goal._supabaseId) {
+      await base44.functions.invoke('deleteSupabaseGoal', { supabaseGoalId: goal._supabaseId }).catch(() => {});
+    }
+    // Delete from Base44
+    if (goal._base44Id) {
+      await base44.entities.SavingsGoal.delete(goal._base44Id).catch(() => {});
+    }
+
     setGoals(g => g.filter(x => x.id !== goal.id));
   };
 
   const handleMarkComplete = async (goal) => {
-    await base44.entities.SavingsGoal.update(goal.id, { is_completed: true, saved_amount: goal.target_amount });
+    if (goal._supabaseId) {
+      await base44.functions.invoke('updateSupabaseGoal', {
+        supabaseGoalId: goal._supabaseId,
+        current_amount: goal.target_amount,
+      }).catch(() => {});
+    }
+    if (goal._base44Id) {
+      await base44.entities.SavingsGoal.update(goal._base44Id, { is_completed: true, saved_amount: goal.target_amount });
+    }
     setGoals(g => g.map(x => x.id === goal.id ? { ...x, is_completed: true, saved_amount: goal.target_amount } : x));
   };
 
@@ -108,6 +242,19 @@ export default function Goals() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
+      {/* Supabase error banner */}
+      {supabaseError && (
+        <div className="flex items-center justify-between gap-3 mb-6 px-4 py-3 bg-amber-500/10 border border-amber-500/25 rounded-xl text-sm text-amber-400">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4 shrink-0" />
+            <span>Could not load synced goals — showing local data only.</span>
+          </div>
+          <button onClick={() => setSupabaseError(false)} className="text-amber-400/60 hover:text-amber-400 transition-colors">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-display font-extrabold mb-1">Savings Goals</h1>
@@ -168,20 +315,20 @@ export default function Goals() {
                   <div className="flex items-start justify-between gap-2 mb-1">
                     <h3 className="text-base font-heading font-bold leading-tight">{goal.name}</h3>
                     <div className="flex items-center gap-1 shrink-0">
-                        {!goal.is_completed && (
-                          <>
-                            <button onClick={() => openEdit(goal)} className="p-1 text-muted-foreground hover:text-foreground transition-colors">
-                              <Pencil className="w-3.5 h-3.5" />
-                            </button>
-                            <button onClick={() => handleMarkComplete(goal)} title="Mark complete" className="p-1 text-muted-foreground hover:text-primary transition-colors">
-                              <CheckCircle className="w-3.5 h-3.5" />
-                            </button>
-                          </>
-                        )}
-                        <button onClick={() => handleDelete(goal)} title="Delete goal" className="p-1 text-muted-foreground hover:text-destructive transition-colors">
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
+                      {!goal.is_completed && (
+                        <>
+                          <button onClick={() => openEdit(goal)} className="p-1 text-muted-foreground hover:text-foreground transition-colors">
+                            <Pencil className="w-3.5 h-3.5" />
+                          </button>
+                          <button onClick={() => handleMarkComplete(goal)} title="Mark complete" className="p-1 text-muted-foreground hover:text-primary transition-colors">
+                            <CheckCircle className="w-3.5 h-3.5" />
+                          </button>
+                        </>
+                      )}
+                      <button onClick={() => handleDelete(goal)} title="Delete goal" className="p-1 text-muted-foreground hover:text-destructive transition-colors">
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </div>
                   {goal.description && (
                     <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{goal.description}</p>
@@ -201,6 +348,7 @@ export default function Goals() {
                         style={{ width: `${pct}%` }}
                       />
                     </div>
+                    <LinkedBalanceRow balance={goal.linked_accounts_balance} syncedAt={goal.last_balance_sync_at} />
                     {goal.target_date && (
                       <p className="text-xs text-muted-foreground mt-2">Target: {goal.target_date}</p>
                     )}
