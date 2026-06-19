@@ -1,0 +1,54 @@
+{
+  "name": "UserStats",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "total_xp": {
+      "type": "number",
+      "default": 0
+    },
+    "current_level": {
+      "type": "number",
+      "default": 1
+    },
+    "current_streak": {
+      "type": "number",
+      "default": 0
+    },
+    "longest_streak": {
+      "type": "number",
+      "default": 0
+    },
+    "last_activity_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "financial_goal": {
+      "type": "string",
+      "enum": [
+        "save_money",
+        "get_out_of_debt",
+        "invest",
+        "build_credit",
+        "understand_basics"
+      ]
+    },
+    "experience_level": {
+      "type": "string",
+      "enum": [
+        "complete_beginner",
+        "some_knowledge",
+        "intermediate"
+      ]
+    },
+    "onboarding_completed": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "user_id"
+  ]
+}

@@ -67,6 +67,13 @@ module.exports = {
   			display: ['var(--font-display)'],
   			mono: ['var(--font-mono)']
   		},
+  		colors: {
+  			teal: 'hsl(var(--teal))',
+  			amber: 'hsl(var(--amber))',
+  			navy: 'hsl(var(--navy))',
+  			'navy-card': 'hsl(var(--navy-card))',
+  			'navy-elevated': 'hsl(var(--navy-elevated))',
+  		},
   		keyframes: {
   			'accordion-down': {
   				from: {

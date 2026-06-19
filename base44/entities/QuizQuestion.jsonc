@@ -1,0 +1,33 @@
+{
+  "name": "QuizQuestion",
+  "type": "object",
+  "properties": {
+    "lesson_id": {
+      "type": "string"
+    },
+    "question": {
+      "type": "string"
+    },
+    "options": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "correct_index": {
+      "type": "number"
+    },
+    "explanation": {
+      "type": "string"
+    },
+    "order_index": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "lesson_id",
+    "question",
+    "options",
+    "correct_index"
+  ]
+}

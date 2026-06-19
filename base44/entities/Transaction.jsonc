@@ -1,0 +1,51 @@
+{
+  "name": "Transaction",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "bank_connection_id": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "description": {
+      "type": "string"
+    },
+    "amount": {
+      "type": "number"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "food_dining",
+        "shopping",
+        "transportation",
+        "entertainment",
+        "bills_utilities",
+        "health",
+        "travel",
+        "education",
+        "income",
+        "transfers",
+        "other"
+      ]
+    },
+    "merchant_name": {
+      "type": "string"
+    },
+    "is_income": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "user_id",
+    "date",
+    "amount",
+    "category"
+  ]
+}

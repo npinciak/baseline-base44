@@ -1,0 +1,55 @@
+{
+  "name": "Module",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "topic_tag": {
+      "type": "string",
+      "enum": [
+        "budgeting",
+        "investing",
+        "credit",
+        "taxes",
+        "saving",
+        "debt",
+        "insurance",
+        "retirement"
+      ]
+    },
+    "difficulty": {
+      "type": "string",
+      "enum": [
+        "beginner",
+        "intermediate",
+        "advanced"
+      ]
+    },
+    "order_index": {
+      "type": "number"
+    },
+    "xp_reward": {
+      "type": "number",
+      "default": 100
+    },
+    "icon": {
+      "type": "string"
+    },
+    "is_published": {
+      "type": "boolean",
+      "default": false
+    },
+    "color": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "topic_tag",
+    "difficulty"
+  ]
+}

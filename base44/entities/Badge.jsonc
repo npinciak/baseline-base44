@@ -1,0 +1,35 @@
+{
+  "name": "Badge",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "icon": {
+      "type": "string"
+    },
+    "trigger_type": {
+      "type": "string",
+      "enum": [
+        "lesson_complete",
+        "module_complete",
+        "xp_threshold",
+        "streak_days",
+        "first_login"
+      ]
+    },
+    "trigger_value": {
+      "type": "number"
+    },
+    "color": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "trigger_type"
+  ]
+}
