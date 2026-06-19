@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Target, Plus, X, Pencil, CheckCircle } from 'lucide-react';
+import GoalCreationWorkflow from '@/components/GoalCreationWorkflow';
 
 const EMPTY_FORM = { name: '', description: '', target_amount: '', saved_amount: '', target_date: '', image_url: '' };
 
@@ -9,6 +10,7 @@ export default function Goals() {
   const [goals, setGoals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [showWorkflow, setShowWorkflow] = useState(false);
   const [editingGoal, setEditingGoal] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
@@ -21,9 +23,19 @@ export default function Goals() {
   }, []);
 
   const openCreate = () => {
-    setEditingGoal(null);
-    setForm(EMPTY_FORM);
-    setShowModal(true);
+    if (goals.length === 0) {
+      setShowWorkflow(true);
+    } else {
+      setEditingGoal(null);
+      setForm(EMPTY_FORM);
+      setShowModal(true);
+    }
+  };
+
+  const handleWorkflowCreated = async () => {
+    const updated = await base44.entities.SavingsGoal.filter({ user_id: user.id }, '-created_date', 50);
+    setGoals(updated);
+    setShowWorkflow(false);
   };
 
   const openEdit = (goal) => {
@@ -174,6 +186,15 @@ export default function Goals() {
             );
           })}
         </div>
+      )}
+
+      {/* First-goal workflow */}
+      {showWorkflow && user && (
+        <GoalCreationWorkflow
+          user={user}
+          onClose={() => setShowWorkflow(false)}
+          onCreated={handleWorkflowCreated}
+        />
       )}
 
       {/* Modal */}

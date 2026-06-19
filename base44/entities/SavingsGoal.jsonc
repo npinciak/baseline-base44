@@ -11,12 +11,25 @@
     "description": {
       "type": "string"
     },
+    "goal_type": {
+      "type": "string",
+      "enum": [
+        "vacation",
+        "buyHome",
+        "newCar",
+        "other"
+      ]
+    },
     "target_amount": {
       "type": "number"
     },
     "saved_amount": {
       "type": "number",
       "default": 0
+    },
+    "currency": {
+      "type": "string",
+      "default": "USD"
     },
     "target_date": {
       "type": "string",
@@ -25,6 +38,16 @@
     "is_completed": {
       "type": "boolean",
       "default": false
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string"
+    },
+    "pending_points": {
+      "type": "number",
+      "default": 0
     }
   },
   "required": [
