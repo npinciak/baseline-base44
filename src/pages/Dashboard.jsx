@@ -46,7 +46,7 @@ export default function Dashboard() {
       const [statsArr, goalsArr, mods, prog] = await Promise.all([
         base44.entities.UserStats.filter({ user_id: u.id }),
         base44.entities.SavingsGoal.filter({ user_id: u.id }, '-created_date', 6),
-        base44.entities.Module.filter({ is_published: true }, 'order_index', 20),
+        base44.entities.Module.filter({ is_published: true }, 'order_index', 50),
         base44.entities.UserProgress.filter({ user_id: u.id }),
       ]);
       if (statsArr.length === 0) { navigate('/onboarding'); return; }
@@ -69,11 +69,6 @@ export default function Dashboard() {
     if (index === 0) return true;
     return getModuleCompletedCount(modules[index - 1]?.id) > 0;
   };
-
-  // Find next recommended module
-  const nextModuleIndex = modules.findIndex((m, i) => isModuleUnlocked(i) && getModuleCompletedCount(m.id) === 0);
-  const nextModule = nextModuleIndex >= 0 ? modules[nextModuleIndex] : null;
-  const inProgressModules = modules.filter(m => getModuleCompletedCount(m.id) > 0 && isModuleUnlocked(modules.indexOf(m)));
 
   const prevGoal = () => setCarouselIndex(i => Math.max(0, i - 1));
   const nextGoal = () => setCarouselIndex(i => Math.min(goals.length - 1, i + 1));
@@ -166,7 +161,7 @@ export default function Dashboard() {
 
       <div className="grid md:grid-cols-5 gap-6">
         {/* Main column */}
-        <div className="md:col-span-3 space-y-6">
+        <div className="md:col-span-4 space-y-6">
 
           {/* Goals Carousel */}
           <section>
@@ -270,13 +265,11 @@ export default function Dashboard() {
             )}
           </section>
 
-          {/* Learning path next steps */}
+          {/* Full Learning Path */}
           <section>
-            <div className="flex items-center justify-between mb-4">
+            <div className="mb-4">
               <h2 className="text-lg font-heading font-bold">Learning Path</h2>
-              <Link to="/learn" className="text-xs text-primary font-semibold hover:underline flex items-center gap-1">
-                Full path <ChevronRight className="w-3.5 h-3.5" />
-              </Link>
+              <p className="text-xs text-muted-foreground">Master personal finance one lesson at a time</p>
             </div>
 
             {modules.length === 0 ? (
@@ -285,54 +278,76 @@ export default function Dashboard() {
                 <p className="text-sm text-muted-foreground">No modules published yet — check back soon!</p>
               </div>
             ) : (
-              <div className="space-y-3">
-                {/* Next up */}
-                {nextModule && (
-                  <Link
-                    to={`/learn/${nextModule.id}`}
-                    className="flex items-center gap-4 bg-primary/10 border border-primary/25 rounded-2xl p-4 hover:border-primary/50 transition-all group"
-                  >
-                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${TOPIC_COLORS[nextModule.topic_tag] || 'from-primary to-primary'} flex items-center justify-center shrink-0 shadow-md`}>
-                      {(() => { const Icon = TOPIC_ICONS[nextModule.topic_tag] || BookOpen; return <Icon className="w-6 h-6 text-white" />; })()}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-semibold text-primary uppercase tracking-wider mb-0.5">Up Next</p>
-                      <p className="text-sm font-bold truncate">{nextModule.title}</p>
-                      <p className="text-xs text-muted-foreground capitalize">{nextModule.topic_tag?.replace('_', ' ')} · {nextModule.difficulty}</p>
-                    </div>
-                    <ChevronRight className="w-5 h-5 text-primary group-hover:translate-x-0.5 transition-transform shrink-0" />
-                  </Link>
-                )}
-
-                {/* In progress */}
-                {inProgressModules.slice(0, 2).map(mod => {
-                  const completed = getModuleCompletedCount(mod.id);
-                  const TopicIcon = TOPIC_ICONS[mod.topic_tag] || BookOpen;
-                  return (
-                    <Link
-                      key={mod.id}
-                      to={`/learn/${mod.id}`}
-                      className="flex items-center gap-4 bg-card border border-border rounded-2xl p-4 hover:border-primary/30 transition-all"
-                    >
-                      <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${TOPIC_COLORS[mod.topic_tag] || 'from-primary to-primary'} flex items-center justify-center shrink-0 opacity-80`}>
-                        <TopicIcon className="w-6 h-6 text-white" />
+              <div className="relative">
+                <div className="absolute left-8 top-8 bottom-8 w-0.5 bg-border" />
+                <div className="space-y-4">
+                  {modules.map((module, index) => {
+                    const unlocked = isModuleUnlocked(index);
+                    const completedCount = getModuleCompletedCount(module.id);
+                    const colorClass = TOPIC_COLORS[module.topic_tag] || 'from-primary to-primary';
+                    const TopicIcon = TOPIC_ICONS[module.topic_tag] || BookOpen;
+                    return (
+                      <div key={module.id} className="relative pl-20">
+                        <div className={`absolute left-0 w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-300 ${
+                          unlocked
+                            ? `bg-gradient-to-br ${colorClass} shadow-lg ${completedCount > 0 ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : ''}`
+                            : 'bg-secondary grayscale'
+                        }`}>
+                          {unlocked ? <TopicIcon className="w-7 h-7 text-white" /> : <Lock className="w-6 h-6 text-muted-foreground" />}
+                          {completedCount > 0 && (
+                            <div className="absolute -top-1 -right-1 w-5 h-5 bg-primary rounded-full flex items-center justify-center">
+                              <CheckCircle className="w-3 h-3 text-primary-foreground" />
+                            </div>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => unlocked && navigate(`/learn/${module.id}`)}
+                          disabled={!unlocked}
+                          className={`w-full text-left bg-card border rounded-2xl p-5 transition-all duration-300 ${
+                            unlocked
+                              ? 'border-border hover:border-primary/40 hover:bg-card/80 cursor-pointer hover:-translate-y-0.5'
+                              : 'border-border opacity-60 cursor-not-allowed'
+                          }`}
+                        >
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className={`text-xs font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                                  module.difficulty === 'beginner' ? 'bg-primary/15 text-primary' :
+                                  module.difficulty === 'intermediate' ? 'bg-amber-400/15 text-amber-400' :
+                                  'bg-red-400/15 text-red-400'
+                                }`}>{module.difficulty}</span>
+                                <span className="text-xs text-muted-foreground capitalize">{module.topic_tag?.replace('_', ' ')}</span>
+                              </div>
+                              <h3 className="text-base font-heading font-semibold mb-1">{module.title}</h3>
+                              {module.description && (
+                                <p className="text-sm text-muted-foreground line-clamp-2">{module.description}</p>
+                              )}
+                              <div className="flex items-center gap-3 mt-3">
+                                <span className="flex items-center gap-1 text-xs text-primary font-medium">
+                                  <Zap className="w-3 h-3" /> {module.xp_reward} XP
+                                </span>
+                                {completedCount > 0 && (
+                                  <span className="flex items-center gap-1 text-xs text-green-400 font-medium">
+                                    <CheckCircle className="w-3 h-3" /> In progress
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            {unlocked && <ChevronRight className="w-5 h-5 text-muted-foreground mt-1" />}
+                          </div>
+                        </button>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs text-muted-foreground uppercase tracking-wider mb-0.5">In Progress</p>
-                        <p className="text-sm font-semibold truncate">{mod.title}</p>
-                        <p className="text-xs text-green-400 font-medium">{completed} lesson{completed !== 1 ? 's' : ''} done</p>
-                      </div>
-                      <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
-                    </Link>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
             )}
           </section>
         </div>
 
         {/* Sidebar widgets */}
-        <div className="md:col-span-2 space-y-5">
+        <div className="md:col-span-1 space-y-5">
           {/* Quick links */}
           <div className="bg-card border border-border rounded-2xl p-5">
             <h3 className="text-sm font-heading font-semibold mb-4">Quick Actions</h3>
