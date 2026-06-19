@@ -3,6 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { Link } from 'react-router-dom';
 import { Wallet, TrendingUp, TrendingDown, Plus, RefreshCw, Zap } from 'lucide-react';
+import SavingsGoals from '@/components/SavingsGoals';
 
 const CATEGORY_COLORS = {
   food_dining: '#00D4AA',
@@ -195,6 +196,11 @@ export default function Finance() {
           </div>
           <p className="text-3xl font-display font-extrabold text-green-400">${totalIncome.toFixed(2)}</p>
         </div>
+      </div>
+
+      {/* Savings Goals */}
+      <div className="mb-6">
+        <SavingsGoals user={user} />
       </div>
 
       {transactions.length === 0 ? (
