@@ -20,7 +20,7 @@ function computeMonthlySavings(targetAmount, targetDate) {
   return (targetAmount / months).toFixed(2);
 }
 
-export default function GoalCreationWorkflow({ user, onClose, onCreated, skipPoints = false }) {
+export default function GoalCreationWorkflow({ user, onClose, onCreated }) {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [goalType, setGoalType] = useState('vacation');
@@ -30,7 +30,7 @@ export default function GoalCreationWorkflow({ user, onClose, onCreated, skipPoi
   const [pendingPoints, setPendingPoints] = useState(0);
   const [saving, setSaving] = useState(false);
 
-  const STEPS = skipPoints ? STEPS_NO_POINTS : ALL_STEPS;
+  const STEPS = ALL_STEPS;
   const currentStep = STEPS[step];
   const today = new Date().toISOString().slice(0, 10);
 
@@ -41,6 +41,10 @@ export default function GoalCreationWorkflow({ user, onClose, onCreated, skipPoi
   const handleSubmit = async () => {
     setSaving(true);
     const selectedType = GOAL_TYPES.find(t => t.value === goalType);
+    const statsArr = await base44.entities.UserStats.filter({ user_id: user.id });
+    if (statsArr.length > 0) {
+      await base44.entities.UserStats.update(statsArr[0].id, { first_goal_workflow_completed: true });
+    }
     await base44.entities.SavingsGoal.create({
       user_id: user.id,
       name: goalName.trim(),

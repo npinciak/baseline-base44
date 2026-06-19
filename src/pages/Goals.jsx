@@ -8,7 +8,7 @@ const EMPTY_FORM = { name: '', description: '', target_amount: '', saved_amount:
 export default function Goals() {
   const [user, setUser] = useState(null);
   const [goals, setGoals] = useState([]);
-  const [hasEverHadGoals, setHasEverHadGoals] = useState(false);
+  const [userStats, setUserStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [showWorkflow, setShowWorkflow] = useState(false);
@@ -17,14 +17,22 @@ export default function Goals() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    base44.auth.me().then(u => {
+    const init = async () => {
+      const u = await base44.auth.me();
       setUser(u);
-      return base44.entities.SavingsGoal.filter({ user_id: u.id }, '-created_date', 50);
-    }).then(g => { setGoals(g); if (g.length > 0) setHasEverHadGoals(true); }).finally(() => setLoading(false));
+      const [g, statsArr] = await Promise.all([
+        base44.entities.SavingsGoal.filter({ user_id: u.id }, '-created_date', 50),
+        base44.entities.UserStats.filter({ user_id: u.id }),
+      ]);
+      setGoals(g);
+      if (statsArr.length > 0) setUserStats(statsArr[0]);
+    };
+    init().finally(() => setLoading(false));
   }, []);
 
   const openCreate = () => {
-    if (goals.length === 0) {
+    const workflowDone = userStats?.first_goal_workflow_completed;
+    if (!workflowDone) {
       setShowWorkflow(true);
     } else {
       setEditingGoal(null);
@@ -34,8 +42,12 @@ export default function Goals() {
   };
 
   const handleWorkflowCreated = async () => {
-    const updated = await base44.entities.SavingsGoal.filter({ user_id: user.id }, '-created_date', 50);
+    const [updated, statsArr] = await Promise.all([
+      base44.entities.SavingsGoal.filter({ user_id: user.id }, '-created_date', 50),
+      base44.entities.UserStats.filter({ user_id: user.id }),
+    ]);
     setGoals(updated);
+    if (statsArr.length > 0) setUserStats(statsArr[0]);
     setShowWorkflow(false);
   };
 
@@ -206,7 +218,7 @@ export default function Goals() {
           user={user}
           onClose={() => setShowWorkflow(false)}
           onCreated={handleWorkflowCreated}
-          skipPoints={hasEverHadGoals}
+          skipPoints={false}
         />
       )}
 

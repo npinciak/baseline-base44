@@ -46,6 +46,10 @@
     "onboarding_completed": {
       "type": "boolean",
       "default": false
+    },
+    "first_goal_workflow_completed": {
+      "type": "boolean",
+      "default": false
     }
   },
   "required": [
