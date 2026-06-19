@@ -3,9 +3,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import {
   Flame, Zap, Star, Target, ChevronRight, ChevronLeft,
-  Plus, BookOpen, Lock, CheckCircle,
+  Plus, BookOpen, Lock, CheckCircle, X,
   Wallet, TrendingUp, CreditCard, FileText, Unlock, Umbrella, Shield, PiggyBank
 } from 'lucide-react';
+
+const EMPTY_FORM = { name: '', description: '', target_amount: '', saved_amount: '', target_date: '', image_url: '' };
 
 const TOPIC_ICONS = {
   budgeting: Wallet, investing: TrendingUp, credit: CreditCard,
@@ -32,6 +34,9 @@ export default function Dashboard() {
   const [progress, setProgress] = useState([]);
   const [loading, setLoading] = useState(true);
   const [carouselIndex, setCarouselIndex] = useState(0);
+  const [showGoalModal, setShowGoalModal] = useState(false);
+  const [goalForm, setGoalForm] = useState(EMPTY_FORM);
+  const [savingGoal, setSavingGoal] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -72,6 +77,27 @@ export default function Dashboard() {
 
   const prevGoal = () => setCarouselIndex(i => Math.max(0, i - 1));
   const nextGoal = () => setCarouselIndex(i => Math.min(goals.length - 1, i + 1));
+
+  const handleCreateGoal = async () => {
+    if (!goalForm.name || !goalForm.target_amount) return;
+    setSavingGoal(true);
+    await base44.entities.SavingsGoal.create({
+      user_id: user.id,
+      name: goalForm.name,
+      description: goalForm.description || undefined,
+      target_amount: parseFloat(goalForm.target_amount),
+      saved_amount: parseFloat(goalForm.saved_amount) || 0,
+      target_date: goalForm.target_date || undefined,
+      image_url: goalForm.image_url || undefined,
+      is_completed: false,
+    });
+    const updated = await base44.entities.SavingsGoal.filter({ user_id: user.id }, '-created_date', 6);
+    setGoals(updated);
+    setCarouselIndex(0);
+    setShowGoalModal(false);
+    setGoalForm(EMPTY_FORM);
+    setSavingGoal(false);
+  };
 
   if (loading) {
     return (
@@ -152,9 +178,9 @@ export default function Dashboard() {
             </div>
 
             {goals.length === 0 ? (
-              <Link
-                to="/goals"
-                className="flex flex-col items-center justify-center bg-card border border-dashed border-border rounded-2xl p-10 hover:border-primary/40 transition-all group"
+              <button
+                onClick={() => setShowGoalModal(true)}
+                className="w-full flex flex-col items-center justify-center bg-card border border-dashed border-border rounded-2xl p-10 hover:border-primary/40 transition-all group"
               >
                 <div className="w-12 h-12 bg-secondary rounded-xl flex items-center justify-center mb-3 group-hover:bg-primary/15 transition-all">
                   <Target className="w-6 h-6 text-muted-foreground group-hover:text-primary transition-all" />
@@ -164,7 +190,7 @@ export default function Dashboard() {
                 <span className="inline-flex items-center gap-1.5 px-4 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-semibold">
                   <Plus className="w-4 h-4" /> Create a Goal
                 </span>
-              </Link>
+              </button>
             ) : (
               <div className="relative">
                 {/* Carousel card */}
@@ -381,6 +407,92 @@ export default function Dashboard() {
           )}
         </div>
       </div>
+
+      {/* Create Goal Modal */}
+      {showGoalModal && (
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-end md:items-center justify-center z-50 p-4">
+          <div className="bg-card border border-border rounded-3xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-5">
+              <h3 className="text-lg font-heading font-bold">New Savings Goal</h3>
+              <button onClick={() => setShowGoalModal(false)} className="text-muted-foreground hover:text-foreground transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="text-xs text-muted-foreground font-medium mb-1 block">Goal Name</label>
+                <input
+                  value={goalForm.name}
+                  onChange={e => setGoalForm(p => ({ ...p, name: e.target.value }))}
+                  placeholder="e.g. New MacBook, Vacation to Japan"
+                  className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground font-medium mb-1 block">Image URL (optional)</label>
+                <input
+                  value={goalForm.image_url}
+                  onChange={e => setGoalForm(p => ({ ...p, image_url: e.target.value }))}
+                  placeholder="https://..."
+                  className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground font-medium mb-1 block">Description (optional)</label>
+                <input
+                  value={goalForm.description}
+                  onChange={e => setGoalForm(p => ({ ...p, description: e.target.value }))}
+                  placeholder="Why is this important to you?"
+                  className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-muted-foreground font-medium mb-1 block">Target Amount ($)</label>
+                  <input
+                    type="number"
+                    value={goalForm.target_amount}
+                    onChange={e => setGoalForm(p => ({ ...p, target_amount: e.target.value }))}
+                    placeholder="0.00"
+                    className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground font-medium mb-1 block">Already Saved ($)</label>
+                  <input
+                    type="number"
+                    value={goalForm.saved_amount}
+                    onChange={e => setGoalForm(p => ({ ...p, saved_amount: e.target.value }))}
+                    placeholder="0.00"
+                    className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground font-medium mb-1 block">Target Date (optional)</label>
+                <input
+                  type="date"
+                  value={goalForm.target_date}
+                  onChange={e => setGoalForm(p => ({ ...p, target_date: e.target.value }))}
+                  className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
+                />
+              </div>
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button onClick={() => setShowGoalModal(false)} className="flex-1 py-3 bg-secondary text-foreground rounded-xl font-semibold hover:bg-secondary/80 transition-all">
+                Cancel
+              </button>
+              <button
+                onClick={handleCreateGoal}
+                disabled={savingGoal || !goalForm.name || !goalForm.target_amount}
+                className="flex-1 py-3 bg-primary text-primary-foreground rounded-xl font-semibold hover:bg-primary/90 transition-all disabled:opacity-50"
+              >
+                {savingGoal ? 'Saving...' : 'Create Goal'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
