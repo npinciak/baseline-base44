@@ -8,6 +8,7 @@ const EMPTY_FORM = { name: '', description: '', target_amount: '', saved_amount:
 export default function Goals() {
   const [user, setUser] = useState(null);
   const [goals, setGoals] = useState([]);
+  const [hasEverHadGoals, setHasEverHadGoals] = useState(false);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [showWorkflow, setShowWorkflow] = useState(false);
@@ -19,7 +20,7 @@ export default function Goals() {
     base44.auth.me().then(u => {
       setUser(u);
       return base44.entities.SavingsGoal.filter({ user_id: u.id }, '-created_date', 50);
-    }).then(setGoals).finally(() => setLoading(false));
+    }).then(g => { setGoals(g); if (g.length > 0) setHasEverHadGoals(true); }).finally(() => setLoading(false));
   }, []);
 
   const openCreate = () => {
@@ -205,6 +206,7 @@ export default function Goals() {
           user={user}
           onClose={() => setShowWorkflow(false)}
           onCreated={handleWorkflowCreated}
+          skipPoints={hasEverHadGoals}
         />
       )}
 

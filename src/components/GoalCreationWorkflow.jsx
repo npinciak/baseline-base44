@@ -10,7 +10,8 @@ const GOAL_TYPES = [
   { value: 'other', label: 'Something else', icon: Sparkles, image: 'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=800&auto=format&fit=crop' },
 ];
 
-const STEPS = ['GoalType', 'BasePoints100', 'BasePoints150', 'Target', 'GoalName', 'GoalDate', 'Summary', 'LinkAccounts', 'Baseplan'];
+const ALL_STEPS = ['GoalType', 'BasePoints100', 'BasePoints150', 'Target', 'GoalName', 'GoalDate', 'Summary', 'LinkAccounts', 'Baseplan'];
+const STEPS_NO_POINTS = ['GoalType', 'Target', 'GoalName', 'GoalDate', 'Summary', 'LinkAccounts', 'Baseplan'];
 
 function computeMonthlySavings(targetAmount, targetDate) {
   const now = new Date();
@@ -19,7 +20,7 @@ function computeMonthlySavings(targetAmount, targetDate) {
   return (targetAmount / months).toFixed(2);
 }
 
-export default function GoalCreationWorkflow({ user, onClose, onCreated }) {
+export default function GoalCreationWorkflow({ user, onClose, onCreated, skipPoints = false }) {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [goalType, setGoalType] = useState('vacation');
@@ -29,6 +30,7 @@ export default function GoalCreationWorkflow({ user, onClose, onCreated }) {
   const [pendingPoints, setPendingPoints] = useState(0);
   const [saving, setSaving] = useState(false);
 
+  const STEPS = skipPoints ? STEPS_NO_POINTS : ALL_STEPS;
   const currentStep = STEPS[step];
   const today = new Date().toISOString().slice(0, 10);
 
