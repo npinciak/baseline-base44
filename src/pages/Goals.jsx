@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Target, Plus, X, Pencil, CheckCircle } from 'lucide-react';
+import { Target, Plus, X, Pencil, CheckCircle, Trash2 } from 'lucide-react';
 import GoalCreationWorkflow from '@/components/GoalCreationWorkflow';
 
 const EMPTY_FORM = { name: '', description: '', target_amount: '', saved_amount: '', target_date: '', image_url: '' };
@@ -72,6 +72,12 @@ export default function Goals() {
     setGoals(updated);
     setShowModal(false);
     setSaving(false);
+  };
+
+  const handleDelete = async (goal) => {
+    if (!confirm(`Delete "${goal.name}"? This cannot be undone.`)) return;
+    await base44.entities.SavingsGoal.delete(goal.id);
+    setGoals(g => g.filter(x => x.id !== goal.id));
   };
 
   const handleMarkComplete = async (goal) => {
@@ -148,16 +154,21 @@ export default function Goals() {
                 <div className="p-4 flex flex-col flex-1">
                   <div className="flex items-start justify-between gap-2 mb-1">
                     <h3 className="text-base font-heading font-bold leading-tight">{goal.name}</h3>
-                    {!goal.is_completed && (
-                      <div className="flex items-center gap-1 shrink-0">
-                        <button onClick={() => openEdit(goal)} className="p-1 text-muted-foreground hover:text-foreground transition-colors">
-                          <Pencil className="w-3.5 h-3.5" />
-                        </button>
-                        <button onClick={() => handleMarkComplete(goal)} title="Mark complete" className="p-1 text-muted-foreground hover:text-primary transition-colors">
-                          <CheckCircle className="w-3.5 h-3.5" />
+                    <div className="flex items-center gap-1 shrink-0">
+                        {!goal.is_completed && (
+                          <>
+                            <button onClick={() => openEdit(goal)} className="p-1 text-muted-foreground hover:text-foreground transition-colors">
+                              <Pencil className="w-3.5 h-3.5" />
+                            </button>
+                            <button onClick={() => handleMarkComplete(goal)} title="Mark complete" className="p-1 text-muted-foreground hover:text-primary transition-colors">
+                              <CheckCircle className="w-3.5 h-3.5" />
+                            </button>
+                          </>
+                        )}
+                        <button onClick={() => handleDelete(goal)} title="Delete goal" className="p-1 text-muted-foreground hover:text-destructive transition-colors">
+                          <Trash2 className="w-3.5 h-3.5" />
                         </button>
                       </div>
-                    )}
                   </div>
                   {goal.description && (
                     <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{goal.description}</p>
