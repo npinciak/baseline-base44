@@ -119,45 +119,7 @@ export default function Dashboard() {
         <p className="text-muted-foreground">Here's your financial progress at a glance.</p>
       </div>
 
-      {/* Stats row */}
-      {stats && (
-        <div className="grid grid-cols-3 gap-3 mb-8">
-          <div className="bg-card border border-border rounded-2xl p-4 text-center">
-            <div className="flex items-center justify-center gap-1.5 mb-1">
-              <Flame className="w-5 h-5 text-orange-400" />
-              <span className="text-2xl font-display font-bold">{stats.current_streak}</span>
-            </div>
-            <p className="text-xs text-muted-foreground">Day Streak</p>
-          </div>
-          <div className="bg-card border border-border rounded-2xl p-4 text-center">
-            <div className="flex items-center justify-center gap-1.5 mb-1">
-              <Zap className="w-5 h-5 text-primary" />
-              <span className="text-2xl font-display font-bold">{stats.total_xp}</span>
-            </div>
-            <p className="text-xs text-muted-foreground">Total XP</p>
-          </div>
-          <div className="bg-card border border-border rounded-2xl p-4 text-center">
-            <div className="flex items-center justify-center gap-1.5 mb-1">
-              <Star className="w-5 h-5 text-amber-400" />
-              <span className="text-2xl font-display font-bold">{stats.current_level}</span>
-            </div>
-            <p className="text-xs text-muted-foreground">Level</p>
-          </div>
-        </div>
-      )}
 
-      {/* XP Progress */}
-      {stats && (
-        <div className="bg-card border border-border rounded-2xl p-4 mb-8">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium">Level {stats.current_level} → {stats.current_level + 1}</span>
-            <span className="text-sm text-primary font-semibold">{Math.round(xpProgress)}%</span>
-          </div>
-          <div className="h-3 bg-secondary rounded-full overflow-hidden">
-            <div className="h-full rounded-full xp-shimmer transition-all duration-700" style={{ width: `${xpProgress}%` }} />
-          </div>
-        </div>
-      )}
 
       <div className="grid md:grid-cols-5 gap-6">
         {/* Main column */}
@@ -166,7 +128,7 @@ export default function Dashboard() {
           {/* Goals Carousel */}
           <section>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-heading font-bold">Savings Goals</h2>
+              <h2 className="text-lg font-heading font-bold">My Goals</h2>
               <Link to="/goals" className="text-xs text-primary font-semibold hover:underline flex items-center gap-1">
                 View all <ChevronRight className="w-3.5 h-3.5" />
               </Link>
