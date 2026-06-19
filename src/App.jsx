@@ -16,6 +16,7 @@ import LessonView from './pages/LessonView';
 import Finance from './pages/Finance';
 import Profile from './pages/Profile';
 import Admin from './pages/Admin';
+import Goals from './pages/Goals';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -47,6 +48,7 @@ const AuthenticatedApp = () => {
         <Route path="/finance" element={<Finance />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/goals" element={<Goals />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>
