@@ -17,6 +17,7 @@ import Finance from './pages/Finance';
 import Profile from './pages/Profile';
 import Admin from './pages/Admin';
 import Goals from './pages/Goals';
+import Dashboard from './pages/Dashboard';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -43,6 +44,7 @@ const AuthenticatedApp = () => {
       <Route path="/" element={<Landing />} />
       <Route path="/onboarding" element={<Onboarding />} />
       <Route element={<Layout />}>
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/learn" element={<Learn />} />
         <Route path="/learn/:moduleId" element={<LessonView />} />
         <Route path="/finance" element={<Finance />} />

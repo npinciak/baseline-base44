@@ -1,6 +1,6 @@
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { BookOpen, BarChart2, User, Flame, Zap, LogOut, Shield, Target } from 'lucide-react';
+import { BookOpen, BarChart2, User, Flame, Zap, LogOut, Shield, Target, LayoutDashboard } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export default function Layout() {
@@ -21,6 +21,7 @@ export default function Layout() {
   const xpProgress = stats ? ((stats.total_xp % xpForLevel(stats.current_level)) / xpForLevel(stats.current_level)) * 100 : 0;
 
   const navItems = [
+    { to: '/dashboard', icon: LayoutDashboard, label: 'Home' },
     { to: '/learn', icon: BookOpen, label: 'Learn' },
     { to: '/finance', icon: BarChart2, label: 'Finance' },
     { to: '/goals', icon: Target, label: 'Goals' },
