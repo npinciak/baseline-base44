@@ -4,6 +4,7 @@ import {
   Wallet, RefreshCw, ChevronDown, ChevronUp,
   TrendingUp, TrendingDown, Repeat, Tag, AlertCircle
 } from 'lucide-react';
+import ConnectBankButton from '@/components/ConnectBankButton';
 
 const CATEGORY_COLORS = {
   food_dining: '#00D4AA', shopping: '#FFB347', transportation: '#60A5FA',
@@ -138,9 +139,12 @@ export default function Money() {
       </div>
 
       {mxError && (
-        <div className="flex items-center gap-2 px-4 py-3 bg-amber-500/10 border border-amber-500/25 rounded-xl text-sm text-amber-400">
-          <AlertCircle className="w-4 h-4 shrink-0" />
-          <span>{mxError}</span>
+        <div className="flex flex-col gap-3 px-4 py-4 bg-amber-500/10 border border-amber-500/25 rounded-xl text-sm text-amber-400">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            <span>{mxError}</span>
+          </div>
+          <ConnectBankButton onConnected={() => window.location.reload()} />
         </div>
       )}
 
