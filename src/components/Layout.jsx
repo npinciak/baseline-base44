@@ -1,6 +1,6 @@
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { BarChart2, User, Flame, Zap, LogOut, Shield, Target, LayoutDashboard } from 'lucide-react';
+import { BarChart2, User, Flame, Zap, LogOut, Shield, Target, LayoutDashboard, Wallet } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export default function Layout() {
@@ -23,6 +23,7 @@ export default function Layout() {
   const navItems = [
     { to: '/dashboard', icon: LayoutDashboard, label: 'Home' },
     { to: '/finance', icon: BarChart2, label: 'Finance' },
+    { to: '/money', icon: Wallet, label: 'Money' },
     { to: '/goals', icon: Target, label: 'Goals' },
     { to: '/profile', icon: User, label: 'Profile' },
   ];
