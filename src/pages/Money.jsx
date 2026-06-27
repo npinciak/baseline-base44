@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import {
   Wallet, RefreshCw, ChevronDown, ChevronUp,
-  TrendingUp, TrendingDown, Repeat, Tag, Plus, X
+  TrendingUp, TrendingDown, Repeat, Tag, AlertCircle
 } from 'lucide-react';
 
 const CATEGORY_COLORS = {
@@ -38,9 +38,41 @@ function detectRecurring(transactions) {
     .slice(0, 10);
 }
 
+const MX_CATEGORY_MAP = {
+  'Food & Dining': 'food_dining', 'Restaurants': 'food_dining', 'Groceries': 'food_dining',
+  'Shopping': 'shopping', 'Clothing': 'shopping',
+  'Transportation': 'transportation', 'Gas & Fuel': 'transportation', 'Auto': 'transportation',
+  'Entertainment': 'entertainment',
+  'Bills & Utilities': 'bills_utilities', 'Utilities': 'bills_utilities',
+  'Health & Fitness': 'health', 'Healthcare': 'health',
+  'Travel': 'travel', 'Hotels': 'travel', 'Airlines': 'travel',
+  'Education': 'education',
+  'Income': 'income', 'Paycheck': 'income', 'Transfer': 'transfers',
+};
+function mapMxCategory(mxCategory) {
+  if (!mxCategory) return 'other';
+  for (const [key, val] of Object.entries(MX_CATEGORY_MAP)) {
+    if (mxCategory.includes(key)) return val;
+  }
+  return 'other';
+}
+function normalizeMxTransaction(tx) {
+  return {
+    id: tx.guid,
+    description: tx.description || tx.original_description || '',
+    merchant_name: tx.merchant_name || '',
+    amount: Math.abs(tx.amount),
+    is_income: tx.type === 'CREDIT',
+    date: tx.date ? tx.date.slice(0, 10) : '',
+    category: mapMxCategory(tx.category),
+    _source: 'mx',
+  };
+}
+
 export default function Money() {
   const [user, setUser] = useState(null);
   const [transactions, setTransactions] = useState([]);
+  const [mxError, setMxError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [txFilter, setTxFilter] = useState('all');
   const [expandedCategory, setExpandedCategory] = useState(null);
@@ -49,8 +81,26 @@ export default function Money() {
     const init = async () => {
       const u = await base44.auth.me();
       setUser(u);
-      const txs = await base44.entities.Transaction.filter({ user_id: u.id }, '-date', 500);
-      setTransactions(txs);
+
+      // Load local transactions
+      const localTxs = await base44.entities.Transaction.filter({ user_id: u.id }, '-date', 500);
+
+      // Try to load MX transactions if a connection exists
+      const connections = await base44.entities.BankConnection.filter({ user_id: u.id, provider: 'mx' });
+      let mxTxs = [];
+      if (connections.length > 0 && connections[0].access_token_ref) {
+        const userGuid = connections[0].access_token_ref;
+        const res = await base44.functions.invoke('getMxTransactions', { userGuid }).catch(e => {
+          setMxError('Could not load MX transactions');
+          return null;
+        });
+        if (res?.data?.transactions) {
+          mxTxs = res.data.transactions.map(normalizeMxTransaction);
+        }
+      }
+
+      // Merge: MX transactions first, then local ones not already in MX
+      setTransactions([...mxTxs, ...localTxs]);
       setLoading(false);
     };
     init().catch(() => setLoading(false));
@@ -91,6 +141,13 @@ export default function Money() {
         <h1 className="text-3xl font-display font-extrabold mb-1">Money</h1>
         <p className="text-muted-foreground">Your full financial picture</p>
       </div>
+
+      {mxError && (
+        <div className="flex items-center gap-2 px-4 py-3 bg-amber-500/10 border border-amber-500/25 rounded-xl text-sm text-amber-400">
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          <span>{mxError}</span>
+        </div>
+      )}
 
       {/* Categories */}
       <section>
