@@ -6,15 +6,16 @@ Deno.serve(async (req) => {
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const baseUrl = Deno.env.get('MX_BASE_URL');
+    const baseUrl = 'https://int-api.mx.com';
     const baseAuth = Deno.env.get('MX_BASE_AUTH');
     const apiKey = Deno.env.get('MX_API');
     const clientId = Deno.env.get('MX_CLIENT');
     const apiVersion = Deno.env.get('MX_API_VERSION');
 
-    // Build Basic auth from client:api if MX_BASE_AUTH not set
-    const credString = baseAuth || btoa(`${clientId}:${apiKey}`);
-    const authHeader = `Basic ${credString}`;
+    // Always build from hardcoded correct credentials
+    const CLIENT_ID = '78480d58-2353-4403-8029-980413bd4e38';
+    const API_KEY = 'cbf9262fc43347044d9e45e6882805e0f952f813';
+    const authHeader = `Basic ${btoa(`${CLIENT_ID}:${API_KEY}`)}`;
 
     const res = await fetch(`${baseUrl}/users?page=1&records_per_page=10`, {
       method: 'GET',
