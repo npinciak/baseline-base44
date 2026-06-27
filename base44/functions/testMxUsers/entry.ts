@@ -20,7 +20,7 @@ Deno.serve(async (req) => {
       method: 'GET',
       headers: {
         'Authorization': authHeader,
-        'Accept': apiVersion || 'application/vnd.mx.api.v1+json',
+        'Accept': 'application/vnd.mx.api.v1+json',
         'Content-Type': 'application/json',
       },
     });
