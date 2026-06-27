@@ -18,9 +18,6 @@ Deno.serve(async (req) => {
       'Accept-Version': apiVersion,
     };
 
-    const body = await req.json();
-    const { institutionCode, redirectUri } = body;
-
     // Step 1: Create or retrieve MX user
     let userGuid = null;
     const existingConn = await base44.asServiceRole.entities.BankConnection.filter({ user_id: user.id, provider: 'mx' });
@@ -35,7 +32,6 @@ Deno.serve(async (req) => {
       if (!createUserRes.success && createUserRes.status_code !== 409) {
         return Response.json({ error: 'Failed to create MX user', details: createUserRes.data }, { status: 500 });
       }
-      // If 409 (already exists), fetch the user
       if (createUserRes.status_code === 409) {
         const readRes = await base44.asServiceRole.integrations.custom.call('mx', 'get:/users/{user_identifier}', {
           pathParams: { user_identifier: user.id },
@@ -53,50 +49,34 @@ Deno.serve(async (req) => {
         await base44.asServiceRole.entities.BankConnection.create({
           user_id: user.id,
           provider: 'mx',
-          institution_name: institutionCode || 'MX',
+          institution_name: 'MX',
           access_token_ref: userGuid,
           is_active: false,
         });
       }
     }
 
-    // Step 2: Create a member for the institution
-    const memberRes = await base44.asServiceRole.integrations.custom.call('mx', 'post:/users/{user_identifier}/members', {
+    // Step 2: Request widget URL
+    const widgetRes = await base44.asServiceRole.integrations.custom.call('mx', 'post:/users/{user_identifier}/widget_urls', {
       pathParams: { user_identifier: userGuid },
       payload: {
-        member: {
-          institution_code: institutionCode,
-          is_oauth: true,
+        widget_url: {
+          widget_type: 'connect_widget',
+          is_mobile_webview: false,
+          ui_message_version: 4,
+          color_scheme: 'dark',
         },
       },
       headers,
     });
 
-    if (!memberRes.success) {
-      return Response.json({ error: 'Failed to create MX member', details: memberRes.data }, { status: 500 });
-    }
-
-    const memberGuid = memberRes.data?.member?.guid;
-
-    // Step 3: Get OAuth window URI
-    const oauthRes = await base44.asServiceRole.integrations.custom.call(
-      'mx',
-      'get:/users/{user_identifier}/members/{member_identifier}/oauth_window_uri',
-      {
-        pathParams: { user_identifier: userGuid, member_identifier: memberGuid },
-        queryParams: { redirect_uri: redirectUri || '' },
-        headers,
-      }
-    );
-
-    if (!oauthRes.success) {
-      return Response.json({ error: 'Failed to get OAuth URI', details: oauthRes.data }, { status: 500 });
+    if (!widgetRes.success) {
+      return Response.json({ error: 'Failed to get widget URL', details: widgetRes.data }, { status: 500 });
     }
 
     return Response.json({
-      oauth_window_uri: oauthRes.data?.member?.oauth_window_uri,
+      widget_url: widgetRes.data?.widget_url?.url,
       userGuid,
-      memberGuid,
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
