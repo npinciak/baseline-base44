@@ -155,6 +155,13 @@ export default function Layout() {
             Admin
           </NavLink>
         )}
+        <button
+          onClick={() => base44.auth.logout('/')}
+          className="flex-1 flex flex-col items-center gap-1 py-3 text-xs font-medium text-muted-foreground transition-all duration-200"
+        >
+          <LogOut className="w-5 h-5" />
+          Log Out
+        </button>
       </nav>
     </div>
   );
