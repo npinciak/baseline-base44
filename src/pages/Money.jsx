@@ -83,19 +83,14 @@ export default function Money() {
       const u = await base44.auth.me();
       setUser(u);
 
-      // Load MX transactions via stored BankConnection GUID
-      const connections = await base44.entities.BankConnection.filter({ user_id: u.id, provider: 'mx' });
-      if (connections.length > 0 && connections[0].access_token_ref) {
-        const userGuid = connections[0].access_token_ref;
-        const res = await base44.functions.invoke('getMxTransactions', { userGuid }).catch(() => {
-          setMxError('Could not load MX transactions');
-          return null;
-        });
-        if (res?.data?.transactions) {
-          setTransactions(res.data.transactions.map(normalizeMxTransaction));
-        }
-      } else {
+      // Load MX transactions — backend resolves the user GUID
+      const res = await base44.functions.invoke('getMxTransactions', {}).catch(() => null);
+      if (res?.data?.transactions) {
+        setTransactions(res.data.transactions.map(normalizeMxTransaction));
+      } else if (res?.data?.error === 'No MX bank connection found') {
         setMxError('No MX bank connection found. Connect your bank to see transactions.');
+      } else if (!res) {
+        setMxError('Could not load MX transactions');
       }
       setLoading(false);
     };
