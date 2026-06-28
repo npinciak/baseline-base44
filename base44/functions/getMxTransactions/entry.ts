@@ -28,22 +28,8 @@ Deno.serve(async (req) => {
     // Resolve next_auth UUID from user_profiles
     const nextAuthUserId = await resolveNextAuthUuid(supabaseUrl, supabaseHeaders, user);
 
-    // Look up MX user GUID from user_profiles
-    let userGuid = null;
-    if (nextAuthUserId) {
-      const profileRes = await fetch(
-        `${supabaseUrl}/rest/v1/user_profiles?user_id=eq.${nextAuthUserId}&select=mx_user_guid&limit=1`,
-        { headers: supabaseHeaders }
-      );
-      const profiles = await profileRes.json();
-      userGuid = profiles?.[0]?.mx_user_guid ?? null;
-    }
-
-    // Fall back to BankConnection entity if not in user_profiles
-    if (!userGuid) {
-      const connections = await base44.asServiceRole.entities.BankConnection.filter({ user_id: user.id, provider: 'mx' });
-      userGuid = connections?.[0]?.access_token_ref ?? null;
-    }
+    // Use next_auth UUID as the MX user identifier (resolved from user_profiles.user_id)
+    const userGuid = nextAuthUserId;
 
     if (!userGuid) {
       return Response.json({ error: 'No MX bank connection found' }, { status: 404 });
