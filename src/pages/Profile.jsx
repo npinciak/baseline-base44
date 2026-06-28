@@ -13,10 +13,14 @@ export default function Profile() {
   const [modules, setModules] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const [profile, setProfile] = useState(null);
+
   useEffect(() => {
     const init = async () => {
       const u = await base44.auth.me();
       setUser(u);
+      const profileRes = await base44.functions.invoke('getUserProfile', {}).catch(() => null);
+      setProfile(profileRes?.data?.profile || null);
       const [statsArr, allBadges, ubArr, prog, mods] = await Promise.all([
         base44.entities.UserStats.filter({ user_id: u.id }),
         base44.entities.Badge.list(),
@@ -58,10 +62,12 @@ export default function Profile() {
       <div className="bg-card border border-border rounded-3xl p-6 mb-6">
         <div className="flex items-center gap-5">
           <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/30 to-primary/10 border border-primary/20 flex items-center justify-center text-3xl font-display font-extrabold text-primary">
-            {user?.full_name?.[0] || 'U'}
+            {profile?.first_name?.[0] || user?.full_name?.[0] || 'U'}
           </div>
           <div className="flex-1">
-            <h2 className="text-2xl font-display font-extrabold">{user?.full_name}</h2>
+            <h2 className="text-2xl font-display font-extrabold">
+              {profile ? `${profile.first_name || ''} ${profile.last_name || ''}`.trim() : user?.full_name}
+            </h2>
             <p className="text-muted-foreground text-sm">{user?.email}</p>
             <div className="flex items-center gap-2 mt-2">
               <span className="text-xs px-2.5 py-1 rounded-full bg-primary/15 text-primary font-semibold border border-primary/20">

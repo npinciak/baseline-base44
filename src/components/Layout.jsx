@@ -5,11 +5,15 @@ import { useEffect, useState } from 'react';
 
 export default function Layout() {
   const [user, setUser] = useState(null);
+  const [profile, setProfile] = useState(null);
   const [stats, setStats] = useState(null);
   const location = useLocation();
 
   useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => {});
+    base44.auth.me().then(u => {
+      setUser(u);
+      base44.functions.invoke('getUserProfile', {}).then(r => setProfile(r?.data?.profile || null)).catch(() => {});
+    }).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -104,10 +108,12 @@ export default function Layout() {
           {user && (
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm">
-                {user.full_name?.[0] || 'U'}
+                {profile?.first_name?.[0] || user.full_name?.[0] || 'U'}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-foreground truncate">{user.full_name}</p>
+                <p className="text-sm font-medium text-foreground truncate">
+                  {profile ? `${profile.first_name || ''} ${profile.last_name || ''}`.trim() : user.full_name}
+                </p>
                 <p className="text-xs text-muted-foreground truncate">{user.email}</p>
               </div>
               <button

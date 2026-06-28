@@ -28,6 +28,7 @@ const TOPIC_COLORS = {
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
+  const [profile, setProfile] = useState(null);
   const [stats, setStats] = useState(null);
   const [goals, setGoals] = useState([]);
   const [modules, setModules] = useState([]);
@@ -43,6 +44,8 @@ export default function Dashboard() {
     const init = async () => {
       const u = await base44.auth.me();
       setUser(u);
+      const profileRes = await base44.functions.invoke('getUserProfile', {}).catch(() => null);
+      setProfile(profileRes?.data?.profile || null);
       const [statsArr, goalsArr, mods, prog] = await Promise.all([
         base44.entities.UserStats.filter({ user_id: u.id }),
         base44.entities.SavingsGoal.filter({ user_id: u.id }, '-created_date', 6),
@@ -114,7 +117,7 @@ export default function Dashboard() {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-display font-extrabold mb-1">
-          {greeting()}, {user?.full_name?.split(' ')[0] || 'there'} 👋
+          {greeting()}, {profile?.first_name || user?.full_name?.split(' ')[0] || 'there'} 👋
         </h1>
         <p className="text-muted-foreground">Here's your financial progress at a glance.</p>
       </div>
