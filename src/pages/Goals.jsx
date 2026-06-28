@@ -34,69 +34,15 @@ export default function Goals() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
 
-  const mergeGoals = (supabaseGoals, base44Goals) => {
-    // Supabase goals take precedence; deduplicate via base44 source = supabase id
-    const supabaseIds = new Set(supabaseGoals.map(g => g.id));
-    const base44Only = base44Goals.filter(g => !g.source || !supabaseIds.has(g.source));
-
-    return [
-      ...supabaseGoals.map(sg => {
-        const b44 = base44Goals.find(g => g.source === sg.id);
-        return {
-          _supabaseId: sg.id,
-          _base44Id: b44?.id || null,
-          id: sg.id, // use supabase id as display key
-          name: sg.name,
-          description: b44?.description || '',
-          goal_type: sg.goal_type,
-          image_url: sg.image,
-          target_amount: sg.target_amount,
-          saved_amount: sg.current_amount,
-          target_date: sg.target_date,
-          currency_code: sg.currency_code,
-          is_completed: b44?.is_completed || false,
-          linked_accounts_balance: sg.linked_accounts_balance,
-          last_balance_sync_at: sg.last_balance_sync_at,
-          _source: 'supabase',
-        };
-      }),
-      ...base44Only.map(g => ({
-        _supabaseId: null,
-        _base44Id: g.id,
-        id: g.id,
-        name: g.name,
-        description: g.description || '',
-        goal_type: g.goal_type,
-        image_url: g.image_url,
-        target_amount: g.target_amount,
-        saved_amount: g.saved_amount || 0,
-        target_date: g.target_date,
-        currency_code: 'USD',
-        is_completed: g.is_completed || false,
-        linked_accounts_balance: null,
-        last_balance_sync_at: null,
-        _source: 'base44',
-      })),
-    ];
-  };
-
-  const loadGoals = async (u, statsArr) => {
-    let supabaseGoals = [];
-    let profileId = null;
+  const loadGoals = async () => {
     try {
       const res = await base44.functions.invoke('getSupabaseGoals', {});
-      supabaseGoals = res.data.goals || [];
-      profileId = res.data.userProfileId;
-      setUserProfileId(profileId);
+      setGoals(res.data.goals || []);
+      setUserProfileId(res.data.userProfileId);
       setSupabaseError(false);
     } catch {
       setSupabaseError(true);
     }
-
-    const b44Goals = await base44.entities.SavingsGoal.filter({ user_id: u.id }, '-created_date', 50);
-    setGoals(mergeGoals(supabaseGoals, b44Goals));
-
-    if (statsArr && statsArr.length > 0) setUserStats(statsArr[0]);
   };
 
   useEffect(() => {
@@ -104,14 +50,14 @@ export default function Goals() {
       const u = await base44.auth.me();
       setUser(u);
       const statsArr = await base44.entities.UserStats.filter({ user_id: u.id });
-      await loadGoals(u, statsArr);
+      if (statsArr.length > 0) setUserStats(statsArr[0]);
+      await loadGoals();
     };
     init().finally(() => setLoading(false));
   }, []);
 
   const openCreate = () => {
-    const workflowDone = userStats?.first_goal_workflow_completed;
-    if (!workflowDone) {
+    if (!userStats?.first_goal_workflow_completed) {
       setShowWorkflow(true);
     } else {
       setEditingGoal(null);
@@ -122,19 +68,20 @@ export default function Goals() {
 
   const handleWorkflowCreated = async () => {
     const statsArr = await base44.entities.UserStats.filter({ user_id: user.id });
-    await loadGoals(user, statsArr);
+    if (statsArr.length > 0) setUserStats(statsArr[0]);
+    await loadGoals();
     setShowWorkflow(false);
   };
 
   const openEdit = (goal) => {
     setEditingGoal(goal);
     setForm({
-      name: goal.name,
-      description: goal.description || '',
-      target_amount: goal.target_amount,
-      saved_amount: goal.saved_amount || 0,
+      name: goal.name || '',
+      description: '',
+      target_amount: goal.target_amount || '',
+      saved_amount: goal.current_amount || 0,
       target_date: goal.target_date || '',
-      image_url: goal.image_url || '',
+      image_url: goal.image || '',
       goal_type: goal.goal_type || '',
     });
     setShowModal(true);
@@ -145,91 +92,45 @@ export default function Goals() {
     setSaving(true);
 
     if (editingGoal) {
-      // Update Supabase if we have a supabase id
-      if (editingGoal._supabaseId) {
-        await base44.functions.invoke('updateSupabaseGoal', {
-          supabaseGoalId: editingGoal._supabaseId,
-          name: form.name,
-          goal_type: form.goal_type || null,
-          image: form.image_url || null,
-          target_amount: parseFloat(form.target_amount),
-          current_amount: parseFloat(form.saved_amount) || 0,
-          target_date: form.target_date || null,
-        });
-      }
-      // Update Base44
-      if (editingGoal._base44Id) {
-        await base44.entities.SavingsGoal.update(editingGoal._base44Id, {
-          name: form.name,
-          description: form.description,
-          target_amount: parseFloat(form.target_amount),
-          saved_amount: parseFloat(form.saved_amount) || 0,
-          target_date: form.target_date || undefined,
-          image_url: form.image_url || undefined,
-        });
-      }
-    } else {
-      // Create in Supabase first
-      let supabaseId = null;
-      if (userProfileId) {
-        const res = await base44.functions.invoke('createSupabaseGoal', {
-          name: form.name,
-          goal_type: form.goal_type || null,
-          image: form.image_url || null,
-          target_amount: parseFloat(form.target_amount),
-          current_amount: parseFloat(form.saved_amount) || 0,
-          target_date: form.target_date || null,
-          currency_code: 'USD',
-          userProfileId,
-        });
-        supabaseId = res.data?.goal?.id || null;
-      }
-      // Create in Base44
-      await base44.entities.SavingsGoal.create({
-        user_id: user.id,
+      await base44.functions.invoke('updateSupabaseGoal', {
+        supabaseGoalId: editingGoal.id,
         name: form.name,
-        description: form.description,
+        goal_type: form.goal_type || null,
+        image: form.image_url || null,
         target_amount: parseFloat(form.target_amount),
-        saved_amount: parseFloat(form.saved_amount) || 0,
-        target_date: form.target_date || undefined,
-        image_url: form.image_url || undefined,
-        is_completed: false,
-        source: supabaseId || undefined,
+        current_amount: parseFloat(form.saved_amount) || 0,
+        target_date: form.target_date || null,
+      });
+    } else {
+      await base44.functions.invoke('createSupabaseGoal', {
+        name: form.name,
+        goal_type: form.goal_type || null,
+        image: form.image_url || null,
+        target_amount: parseFloat(form.target_amount),
+        current_amount: parseFloat(form.saved_amount) || 0,
+        target_date: form.target_date || null,
+        currency_code: 'USD',
+        userProfileId,
       });
     }
 
-    const statsArr = await base44.entities.UserStats.filter({ user_id: user.id });
-    await loadGoals(user, statsArr);
+    await loadGoals();
     setShowModal(false);
     setSaving(false);
   };
 
   const handleDelete = async (goal) => {
     if (!confirm(`Delete "${goal.name}"? This cannot be undone.`)) return;
-
-    // Delete from Supabase
-    if (goal._supabaseId) {
-      await base44.functions.invoke('deleteSupabaseGoal', { supabaseGoalId: goal._supabaseId }).catch(() => {});
-    }
-    // Delete from Base44
-    if (goal._base44Id) {
-      await base44.entities.SavingsGoal.delete(goal._base44Id).catch(() => {});
-    }
-
+    await base44.functions.invoke('deleteSupabaseGoal', { supabaseGoalId: goal.id }).catch(() => {});
     setGoals(g => g.filter(x => x.id !== goal.id));
   };
 
   const handleMarkComplete = async (goal) => {
-    if (goal._supabaseId) {
-      await base44.functions.invoke('updateSupabaseGoal', {
-        supabaseGoalId: goal._supabaseId,
-        current_amount: goal.target_amount,
-      }).catch(() => {});
-    }
-    if (goal._base44Id) {
-      await base44.entities.SavingsGoal.update(goal._base44Id, { is_completed: true, saved_amount: goal.target_amount });
-    }
-    setGoals(g => g.map(x => x.id === goal.id ? { ...x, is_completed: true, saved_amount: goal.target_amount } : x));
+    await base44.functions.invoke('updateSupabaseGoal', {
+      supabaseGoalId: goal.id,
+      current_amount: goal.target_amount,
+    }).catch(() => {});
+    setGoals(g => g.map(x => x.id === goal.id ? { ...x, current_amount: goal.target_amount } : x));
   };
 
   if (loading) {
@@ -242,12 +143,11 @@ export default function Goals() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
-      {/* Supabase error banner */}
       {supabaseError && (
         <div className="flex items-center justify-between gap-3 mb-6 px-4 py-3 bg-amber-500/10 border border-amber-500/25 rounded-xl text-sm text-amber-400">
           <div className="flex items-center gap-2">
             <AlertTriangle className="w-4 h-4 shrink-0" />
-            <span>Could not load synced goals — showing local data only.</span>
+            <span>Could not load goals from the server. Please try again.</span>
           </div>
           <button onClick={() => setSupabaseError(false)} className="text-amber-400/60 hover:text-amber-400 transition-colors">
             <X className="w-4 h-4" />
@@ -285,23 +185,23 @@ export default function Goals() {
       ) : (
         <div className="grid sm:grid-cols-2 gap-5">
           {goals.map(goal => {
-            const saved = goal.saved_amount || 0;
+            const saved = goal.current_amount || 0;
             const pct = Math.min(100, Math.round((saved / goal.target_amount) * 100));
+            const isComplete = saved >= goal.target_amount;
             return (
               <div
                 key={goal.id}
-                className={`bg-card border rounded-2xl overflow-hidden flex flex-col transition-all ${goal.is_completed ? 'border-primary/30' : 'border-border'}`}
+                className={`bg-card border rounded-2xl overflow-hidden flex flex-col transition-all ${isComplete ? 'border-primary/30' : 'border-border'}`}
               >
-                {/* Image */}
                 <div className="relative h-40 bg-secondary overflow-hidden">
-                  {goal.image_url ? (
-                    <img src={goal.image_url} alt={goal.name} className="w-full h-full object-cover" />
+                  {goal.image ? (
+                    <img src={goal.image} alt={goal.name} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
                       <Target className="w-10 h-10 text-muted-foreground/40" />
                     </div>
                   )}
-                  {goal.is_completed && (
+                  {isComplete && (
                     <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
                       <div className="bg-primary rounded-full p-2">
                         <CheckCircle className="w-6 h-6 text-primary-foreground" />
@@ -310,12 +210,11 @@ export default function Goals() {
                   )}
                 </div>
 
-                {/* Content */}
                 <div className="p-4 flex flex-col flex-1">
                   <div className="flex items-start justify-between gap-2 mb-1">
                     <h3 className="text-base font-heading font-bold leading-tight">{goal.name}</h3>
                     <div className="flex items-center gap-1 shrink-0">
-                      {!goal.is_completed && (
+                      {!isComplete && (
                         <>
                           <button onClick={() => openEdit(goal)} className="p-1 text-muted-foreground hover:text-foreground transition-colors">
                             <Pencil className="w-3.5 h-3.5" />
@@ -330,9 +229,6 @@ export default function Goals() {
                       </button>
                     </div>
                   </div>
-                  {goal.description && (
-                    <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{goal.description}</p>
-                  )}
 
                   <div className="mt-auto">
                     <div className="flex items-end justify-between mb-2">
@@ -344,7 +240,7 @@ export default function Goals() {
                     </div>
                     <div className="h-2 bg-secondary rounded-full overflow-hidden">
                       <div
-                        className={`h-full rounded-full transition-all duration-500 ${goal.is_completed ? 'xp-shimmer' : 'bg-primary'}`}
+                        className={`h-full rounded-full transition-all duration-500 ${isComplete ? 'xp-shimmer' : 'bg-primary'}`}
                         style={{ width: `${pct}%` }}
                       />
                     </div>
@@ -360,7 +256,6 @@ export default function Goals() {
         </div>
       )}
 
-      {/* First-goal workflow */}
       {showWorkflow && user && (
         <GoalCreationWorkflow
           user={user}
@@ -370,7 +265,6 @@ export default function Goals() {
         />
       )}
 
-      {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-end md:items-center justify-center z-50 p-4">
           <div className="bg-card border border-border rounded-3xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
@@ -396,15 +290,6 @@ export default function Goals() {
                   value={form.image_url}
                   onChange={e => setForm(p => ({ ...p, image_url: e.target.value }))}
                   placeholder="https://..."
-                  className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
-                />
-              </div>
-              <div>
-                <label className="text-xs text-muted-foreground font-medium mb-1 block">Description (optional)</label>
-                <input
-                  value={form.description}
-                  onChange={e => setForm(p => ({ ...p, description: e.target.value }))}
-                  placeholder="Why is this important to you?"
                   className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
                 />
               </div>
