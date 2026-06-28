@@ -11,8 +11,14 @@ export default function Layout() {
 
   useEffect(() => {
     base44.auth.me().then(u => {
-      setUser(u);
-      base44.functions.invoke('getUserProfile', {}).then(r => setProfile(r?.data?.profile || null)).catch(() => {});
+    setUser(u);
+    // Sync profile with Supabase on every load (mirrors signIn event in auth flow)
+    base44.functions.invoke('syncUserProfile', {})
+      .then(r => setProfile(r?.data?.profile || null))
+      .catch(() => {
+        // Fallback to read-only fetch if sync fails
+        base44.functions.invoke('getUserProfile', {}).then(r => setProfile(r?.data?.profile || null)).catch(() => {});
+      });
     }).catch(() => {});
   }, []);
 
