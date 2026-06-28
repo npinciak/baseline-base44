@@ -56,7 +56,7 @@ Deno.serve(async (req) => {
 
     const response = await base44.asServiceRole.integrations.custom.call('mx', `get:/users/{user_identifier}/transactions`, {
       pathParams: { user_identifier: userGuid },
-      queryParams: { page: 1, records_per_page: 500 },
+      queryParams: { page: 1, records_per_page: 500, includes: 'merchants,classifications,repeating_transactions' },
       payload: {},
       headers: {
         'Authorization': authHeader,
