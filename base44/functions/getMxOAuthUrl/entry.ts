@@ -1,10 +1,32 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.31';
 
+function isUuid(value) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+}
+
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    const supabaseHeaders = { apikey: serviceRoleKey, Authorization: `Bearer ${serviceRoleKey}` };
+
+    // Resolve canonical next_auth UUID (consistent with profile/goals resolution)
+    let nextAuthUserId = isUuid(user.id) ? user.id : null;
+    if (!nextAuthUserId && user.email) {
+      const lookupRes = await fetch(
+        `${supabaseUrl}/rest/v1/users?email=eq.${encodeURIComponent(user.email)}&select=id&limit=1`,
+        { headers: { ...supabaseHeaders, 'Accept-Profile': 'next_auth' } }
+      );
+      const rows = await lookupRes.json();
+      nextAuthUserId = rows?.[0]?.id ?? null;
+    }
+
+    // Use next_auth UUID if available, otherwise fall back to base44 user.id
+    const mxUserId = nextAuthUserId || user.id;
 
     const apiKey = Deno.env.get('MX_API');
     const clientId = Deno.env.get('MX_CLIENT');
@@ -24,9 +46,9 @@ Deno.serve(async (req) => {
     if (existingConn.length > 0 && existingConn[0].access_token_ref) {
       userGuid = existingConn[0].access_token_ref;
     } else {
-      // Create a new MX user
+      // Create a new MX user using the canonical UUID
       const createUserRes = await base44.asServiceRole.integrations.custom.call('mx', 'post:/users', {
-        payload: { user: { id: user.id } },
+        payload: { user: { id: mxUserId } },
         headers,
       });
       if (!createUserRes.success && createUserRes.status_code !== 409) {
@@ -34,7 +56,7 @@ Deno.serve(async (req) => {
       }
       if (createUserRes.status_code === 409) {
         const readRes = await base44.asServiceRole.integrations.custom.call('mx', 'get:/users/{user_identifier}', {
-          pathParams: { user_identifier: user.id },
+          pathParams: { user_identifier: mxUserId },
           headers,
         });
         userGuid = readRes.data?.user?.guid;
@@ -42,7 +64,7 @@ Deno.serve(async (req) => {
         userGuid = createUserRes.data?.user?.guid;
       }
 
-      // Save BankConnection with user GUID
+      // Save BankConnection with MX user GUID
       if (existingConn.length > 0) {
         await base44.asServiceRole.entities.BankConnection.update(existingConn[0].id, { access_token_ref: userGuid });
       } else {
