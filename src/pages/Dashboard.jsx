@@ -264,7 +264,7 @@ export default function Dashboard() {
                           )}
                         </div>
                         <button
-                          onClick={() => unlocked && navigate(`/learn/${module.id}`)}
+                          onClick={() => unlocked && navigate(`/lesson/${module.id}`)}
                           disabled={!unlocked}
                           className={`w-full text-left bg-card border rounded-2xl p-5 transition-all duration-300 ${
                             unlocked
@@ -323,7 +323,7 @@ export default function Dashboard() {
                 <ChevronRight className="w-4 h-4 text-muted-foreground ml-auto group-hover:translate-x-0.5 transition-transform" />
               </Link>
 
-              <Link to="/learn" className="flex items-center gap-3 p-3 rounded-xl hover:bg-secondary transition-all group">
+              <Link to="/dashboard" className="flex items-center gap-3 p-3 rounded-xl hover:bg-secondary transition-all group">
                 <div className="w-8 h-8 rounded-lg bg-amber-500/15 flex items-center justify-center">
                   <BookOpen className="w-4 h-4 text-amber-400" />
                 </div>

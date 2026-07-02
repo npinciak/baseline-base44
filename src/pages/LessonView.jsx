@@ -159,7 +159,7 @@ export default function LessonView() {
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <div className="sticky top-0 bg-background/90 backdrop-blur-md border-b border-border px-4 py-3 flex items-center gap-4 z-10">
-        <button onClick={() => navigate('/learn')} className="text-muted-foreground hover:text-foreground transition-colors">
+        <button onClick={() => navigate('/dashboard')} className="text-muted-foreground hover:text-foreground transition-colors">
           <X className="w-5 h-5" />
         </button>
         <div className="flex-1">
