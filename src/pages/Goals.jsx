@@ -6,6 +6,14 @@ import { formatDistanceToNow } from 'date-fns';
 
 const EMPTY_FORM = { name: '', description: '', target_amount: '', saved_amount: '', target_date: '', image_url: '', goal_type: '' };
 
+const GOAL_TYPES = [
+  { value: 'vacation', label: 'Go on Vacation' },
+  { value: 'buyHome', label: 'Buy a Home' },
+  { value: 'newCar', label: 'Buy a New Car' },
+  { value: 'other', label: 'Something Else' },
+  { value: 'unknown', label: 'Not Sure Yet' },
+];
+
 function LinkedBalanceRow({ balance, syncedAt }) {
   if (!balance || balance <= 0) return null;
   const syncLabel = syncedAt
@@ -283,6 +291,19 @@ export default function Goals() {
                   placeholder="e.g. New MacBook, Vacation to Japan"
                   className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
                 />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground font-medium mb-1 block">Category</label>
+                <select
+                  value={form.goal_type}
+                  onChange={e => setForm(p => ({ ...p, goal_type: e.target.value }))}
+                  className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
+                >
+                  <option value="">Select a category...</option>
+                  {GOAL_TYPES.map(({ value, label }) => (
+                    <option key={value} value={value}>{label}</option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className="text-xs text-muted-foreground font-medium mb-1 block">Image URL (optional)</label>
