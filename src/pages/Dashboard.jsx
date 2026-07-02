@@ -46,15 +46,15 @@ export default function Dashboard() {
       setUser(u);
       const profileRes = await base44.functions.invoke('getUserProfile', {}).catch(() => null);
       setProfile(profileRes?.data?.profile || null);
-      const [statsArr, goalsArr, mods, prog] = await Promise.all([
+      const [statsArr, goalsRes, mods, prog] = await Promise.all([
         base44.entities.UserStats.filter({ user_id: u.id }),
-        base44.entities.SavingsGoal.filter({ user_id: u.id }, '-created_date', 6),
+        base44.functions.invoke('getSupabaseGoals', {}).catch(() => ({ data: { goals: [] } })),
         base44.entities.Module.filter({ is_published: true }, 'order_index', 50),
         base44.entities.UserProgress.filter({ user_id: u.id }),
       ]);
       if (statsArr.length === 0) { navigate('/onboarding'); return; }
       setStats(statsArr[0]);
-      setGoals(goalsArr);
+      setGoals(goalsRes?.data?.goals || []);
       setModules(mods);
       setProgress(prog);
       setLoading(false);
@@ -79,18 +79,16 @@ export default function Dashboard() {
   const handleCreateGoal = async () => {
     if (!goalForm.name || !goalForm.target_amount) return;
     setSavingGoal(true);
-    await base44.entities.SavingsGoal.create({
-      user_id: user.id,
+    await base44.functions.invoke('createSupabaseGoal', {
       name: goalForm.name,
-      description: goalForm.description || undefined,
       target_amount: parseFloat(goalForm.target_amount),
-      saved_amount: parseFloat(goalForm.saved_amount) || 0,
-      target_date: goalForm.target_date || undefined,
-      image_url: goalForm.image_url || undefined,
-      is_completed: false,
+      current_amount: parseFloat(goalForm.saved_amount) || 0,
+      target_date: goalForm.target_date || null,
+      image: goalForm.image_url || null,
+      currency_code: 'USD',
     });
-    const updated = await base44.entities.SavingsGoal.filter({ user_id: user.id }, '-created_date', 6);
-    setGoals(updated);
+    const updated = await base44.functions.invoke('getSupabaseGoals', {}).catch(() => ({ data: { goals: [] } }));
+    setGoals(updated?.data?.goals || []);
     setCarouselIndex(0);
     setShowGoalModal(false);
     setGoalForm(EMPTY_FORM);
@@ -156,17 +154,17 @@ export default function Dashboard() {
                 {/* Carousel card */}
                 <div className="overflow-hidden rounded-2xl">
                   {goals.map((goal, i) => {
-                    const saved = goal.saved_amount || 0;
+                    const saved = goal.current_amount || 0;
                     const pct = Math.min(100, Math.round((saved / goal.target_amount) * 100));
                     return (
-                      <div
-                        key={goal.id}
-                        className={`transition-all duration-300 ${i === carouselIndex ? 'block' : 'hidden'}`}
-                      >
-                        <div className="bg-card border border-border rounded-2xl overflow-hidden">
-                          {goal.image_url ? (
-                            <div className="h-36 overflow-hidden">
-                              <img src={goal.image_url} alt={goal.name} className="w-full h-full object-cover" />
+                    <div
+                    key={goal.id}
+                    className={`transition-all duration-300 ${i === carouselIndex ? 'block' : 'hidden'}`}
+                    >
+                    <div className="bg-card border border-border rounded-2xl overflow-hidden">
+                      {goal.image ? (
+                        <div className="h-36 overflow-hidden">
+                          <img src={goal.image} alt={goal.name} className="w-full h-full object-cover" />
                             </div>
                           ) : (
                             <div className="h-36 bg-secondary flex items-center justify-center">
@@ -176,7 +174,7 @@ export default function Dashboard() {
                           <div className="p-5">
                             <div className="flex items-center justify-between mb-1">
                               <h3 className="font-heading font-bold text-base">{goal.name}</h3>
-                              {goal.is_completed && <CheckCircle className="w-5 h-5 text-primary" />}
+                              {saved >= goal.target_amount && <CheckCircle className="w-5 h-5 text-primary" />}
                             </div>
                             <div className="flex items-end justify-between mb-3">
                               <div>
@@ -347,7 +345,7 @@ export default function Dashboard() {
               <h3 className="text-sm font-heading font-semibold mb-4">Goals Summary</h3>
               <div className="space-y-3">
                 {goals.slice(0, 4).map(goal => {
-                  const saved = goal.saved_amount || 0;
+                  const saved = goal.current_amount || 0;
                   const pct = Math.min(100, Math.round((saved / goal.target_amount) * 100));
                   return (
                     <div key={goal.id}>
