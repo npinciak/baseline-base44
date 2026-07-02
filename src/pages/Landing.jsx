@@ -13,7 +13,7 @@ export default function Landing() {
           <span className="text-xl font-display font-bold">Baseline</span>
         </div>
         <Link
-          to="/learn"
+          to="/onboarding"
           className="px-5 py-2.5 bg-primary text-primary-foreground rounded-xl text-sm font-semibold hover:bg-primary/90 transition-all duration-200 glow-teal"
         >
           Get Started Free
