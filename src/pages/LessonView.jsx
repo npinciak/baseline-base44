@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { ArrowLeft, ArrowRight, CheckCircle, Zap, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle, Coins, X } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 
 export default function LessonView() {
@@ -72,6 +72,9 @@ export default function LessonView() {
       });
     }
 
+    // Credit Supabase wallet
+    await base44.functions.invoke('creditWallet', { amount: xp }).catch(() => {});
+
     // Update UserStats
     const statsArr = await base44.entities.UserStats.filter({ user_id: user.id });
     if (statsArr.length > 0) {
@@ -128,8 +131,8 @@ export default function LessonView() {
           <p className="text-muted-foreground mb-6">You've finished <strong className="text-foreground">{module?.title}</strong></p>
           <div className="bg-card border border-primary/20 rounded-2xl p-6 mb-6 glow-teal">
             <div className="flex items-center justify-center gap-2 text-3xl font-display font-extrabold text-primary">
-              <Zap className="w-8 h-8" />
-              +{xpEarned} XP
+              <Coins className="w-8 h-8" />
+              +{xpEarned} Base Coins
             </div>
             <p className="text-sm text-muted-foreground mt-1">added to your profile</p>
           </div>
