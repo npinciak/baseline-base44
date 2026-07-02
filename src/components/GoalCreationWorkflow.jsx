@@ -29,6 +29,7 @@ export default function GoalCreationWorkflow({ user, onClose, onCreated }) {
   const [targetDate, setTargetDate] = useState('');
   const [pendingPoints, setPendingPoints] = useState(0);
   const [saving, setSaving] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
 
   const STEPS = ALL_STEPS;
   const currentStep = STEPS[step];
@@ -40,27 +41,38 @@ export default function GoalCreationWorkflow({ user, onClose, onCreated }) {
 
   const handleSubmit = async () => {
     setSaving(true);
+    setSubmitError(null);
     const selectedType = GOAL_TYPES.find(t => t.value === goalType);
-    const statsArr = await base44.entities.UserStats.filter({ user_id: user.id });
-    if (statsArr.length > 0) {
-      await base44.entities.UserStats.update(statsArr[0].id, { first_goal_workflow_completed: true });
+    try {
+      // Fetch userProfileId needed by createSupabaseGoal
+      const goalsRes = await base44.functions.invoke('getSupabaseGoals', {});
+      const userProfileId = goalsRes?.data?.userProfileId;
+
+      // Mark workflow as completed on the Base44 entity
+      const statsArr = await base44.entities.UserStats.filter({ user_id: user.id });
+      if (statsArr.length > 0) {
+        await base44.entities.UserStats.update(statsArr[0].id, { first_goal_workflow_completed: true });
+      }
+
+      // Persist goal to Supabase
+      await base44.functions.invoke('createSupabaseGoal', {
+        name: goalName.trim(),
+        goal_type: goalType,
+        image: selectedType?.image || null,
+        target_amount: parseFloat(targetAmount),
+        current_amount: 0,
+        target_date: targetDate || null,
+        currency_code: 'USD',
+        userProfileId,
+      });
+
+      onCreated();
+      navigate('/goals');
+    } catch (err) {
+      setSubmitError('Something went wrong. Please try again.');
+    } finally {
+      setSaving(false);
     }
-    await base44.entities.SavingsGoal.create({
-      user_id: user.id,
-      name: goalName.trim(),
-      goal_type: goalType,
-      target_amount: parseFloat(targetAmount),
-      saved_amount: 0,
-      currency: 'USD',
-      target_date: targetDate,
-      source: 'workflow',
-      pending_points: pendingPoints,
-      image_url: selectedType?.image || null,
-      is_completed: false,
-    });
-    setSaving(false);
-    onCreated();
-    navigate('/goals');
   };
 
   const ProgressBar = () => (
@@ -315,6 +327,9 @@ export default function GoalCreationWorkflow({ user, onClose, onCreated }) {
                 </div>
               )}
 
+              {submitError && (
+                <p className="text-sm text-destructive text-center mb-3">{submitError}</p>
+              )}
               <button
                 onClick={handleSubmit}
                 disabled={saving}
