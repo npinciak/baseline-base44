@@ -284,14 +284,50 @@ export default function Goals() {
 
       {showModal && (
         <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-end md:items-center justify-center z-50 p-4">
-          <div className="bg-card border border-border rounded-3xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-5">
-              <h3 className="text-lg font-heading font-bold">{editingGoal ? 'Edit Goal' : 'New Savings Goal'}</h3>
-              <button onClick={() => setShowModal(false)} className="text-muted-foreground hover:text-foreground transition-colors">
-                <X className="w-5 h-5" />
+          <div className="bg-card border border-border rounded-3xl w-full max-w-md max-h-[90vh] overflow-y-auto flex flex-col">
+            {/* Card media header */}
+            <div className="relative h-44 bg-secondary rounded-t-3xl overflow-hidden shrink-0">
+              {form.image_url ? (
+                <img src={form.image_url} alt="Goal" className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-muted-foreground/40">
+                  <Target className="w-10 h-10" />
+                  <span className="text-xs font-medium">No image selected</span>
+                </div>
+              )}
+              {/* Overlay controls */}
+              <div className="absolute inset-0 bg-gradient-to-t from-background/60 to-transparent" />
+              <div className="absolute bottom-3 left-3 flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowImagePicker(true)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-background/80 backdrop-blur-sm text-foreground rounded-lg text-xs font-semibold hover:bg-background transition-all"
+                >
+                  <ImageIcon className="w-3.5 h-3.5" />
+                  {form.image_url ? 'Change' : 'Add Image'}
+                </button>
+                {form.image_url && (
+                  <button
+                    type="button"
+                    onClick={() => setForm(p => ({ ...p, image_url: '' }))}
+                    className="px-3 py-1.5 bg-background/80 backdrop-blur-sm text-muted-foreground rounded-lg text-xs font-semibold hover:bg-background hover:text-foreground transition-all"
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
+              {/* Close button */}
+              <button
+                onClick={() => setShowModal(false)}
+                className="absolute top-3 right-3 w-7 h-7 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <X className="w-4 h-4" />
               </button>
             </div>
-            <div className="space-y-4">
+
+            {/* Form fields */}
+            <div className="p-6 space-y-4">
+              <h3 className="text-lg font-heading font-bold">{editingGoal ? 'Edit Goal' : 'New Savings Goal'}</h3>
               <div>
                 <label className="text-xs text-muted-foreground font-medium mb-1 block">Goal Name</label>
                 <input
@@ -313,26 +349,6 @@ export default function Goals() {
                     <option key={value} value={value}>{label}</option>
                   ))}
                 </select>
-              </div>
-              <div>
-                <label className="text-xs text-muted-foreground font-medium mb-1 block">Image (optional)</label>
-                {form.image_url ? (
-                  <div className="relative h-28 rounded-xl overflow-hidden border border-border group">
-                    <img src={form.image_url} alt="Goal" className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-background/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                      <button type="button" onClick={() => setShowImagePicker(true)} className="px-3 py-1.5 bg-primary text-primary-foreground rounded-lg text-xs font-semibold">Change</button>
-                      <button type="button" onClick={() => setForm(p => ({ ...p, image_url: '' }))} className="px-3 py-1.5 bg-secondary text-foreground rounded-lg text-xs font-semibold">Remove</button>
-                    </div>
-                  </div>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => setShowImagePicker(true)}
-                    className="w-full flex items-center justify-center gap-2 py-3 bg-secondary border border-dashed border-border rounded-xl text-sm text-muted-foreground hover:border-primary/40 hover:text-foreground transition-all"
-                  >
-                    <ImageIcon className="w-4 h-4" /> Search & add image
-                  </button>
-                )}
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -365,18 +381,18 @@ export default function Goals() {
                   className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
                 />
               </div>
-            </div>
-            <div className="flex gap-3 mt-6">
-              <button onClick={() => setShowModal(false)} className="flex-1 py-3 bg-secondary text-foreground rounded-xl font-semibold hover:bg-secondary/80 transition-all">
-                Cancel
-              </button>
-              <button
-                onClick={handleSave}
-                disabled={saving || !form.name || !form.target_amount}
-                className="flex-1 py-3 bg-primary text-primary-foreground rounded-xl font-semibold hover:bg-primary/90 transition-all disabled:opacity-50"
-              >
-                {saving ? 'Saving...' : editingGoal ? 'Save Changes' : 'Create Goal'}
-              </button>
+              <div className="flex gap-3 pt-2">
+                <button onClick={() => setShowModal(false)} className="flex-1 py-3 bg-secondary text-foreground rounded-xl font-semibold hover:bg-secondary/80 transition-all">
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSave}
+                  disabled={saving || !form.name || !form.target_amount}
+                  className="flex-1 py-3 bg-primary text-primary-foreground rounded-xl font-semibold hover:bg-primary/90 transition-all disabled:opacity-50"
+                >
+                  {saving ? 'Saving...' : editingGoal ? 'Save Changes' : 'Create Goal'}
+                </button>
+              </div>
             </div>
           </div>
         </div>
