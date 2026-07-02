@@ -1,7 +1,17 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import { Zap, TrendingUp, BookOpen, Award, ArrowRight, Shield, BarChart2 } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
 
 export default function Landing() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    base44.auth.isAuthenticated().then(authed => {
+      if (authed) navigate('/dashboard', { replace: true });
+    });
+  }, []);
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Nav */}
