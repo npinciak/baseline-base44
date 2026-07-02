@@ -51,9 +51,8 @@ Deno.serve(async (req) => {
 
     let newBalance;
     if (wallets?.length) {
-      // Update existing wallet
       newBalance = (wallets[0].balance ?? 0) + amount;
-      await fetch(
+      const patchRes = await fetch(
         `${supabaseUrl}/rest/v1/user_wallet?user_profile_id=eq.${userProfileId}`,
         {
           method: 'PATCH',
@@ -61,14 +60,22 @@ Deno.serve(async (req) => {
           body: JSON.stringify({ balance: newBalance }),
         }
       );
+      if (!patchRes.ok) {
+        const detail = await patchRes.text();
+        return Response.json({ error: 'Failed to update wallet', detail }, { status: 500 });
+      }
     } else {
-      // Create wallet row
+      // No wallet row yet — create it
       newBalance = amount;
-      await fetch(`${supabaseUrl}/rest/v1/user_wallet`, {
+      const postRes = await fetch(`${supabaseUrl}/rest/v1/user_wallet`, {
         method: 'POST',
         headers: { ...headers, Prefer: 'return=minimal' },
         body: JSON.stringify({ user_profile_id: userProfileId, balance: newBalance }),
       });
+      if (!postRes.ok) {
+        const detail = await postRes.text();
+        return Response.json({ error: 'Failed to create wallet', detail }, { status: 500 });
+      }
     }
 
     return Response.json({ newBalance });

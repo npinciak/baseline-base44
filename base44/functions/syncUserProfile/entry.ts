@@ -47,7 +47,23 @@ Deno.serve(async (req) => {
     const updatedRows = await updateRes.json();
 
     if (Array.isArray(updatedRows) && updatedRows.length > 0) {
-      return Response.json({ profile: updatedRows[0], action: 'updated' });
+      const existingProfile = updatedRows[0];
+      // Ensure wallet exists for this profile
+      if (existingProfile?.id) {
+        const walletCheck = await fetch(
+          `${supabaseUrl}/rest/v1/user_wallet?user_profile_id=eq.${existingProfile.id}&select=id&limit=1`,
+          { headers }
+        );
+        const wallets = await walletCheck.json();
+        if (!wallets?.length) {
+          await fetch(`${supabaseUrl}/rest/v1/user_wallet`, {
+            method: 'POST',
+            headers: { ...headers, Prefer: 'return=minimal' },
+            body: JSON.stringify({ user_profile_id: existingProfile.id, balance: 0 }),
+          });
+        }
+      }
+      return Response.json({ profile: existingProfile, action: 'updated' });
     }
 
     // Step 3: No existing row — insert
@@ -71,7 +87,18 @@ Deno.serve(async (req) => {
       return Response.json({ error: insertResult }, { status: insertRes.status });
     }
 
-    return Response.json({ profile: insertResult[0], action: 'created' });
+    const newProfile = insertResult[0];
+
+    // Also create wallet row for new profiles
+    if (newProfile?.id) {
+      await fetch(`${supabaseUrl}/rest/v1/user_wallet`, {
+        method: 'POST',
+        headers: { ...headers, Prefer: 'return=minimal' },
+        body: JSON.stringify({ user_profile_id: newProfile.id, balance: 0 }),
+      });
+    }
+
+    return Response.json({ profile: newProfile, action: 'created' });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }

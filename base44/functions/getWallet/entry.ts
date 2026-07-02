@@ -14,7 +14,7 @@ Deno.serve(async (req) => {
     const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
     const headers = { apikey: serviceKey, Authorization: `Bearer ${serviceKey}` };
 
-    // Resolve next_auth UUID (same pattern as getUserProfile)
+    // Resolve next_auth UUID
     let nextAuthUserId = isUuid(user.id) ? user.id : null;
     if (!nextAuthUserId && user.email) {
       const lookupRes = await fetch(
