@@ -111,6 +111,7 @@ export default function Basecamp() {
   const [loading, setLoading] = useState(true);
   const [selectedCard, setSelectedCard] = useState(null);
   const [redeeming, setRedeeming] = useState(false);
+  const [redeemSuccess, setRedeemSuccess] = useState(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -133,10 +134,12 @@ export default function Basecamp() {
         coinsCost: selectedCard.coinsCost,
       });
       setBalance(res.data.newBalance);
+      const redeemedCard = selectedCard;
       setSelectedCard(null);
+      setRedeemSuccess(redeemedCard);
       toast({
         title: 'Redemption successful!',
-        description: `Your $${selectedCard.amount} ${selectedCard.brand} gift card is on its way to your email.`,
+        description: `Your $${redeemedCard.amount} ${redeemedCard.brand} gift card is on its way to your email.`,
       });
     } catch (err) {
       const msg = err?.response?.data?.error || 'Redemption failed. Please try again.';
@@ -213,6 +216,31 @@ export default function Basecamp() {
           );
         })}
       </div>
+
+      {/* Success Modal */}
+      {redeemSuccess && (
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-end md:items-center justify-center z-50 p-4">
+          <div className="bg-card border border-border rounded-3xl p-8 w-full max-w-sm text-center">
+            <div className="w-16 h-16 rounded-full bg-primary/20 border-4 border-primary flex items-center justify-center mx-auto mb-5">
+              <CheckCircle className="w-8 h-8 text-primary" />
+            </div>
+            <h3 className="text-2xl font-display font-extrabold mb-2">Redemption Successful!</h3>
+            <p className="text-muted-foreground text-sm mb-2">
+              Your <strong className="text-foreground">${redeemSuccess.amount} {redeemSuccess.brand}</strong> gift card is on its way to your email.
+            </p>
+            <div className="flex items-center justify-center gap-2 text-primary font-bold text-lg mb-6">
+              <Coins className="w-5 h-5" />
+              {balance.toLocaleString()} BC remaining
+            </div>
+            <button
+              onClick={() => setRedeemSuccess(null)}
+              className="w-full py-3 bg-primary text-primary-foreground rounded-xl font-semibold hover:bg-primary/90 transition-all"
+            >
+              Done
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Confirm Redemption Modal */}
       {selectedCard && (
