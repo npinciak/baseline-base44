@@ -137,7 +137,7 @@ export default function LessonView() {
             <p className="text-sm text-muted-foreground mt-1">added to your profile</p>
           </div>
           <button
-            onClick={() => navigate('/learn')}
+            onClick={() => navigate('/dashboard')}
             className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-bold text-lg hover:bg-primary/90 transition-all duration-200"
           >
             Back to Learning Path
