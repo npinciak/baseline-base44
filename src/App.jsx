@@ -19,6 +19,7 @@ import LessonView from './pages/LessonView';
 import Profile from './pages/Profile';
 import Admin from './pages/Admin';
 import Goals from './pages/Goals';
+import GoalDetail from './pages/GoalDetail';
 import Dashboard from './pages/Dashboard';
 import Money from './pages/Money';
 import Basecamp from './pages/Basecamp';
@@ -49,6 +50,7 @@ const AuthenticatedApp = () => {
           <Route path="/profile" element={<Profile />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/goals" element={<Goals />} />
+          <Route path="/goals/:goalId" element={<GoalDetail />} />
           <Route path="/money" element={<Money />} />
           <Route path="/basecamp" element={<Basecamp />} />
         </Route>

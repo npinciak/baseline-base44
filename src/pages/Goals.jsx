@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Target, Plus, X, Pencil, CheckCircle, Trash2, AlertTriangle, Link, ImageIcon } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import GoalCreationWorkflow from '@/components/GoalCreationWorkflow';
 import ImagePickerModal from '@/components/ImagePickerModal';
 import { formatDistanceToNow } from 'date-fns';
@@ -31,6 +32,7 @@ function LinkedBalanceRow({ balance, syncedAt }) {
 }
 
 export default function Goals() {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [userProfileId, setUserProfileId] = useState(null);
   const [goals, setGoals] = useState([]);
@@ -210,7 +212,8 @@ export default function Goals() {
             return (
               <div
                 key={goal.id}
-                className={`bg-card border rounded-2xl overflow-hidden flex flex-col transition-all ${isComplete ? 'border-primary/30' : 'border-border'}`}
+                onClick={() => navigate(`/goals/${goal.id}`)}
+                className={`bg-card border rounded-2xl overflow-hidden flex flex-col transition-all cursor-pointer hover:-translate-y-0.5 hover:border-primary/40 ${isComplete ? 'border-primary/30' : 'border-border'}`}
               >
                 <div className="relative h-40 bg-secondary overflow-hidden">
                   {goal.image ? (
@@ -235,15 +238,15 @@ export default function Goals() {
                     <div className="flex items-center gap-1 shrink-0">
                       {!isComplete && (
                         <>
-                          <button onClick={() => openEdit(goal)} className="p-1 text-muted-foreground hover:text-foreground transition-colors">
+                          <button onClick={e => { e.stopPropagation(); openEdit(goal); }} className="p-1 text-muted-foreground hover:text-foreground transition-colors">
                             <Pencil className="w-3.5 h-3.5" />
                           </button>
-                          <button onClick={() => handleMarkComplete(goal)} title="Mark complete" className="p-1 text-muted-foreground hover:text-primary transition-colors">
+                          <button onClick={e => { e.stopPropagation(); handleMarkComplete(goal); }} title="Mark complete" className="p-1 text-muted-foreground hover:text-primary transition-colors">
                             <CheckCircle className="w-3.5 h-3.5" />
                           </button>
                         </>
                       )}
-                      <button onClick={() => handleDelete(goal)} title="Delete goal" className="p-1 text-muted-foreground hover:text-destructive transition-colors">
+                      <button onClick={e => { e.stopPropagation(); handleDelete(goal); }} title="Delete goal" className="p-1 text-muted-foreground hover:text-destructive transition-colors">
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
