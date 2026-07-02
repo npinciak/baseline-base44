@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { ArrowLeft, Target, CheckCircle, Pencil, Trash2, ImageIcon, X } from 'lucide-react';
+import { ArrowLeft, Target, CheckCircle, Pencil, Trash2, ImageIcon, X, Camera } from 'lucide-react';
 import ImagePickerModal from '@/components/ImagePickerModal';
 
 const GOAL_TYPES = [
@@ -21,6 +21,7 @@ export default function GoalDetail() {
   const [form, setForm] = useState({});
   const [saving, setSaving] = useState(false);
   const [showImagePicker, setShowImagePicker] = useState(false);
+  const [imagePickerTarget, setImagePickerTarget] = useState('hero'); // 'hero' | 'edit'
 
   useEffect(() => {
     base44.functions.invoke('getSupabaseGoals', {})
@@ -59,7 +60,7 @@ export default function GoalDetail() {
       current_amount: parseFloat(form.saved_amount) || 0,
       target_date: form.target_date || null,
     });
-    setGoal(g => ({ ...g, ...form, image: imageUrl, current_amount: parseFloat(form.saved_amount) || 0, target_amount: parseFloat(form.target_amount) }));
+    setGoal(g => ({ ...g, name: form.name, goal_type: form.goal_type, image: imageUrl, current_amount: parseFloat(form.saved_amount) || 0, target_amount: parseFloat(form.target_amount), target_date: form.target_date }));
     setSaving(false);
     setShowEdit(false);
   };
@@ -76,6 +77,18 @@ export default function GoalDetail() {
       current_amount: goal.target_amount,
     }).catch(() => {});
     setGoal(g => ({ ...g, current_amount: g.target_amount }));
+  };
+
+  const handleImagePickerSelect = ({ url }) => {
+    if (imagePickerTarget === 'hero') {
+      setGoal(g => ({ ...g, image: url }));
+      setForm(p => ({ ...p, image_url: url }));
+      // Persist immediately
+      base44.functions.invoke('updateSupabaseGoal', { supabaseGoalId: goalId, image: url }).catch(() => {});
+    } else {
+      setForm(p => ({ ...p, image_url: url }));
+    }
+    setShowImagePicker(false);
   };
 
   if (loading) {
@@ -101,23 +114,49 @@ export default function GoalDetail() {
   const remaining = Math.max(0, goal.target_amount - saved);
 
   return (
-    <div className="max-w-lg mx-auto px-4 py-8">
-      {/* Back */}
-      <button onClick={() => navigate('/goals')} className="flex items-center gap-2 text-muted-foreground hover:text-foreground text-sm font-medium mb-6 transition-colors">
-        <ArrowLeft className="w-4 h-4" /> Back to Goals
-      </button>
-
-      {/* Hero image */}
-      <div className="relative h-56 rounded-3xl overflow-hidden bg-secondary mb-6">
+    <div className="max-w-lg mx-auto">
+      {/* Full-width hero card header */}
+      <div className="relative h-72 bg-secondary overflow-hidden mb-6">
         {goal.image ? (
           <img src={goal.image} alt={goal.name} className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <Target className="w-12 h-12 text-muted-foreground/30" />
+            <Target className="w-14 h-14 text-muted-foreground/30" />
           </div>
         )}
+
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+
+        {/* Back — top left */}
+        <button
+          onClick={() => navigate('/goals')}
+          className="absolute top-4 left-4 flex items-center gap-1.5 px-3 py-1.5 bg-black/40 backdrop-blur-sm text-white rounded-full text-sm font-medium hover:bg-black/60 transition-all"
+        >
+          <ArrowLeft className="w-4 h-4" /> Back
+        </button>
+
+        {/* Edit image — top right */}
+        <button
+          onClick={() => { setImagePickerTarget('hero'); setShowImagePicker(true); }}
+          title="Change image"
+          className="absolute top-4 right-4 w-9 h-9 bg-black/40 backdrop-blur-sm text-white rounded-full flex items-center justify-center hover:bg-black/60 transition-all"
+        >
+          <Camera className="w-4 h-4" />
+        </button>
+
+        {/* Name + category — bottom left */}
+        <div className="absolute bottom-0 left-0 right-0 px-5 pb-5">
+          <h1 className="text-2xl font-display font-extrabold text-white mb-1">{goal.name}</h1>
+          {goal.goal_type && (
+            <span className="text-xs font-semibold text-white/70 uppercase tracking-wider">
+              {GOAL_TYPES.find(t => t.value === goal.goal_type)?.label || goal.goal_type}
+            </span>
+          )}
+        </div>
+
         {isComplete && (
-          <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
+          <div className="absolute inset-0 bg-primary/20 flex items-center justify-center pointer-events-none">
             <div className="bg-primary rounded-full p-3">
               <CheckCircle className="w-8 h-8 text-primary-foreground" />
             </div>
@@ -125,17 +164,9 @@ export default function GoalDetail() {
         )}
       </div>
 
-      {/* Title + actions */}
-      <div className="flex items-start justify-between gap-3 mb-6">
-        <div>
-          <h1 className="text-2xl font-display font-extrabold mb-1">{goal.name}</h1>
-          {goal.goal_type && (
-            <span className="text-xs text-muted-foreground capitalize">
-              {GOAL_TYPES.find(t => t.value === goal.goal_type)?.label || goal.goal_type}
-            </span>
-          )}
-        </div>
-        <div className="flex items-center gap-2 shrink-0">
+      <div className="px-4 pb-8">
+        {/* Actions row */}
+        <div className="flex items-center justify-end gap-2 mb-6">
           {!isComplete && (
             <button onClick={handleMarkComplete} title="Mark complete" className="p-2 rounded-xl bg-secondary text-muted-foreground hover:text-primary transition-colors">
               <CheckCircle className="w-4 h-4" />
@@ -148,34 +179,34 @@ export default function GoalDetail() {
             <Trash2 className="w-4 h-4" />
           </button>
         </div>
-      </div>
 
-      {/* Progress card */}
-      <div className="bg-card border border-border rounded-2xl p-6 mb-4">
-        <div className="flex items-end justify-between mb-4">
-          <div>
-            <p className="text-4xl font-display font-extrabold text-primary">${saved.toLocaleString()}</p>
-            <p className="text-sm text-muted-foreground">saved of ${goal.target_amount.toLocaleString()}</p>
-          </div>
-          <span className="text-2xl font-display font-extrabold">{pct}%</span>
-        </div>
-        <div className="h-3 bg-secondary rounded-full overflow-hidden mb-4">
-          <div
-            className={`h-full rounded-full transition-all duration-700 ${isComplete ? 'xp-shimmer' : 'bg-primary'}`}
-            style={{ width: `${pct}%` }}
-          />
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="bg-secondary rounded-xl p-4">
-            <p className="text-xs text-muted-foreground mb-1">Still needed</p>
-            <p className="text-lg font-display font-bold">${remaining.toLocaleString()}</p>
-          </div>
-          {goal.target_date && (
-            <div className="bg-secondary rounded-xl p-4">
-              <p className="text-xs text-muted-foreground mb-1">Target date</p>
-              <p className="text-lg font-display font-bold">{goal.target_date}</p>
+        {/* Progress card */}
+        <div className="bg-card border border-border rounded-2xl p-6 mb-4">
+          <div className="flex items-end justify-between mb-4">
+            <div>
+              <p className="text-4xl font-display font-extrabold text-primary">${saved.toLocaleString()}</p>
+              <p className="text-sm text-muted-foreground">saved of ${goal.target_amount.toLocaleString()}</p>
             </div>
-          )}
+            <span className="text-2xl font-display font-extrabold">{pct}%</span>
+          </div>
+          <div className="h-3 bg-secondary rounded-full overflow-hidden mb-4">
+            <div
+              className={`h-full rounded-full transition-all duration-700 ${isComplete ? 'xp-shimmer' : 'bg-primary'}`}
+              style={{ width: `${pct}%` }}
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-secondary rounded-xl p-4">
+              <p className="text-xs text-muted-foreground mb-1">Still needed</p>
+              <p className="text-lg font-display font-bold">${remaining.toLocaleString()}</p>
+            </div>
+            {goal.target_date && (
+              <div className="bg-secondary rounded-xl p-4">
+                <p className="text-xs text-muted-foreground mb-1">Target date</p>
+                <p className="text-lg font-display font-bold">{goal.target_date}</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -194,7 +225,7 @@ export default function GoalDetail() {
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-background/60 to-transparent" />
               <div className="absolute bottom-3 left-3 flex gap-2">
-                <button type="button" onClick={() => setShowImagePicker(true)} className="flex items-center gap-1.5 px-3 py-1.5 bg-background/80 backdrop-blur-sm text-foreground rounded-lg text-xs font-semibold hover:bg-background transition-all">
+                <button type="button" onClick={() => { setImagePickerTarget('edit'); setShowImagePicker(true); }} className="flex items-center gap-1.5 px-3 py-1.5 bg-background/80 backdrop-blur-sm text-foreground rounded-lg text-xs font-semibold hover:bg-background transition-all">
                   <ImageIcon className="w-3.5 h-3.5" />
                   {form.image_url ? 'Change' : 'Add Image'}
                 </button>
@@ -248,7 +279,7 @@ export default function GoalDetail() {
 
       {showImagePicker && (
         <ImagePickerModal
-          onSelect={({ url }) => { setForm(p => ({ ...p, image_url: url })); setShowImagePicker(false); }}
+          onSelect={handleImagePickerSelect}
           onClose={() => setShowImagePicker(false)}
         />
       )}
