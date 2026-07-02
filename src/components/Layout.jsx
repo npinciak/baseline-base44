@@ -59,7 +59,7 @@ export default function Layout() {
           <div className="px-5 py-4 border-b border-border">
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-medium text-muted-foreground">Level {stats.current_level}</span>
-              <span className="text-xs font-semibold text-primary flex items-center gap-1"><Coins className="w-3 h-3" />{walletBalance ?? stats.total_xp} Base Coins</span>
+              <span className="text-xs font-semibold text-primary flex items-center gap-1"><Coins className="w-3 h-3" />{walletBalance !== null ? walletBalance : '---'} Base Coins</span>
             </div>
             <div className="h-2 bg-secondary rounded-full overflow-hidden">
               <div
