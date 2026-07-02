@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Target, Plus, X, Pencil, CheckCircle, Trash2, AlertTriangle, Link } from 'lucide-react';
+import { Target, Plus, X, Pencil, CheckCircle, Trash2, AlertTriangle, Link, ImageIcon } from 'lucide-react';
 import GoalCreationWorkflow from '@/components/GoalCreationWorkflow';
+import ImagePickerModal from '@/components/ImagePickerModal';
 import { formatDistanceToNow } from 'date-fns';
 
 const EMPTY_FORM = { name: '', description: '', target_amount: '', saved_amount: '', target_date: '', image_url: '', goal_type: '' };
@@ -41,6 +42,7 @@ export default function Goals() {
   const [editingGoal, setEditingGoal] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
+  const [showImagePicker, setShowImagePicker] = useState(false);
 
   const loadGoals = async () => {
     try {
@@ -264,6 +266,13 @@ export default function Goals() {
         </div>
       )}
 
+      {showImagePicker && (
+        <ImagePickerModal
+          onSelect={({ url }) => { setForm(p => ({ ...p, image_url: url })); setShowImagePicker(false); }}
+          onClose={() => setShowImagePicker(false)}
+        />
+      )}
+
       {showWorkflow && user && (
         <GoalCreationWorkflow
           user={user}
@@ -306,13 +315,24 @@ export default function Goals() {
                 </select>
               </div>
               <div>
-                <label className="text-xs text-muted-foreground font-medium mb-1 block">Image URL (optional)</label>
-                <input
-                  value={form.image_url}
-                  onChange={e => setForm(p => ({ ...p, image_url: e.target.value }))}
-                  placeholder="https://..."
-                  className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
-                />
+                <label className="text-xs text-muted-foreground font-medium mb-1 block">Image (optional)</label>
+                {form.image_url ? (
+                  <div className="relative h-28 rounded-xl overflow-hidden border border-border group">
+                    <img src={form.image_url} alt="Goal" className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-background/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                      <button type="button" onClick={() => setShowImagePicker(true)} className="px-3 py-1.5 bg-primary text-primary-foreground rounded-lg text-xs font-semibold">Change</button>
+                      <button type="button" onClick={() => setForm(p => ({ ...p, image_url: '' }))} className="px-3 py-1.5 bg-secondary text-foreground rounded-lg text-xs font-semibold">Remove</button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setShowImagePicker(true)}
+                    className="w-full flex items-center justify-center gap-2 py-3 bg-secondary border border-dashed border-border rounded-xl text-sm text-muted-foreground hover:border-primary/40 hover:text-foreground transition-all"
+                  >
+                    <ImageIcon className="w-4 h-4" /> Search & add image
+                  </button>
+                )}
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
