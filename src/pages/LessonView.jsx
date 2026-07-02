@@ -56,11 +56,12 @@ export default function LessonView() {
     if (!currentLesson || !user) return;
 
     const xp = currentLesson.xp_reward || 20;
-    setXpEarned(xp);
+    const alreadyCompleted = isCompleted(currentLesson.id);
 
-    // Record progress
-    const existing = progress.find(p => p.lesson_id === currentLesson.id);
-    if (!existing) {
+    if (!alreadyCompleted) {
+      setXpEarned(prev => prev + xp);
+
+      // Record progress
       await base44.entities.UserProgress.create({
         user_id: user.id,
         lesson_id: currentLesson.id,
@@ -70,30 +71,33 @@ export default function LessonView() {
         score: score,
         completed_at: new Date().toISOString(),
       });
-    }
 
-    // Credit Supabase wallet
-    await base44.functions.invoke('creditWallet', { amount: xp }).catch(() => {});
+      // Update local progress state so isCompleted reflects immediately
+      setProgress(prev => [...prev, { lesson_id: currentLesson.id, module_id: moduleId, completed: true }]);
 
-    // Update UserStats
-    const statsArr = await base44.entities.UserStats.filter({ user_id: user.id });
-    if (statsArr.length > 0) {
-      const s = statsArr[0];
-      const today = new Date().toISOString().slice(0, 10);
-      const lastActivity = s.last_activity_date;
-      const isConsecutive = lastActivity && (
-        new Date(today) - new Date(lastActivity) <= 86400000
-      );
-      const newStreak = isConsecutive ? (s.current_streak + 1) : 1;
-      const newXp = (s.total_xp || 0) + xp;
-      const newLevel = Math.floor(newXp / 200) + 1;
-      await base44.entities.UserStats.update(s.id, {
-        total_xp: newXp,
-        current_level: newLevel,
-        current_streak: newStreak,
-        longest_streak: Math.max(s.longest_streak || 0, newStreak),
-        last_activity_date: today,
-      });
+      // Credit Supabase wallet
+      await base44.functions.invoke('creditWallet', { amount: xp }).catch(() => {});
+
+      // Update UserStats
+      const statsArr = await base44.entities.UserStats.filter({ user_id: user.id });
+      if (statsArr.length > 0) {
+        const s = statsArr[0];
+        const today = new Date().toISOString().slice(0, 10);
+        const lastActivity = s.last_activity_date;
+        const isConsecutive = lastActivity && (
+          new Date(today) - new Date(lastActivity) <= 86400000
+        );
+        const newStreak = isConsecutive ? (s.current_streak + 1) : 1;
+        const newXp = (s.total_xp || 0) + xp;
+        const newLevel = Math.floor(newXp / 200) + 1;
+        await base44.entities.UserStats.update(s.id, {
+          total_xp: newXp,
+          current_level: newLevel,
+          current_streak: newStreak,
+          longest_streak: Math.max(s.longest_streak || 0, newStreak),
+          last_activity_date: today,
+        });
+      }
     }
 
     if (currentIndex < lessons.length - 1) {
@@ -177,7 +181,14 @@ export default function LessonView() {
       <div className="flex-1 max-w-2xl mx-auto w-full px-4 py-8">
         <div className="mb-6">
           <span className="text-xs font-semibold uppercase tracking-wider text-primary">{module?.title}</span>
-          <h2 className="text-2xl font-display font-bold mt-1">{currentLesson.title}</h2>
+          <div className="flex items-center gap-3 mt-1">
+            <h2 className="text-2xl font-display font-bold">{currentLesson.title}</h2>
+            {isCompleted(currentLesson.id) && (
+              <span className="flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-primary/15 text-primary border border-primary/20 shrink-0">
+                <CheckCircle className="w-3 h-3" /> Completed
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Text lesson */}
@@ -240,7 +251,9 @@ export default function LessonView() {
           disabled={currentLesson.lesson_type === 'quiz' && questions.length > 0 && !answered}
           className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-bold text-lg hover:bg-primary/90 transition-all duration-200 disabled:opacity-40 flex items-center justify-center gap-2 group glow-teal"
         >
-          {currentIndex < lessons.length - 1 ? 'Continue' : 'Complete Module'}
+          {isCompleted(currentLesson.id)
+            ? (currentIndex < lessons.length - 1 ? 'Next Lesson' : 'Finish Review')
+            : (currentIndex < lessons.length - 1 ? 'Continue' : 'Complete Module')}
           <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
         </button>
       </div>
