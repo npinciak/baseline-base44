@@ -42,16 +42,24 @@ export default function GoalDetail() {
   const handleSave = async () => {
     if (!form.name || !form.target_amount) return;
     setSaving(true);
+    let imageUrl = form.image_url;
+    if (!imageUrl) {
+      const searchTerm = form.goal_type && form.goal_type !== 'unknown' ? form.goal_type : form.name;
+      const res = await base44.integrations.custom.call('unsplash', 'get:/search/photos', {
+        queryParams: { query: searchTerm, per_page: 1 },
+      }).catch(() => null);
+      imageUrl = res?.data?.results?.[0]?.urls?.regular || '';
+    }
     await base44.functions.invoke('updateSupabaseGoal', {
       supabaseGoalId: goalId,
       name: form.name,
       goal_type: form.goal_type || null,
-      image: form.image_url || null,
+      image: imageUrl || null,
       target_amount: parseFloat(form.target_amount),
       current_amount: parseFloat(form.saved_amount) || 0,
       target_date: form.target_date || null,
     });
-    setGoal(g => ({ ...g, ...form, image: form.image_url, current_amount: parseFloat(form.saved_amount) || 0, target_amount: parseFloat(form.target_amount) }));
+    setGoal(g => ({ ...g, ...form, image: imageUrl, current_amount: parseFloat(form.saved_amount) || 0, target_amount: parseFloat(form.target_amount) }));
     setSaving(false);
     setShowEdit(false);
   };

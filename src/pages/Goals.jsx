@@ -104,7 +104,7 @@ export default function Goals() {
     setSaving(true);
 
     let imageUrl = form.image_url;
-    if (!editingGoal && !imageUrl) {
+    if (!imageUrl) {
       const searchTerm = form.goal_type && form.goal_type !== 'unknown' ? form.goal_type : form.name;
       const res = await base44.integrations.custom.call('unsplash', 'get:/search/photos', {
         queryParams: { query: searchTerm, per_page: 1 },
