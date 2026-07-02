@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import {
-  Flame, Zap, Star, Target, ChevronRight, ChevronLeft,
+  Flame, Coins, Star, Target, ChevronRight, ChevronLeft,
   Plus, BookOpen, Lock, CheckCircle, X,
   Wallet, TrendingUp, CreditCard, FileText, Unlock, Umbrella, Shield, PiggyBank
 } from 'lucide-react';
@@ -288,7 +288,7 @@ export default function Dashboard() {
                               )}
                               <div className="flex items-center gap-3 mt-3">
                                 <span className="flex items-center gap-1 text-xs text-primary font-medium">
-                                  <Zap className="w-3 h-3" /> {module.xp_reward} XP
+                                  <Coins className="w-3 h-3" /> {module.xp_reward} BC
                                 </span>
                                 {completedCount > 0 && (
                                   <span className="flex items-center gap-1 text-xs text-green-400 font-medium">

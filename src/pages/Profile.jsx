@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Flame, Zap, Star, Award, CheckCircle, BookOpen, Trophy } from 'lucide-react';
+import { Flame, Coins, Award, CheckCircle, BookOpen, Trophy } from 'lucide-react';
 
 const LEVEL_TITLES = ['Rookie', 'Learner', 'Saver', 'Investor', 'Planner', 'Strategist', 'Expert', 'Master', 'Guru', 'Legend'];
 
@@ -81,7 +81,7 @@ export default function Profile() {
         <div className="mt-5">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs text-muted-foreground">Level {stats?.current_level || 1} → {(stats?.current_level || 1) + 1}</span>
-            <span className="text-xs font-semibold text-primary">{stats?.total_xp || 0} / {xpForLevel((stats?.current_level || 1) + 1)} XP</span>
+            <span className="text-xs font-semibold text-primary">{stats?.total_xp || 0} / {xpForLevel((stats?.current_level || 1) + 1)} Base Coins</span>
           </div>
           <div className="h-3 bg-secondary rounded-full overflow-hidden">
             <div className="h-full rounded-full xp-shimmer transition-all duration-700" style={{ width: `${xpProgress}%` }} />
@@ -93,7 +93,7 @@ export default function Profile() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
         {[
           { icon: Flame, label: 'Day Streak', value: stats?.current_streak || 0, color: 'text-orange-400', bg: 'bg-orange-400/10' },
-          { icon: Zap, label: 'Total XP', value: stats?.total_xp || 0, color: 'text-primary', bg: 'bg-primary/10' },
+          { icon: Coins, label: 'Base Coins', value: stats?.total_xp || 0, color: 'text-primary', bg: 'bg-primary/10' },
           { icon: BookOpen, label: 'Lessons Done', value: totalLessonsCompleted, color: 'text-blue-400', bg: 'bg-blue-400/10' },
           { icon: Trophy, label: 'Best Streak', value: stats?.longest_streak || 0, color: 'text-amber-400', bg: 'bg-amber-400/10' },
         ].map(({ icon: Icon, label, value, color, bg }) => (
@@ -148,7 +148,7 @@ export default function Profile() {
               <div key={mod.id} className="flex items-center gap-3 p-3 bg-secondary rounded-xl">
                 <CheckCircle className="w-5 h-5 text-primary shrink-0" />
                 <span className="text-sm font-medium">{mod.title}</span>
-                <span className="ml-auto text-xs text-primary font-semibold">+{mod.xp_reward} XP</span>
+                <span className="ml-auto text-xs text-primary font-semibold">+{mod.xp_reward} BC</span>
               </div>
             ))}
           </div>

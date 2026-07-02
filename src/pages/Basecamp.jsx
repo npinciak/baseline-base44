@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Zap, CheckCircle, X, ShoppingBag, Lock } from 'lucide-react';
+import { Coins, CheckCircle, X, ShoppingBag, Lock } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
 
 const GIFT_CARDS = [
   {
     id: 'amazon-10',
     brand: 'Amazon',
     amount: 10,
-    xpCost: 500,
+    coinsCost: 500,
     color: 'from-orange-500 to-amber-500',
     bg: 'bg-orange-500/10',
     border: 'border-orange-500/20',
@@ -17,7 +18,7 @@ const GIFT_CARDS = [
     id: 'amazon-25',
     brand: 'Amazon',
     amount: 25,
-    xpCost: 1200,
+    coinsCost: 1200,
     color: 'from-orange-500 to-amber-500',
     bg: 'bg-orange-500/10',
     border: 'border-orange-500/20',
@@ -27,7 +28,7 @@ const GIFT_CARDS = [
     id: 'starbucks-10',
     brand: 'Starbucks',
     amount: 10,
-    xpCost: 500,
+    coinsCost: 500,
     color: 'from-green-600 to-emerald-500',
     bg: 'bg-green-500/10',
     border: 'border-green-500/20',
@@ -37,7 +38,7 @@ const GIFT_CARDS = [
     id: 'starbucks-25',
     brand: 'Starbucks',
     amount: 25,
-    xpCost: 1200,
+    coinsCost: 1200,
     color: 'from-green-600 to-emerald-500',
     bg: 'bg-green-500/10',
     border: 'border-green-500/20',
@@ -47,7 +48,7 @@ const GIFT_CARDS = [
     id: 'netflix-10',
     brand: 'Netflix',
     amount: 10,
-    xpCost: 500,
+    coinsCost: 500,
     color: 'from-red-600 to-rose-500',
     bg: 'bg-red-500/10',
     border: 'border-red-500/20',
@@ -57,7 +58,7 @@ const GIFT_CARDS = [
     id: 'netflix-25',
     brand: 'Netflix',
     amount: 25,
-    xpCost: 1200,
+    coinsCost: 1200,
     color: 'from-red-600 to-rose-500',
     bg: 'bg-red-500/10',
     border: 'border-red-500/20',
@@ -67,7 +68,7 @@ const GIFT_CARDS = [
     id: 'spotify-10',
     brand: 'Spotify',
     amount: 10,
-    xpCost: 500,
+    coinsCost: 500,
     color: 'from-green-400 to-lime-400',
     bg: 'bg-lime-500/10',
     border: 'border-lime-500/20',
@@ -77,7 +78,7 @@ const GIFT_CARDS = [
     id: 'target-10',
     brand: 'Target',
     amount: 10,
-    xpCost: 500,
+    coinsCost: 500,
     color: 'from-red-500 to-rose-400',
     bg: 'bg-rose-500/10',
     border: 'border-rose-500/20',
@@ -87,7 +88,7 @@ const GIFT_CARDS = [
     id: 'target-25',
     brand: 'Target',
     amount: 25,
-    xpCost: 1200,
+    coinsCost: 1200,
     color: 'from-red-500 to-rose-400',
     bg: 'bg-rose-500/10',
     border: 'border-rose-500/20',
@@ -97,7 +98,7 @@ const GIFT_CARDS = [
     id: 'doordash-10',
     brand: 'DoorDash',
     amount: 10,
-    xpCost: 500,
+    coinsCost: 500,
     color: 'from-orange-600 to-red-500',
     bg: 'bg-orange-600/10',
     border: 'border-orange-600/20',
@@ -106,34 +107,43 @@ const GIFT_CARDS = [
 ];
 
 export default function Basecamp() {
-  const [stats, setStats] = useState(null);
+  const [balance, setBalance] = useState(0);
   const [loading, setLoading] = useState(true);
   const [selectedCard, setSelectedCard] = useState(null);
   const [redeeming, setRedeeming] = useState(false);
-  const [redeemed, setRedeemed] = useState(null);
+  const { toast } = useToast();
 
   useEffect(() => {
-    const init = async () => {
-      const user = await base44.auth.me();
-      const statsArr = await base44.entities.UserStats.filter({ user_id: user.id });
-      setStats(statsArr[0] || null);
-      setLoading(false);
-    };
-    init().catch(() => setLoading(false));
+    base44.functions.invoke('getWallet', {})
+      .then(res => setBalance(res?.data?.balance ?? 0))
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
-  const canAfford = (card) => stats && stats.total_xp >= card.xpCost;
+  const canAfford = (card) => balance >= card.coinsCost;
 
   const handleRedeem = async () => {
     if (!selectedCard || !canAfford(selectedCard)) return;
     setRedeeming(true);
-    // Deduct XP from UserStats
-    const newXp = stats.total_xp - selectedCard.xpCost;
-    await base44.entities.UserStats.update(stats.id, { total_xp: newXp });
-    setStats(s => ({ ...s, total_xp: newXp }));
-    setRedeemed(selectedCard);
-    setSelectedCard(null);
-    setRedeeming(false);
+    try {
+      const res = await base44.functions.invoke('redeemGiftCard', {
+        giftCardId: selectedCard.id,
+        brand: selectedCard.brand,
+        amountUsd: selectedCard.amount,
+        coinsCost: selectedCard.coinsCost,
+      });
+      setBalance(res.data.newBalance);
+      setSelectedCard(null);
+      toast({
+        title: 'Redemption successful!',
+        description: `Your $${selectedCard.amount} ${selectedCard.brand} gift card is on its way to your email.`,
+      });
+    } catch (err) {
+      const msg = err?.response?.data?.error || 'Redemption failed. Please try again.';
+      toast({ title: 'Error', description: msg, variant: 'destructive' });
+    } finally {
+      setRedeeming(false);
+    }
   };
 
   if (loading) {
@@ -154,32 +164,19 @@ export default function Basecamp() {
           </div>
           <h1 className="text-3xl font-display font-extrabold">Basecamp Store</h1>
         </div>
-        <p className="text-muted-foreground text-sm ml-12">Redeem your XP for real-world rewards</p>
+        <p className="text-muted-foreground text-sm ml-12">Redeem your Base Coins for real-world rewards</p>
       </div>
 
-      {/* XP Balance */}
+      {/* Balance */}
       <div className="flex items-center gap-3 bg-card border border-border rounded-2xl px-5 py-4 mb-8">
         <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center">
-          <Zap className="w-5 h-5 text-primary" />
+          <Coins className="w-5 h-5 text-primary" />
         </div>
         <div>
           <p className="text-xs text-muted-foreground font-medium">Your Balance</p>
-          <p className="text-2xl font-display font-extrabold text-primary">{stats?.total_xp ?? 0} <span className="text-sm font-normal text-muted-foreground">XP</span></p>
+          <p className="text-2xl font-display font-extrabold text-primary">{balance.toLocaleString()} <span className="text-sm font-normal text-muted-foreground">Base Coins</span></p>
         </div>
       </div>
-
-      {/* Success banner */}
-      {redeemed && (
-        <div className="flex items-center justify-between gap-3 mb-6 px-4 py-3 bg-primary/10 border border-primary/25 rounded-xl text-sm text-primary">
-          <div className="flex items-center gap-2">
-            <CheckCircle className="w-4 h-4 shrink-0" />
-            <span>Your <strong>${redeemed.amount} {redeemed.brand}</strong> gift card redemption was submitted! We'll email it to you shortly.</span>
-          </div>
-          <button onClick={() => setRedeemed(null)} className="text-primary/60 hover:text-primary transition-colors">
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-      )}
 
       {/* Gift Cards Grid */}
       <div className="grid sm:grid-cols-2 gap-4">
@@ -208,8 +205,8 @@ export default function Basecamp() {
                   <p className="text-xs text-muted-foreground">{card.brand} Gift Card</p>
                 </div>
                 <div className={`flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-gradient-to-r ${card.color} text-white`}>
-                  <Zap className="w-3 h-3" />
-                  {card.xpCost.toLocaleString()} XP
+                  <Coins className="w-3 h-3" />
+                  {card.coinsCost.toLocaleString()} BC
                 </div>
               </div>
             </button>
@@ -237,17 +234,17 @@ export default function Basecamp() {
             </div>
 
             <div className="flex items-center justify-between text-sm mb-1">
-              <span className="text-muted-foreground">Your XP</span>
-              <span className="font-semibold">{stats.total_xp.toLocaleString()} XP</span>
+              <span className="text-muted-foreground">Your Balance</span>
+              <span className="font-semibold">{balance.toLocaleString()} BC</span>
             </div>
             <div className="flex items-center justify-between text-sm mb-1">
               <span className="text-muted-foreground">Cost</span>
-              <span className="font-semibold text-destructive">- {selectedCard.xpCost.toLocaleString()} XP</span>
+              <span className="font-semibold text-destructive">- {selectedCard.coinsCost.toLocaleString()} BC</span>
             </div>
             <div className="h-px bg-border my-3" />
             <div className="flex items-center justify-between text-sm mb-6">
-              <span className="font-semibold">Remaining XP</span>
-              <span className="font-bold text-primary">{(stats.total_xp - selectedCard.xpCost).toLocaleString()} XP</span>
+              <span className="font-semibold">Remaining Balance</span>
+              <span className="font-bold text-primary">{(balance - selectedCard.coinsCost).toLocaleString()} BC</span>
             </div>
 
             <div className="flex gap-3">

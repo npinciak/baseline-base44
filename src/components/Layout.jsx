@@ -1,6 +1,6 @@
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { User, Flame, Zap, LogOut, Shield, Target, LayoutDashboard, Wallet, ShoppingBag } from 'lucide-react';
+import { User, Flame, Coins, Zap, LogOut, Shield, Target, LayoutDashboard, Wallet, ShoppingBag } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export default function Layout() {
@@ -22,9 +22,12 @@ export default function Layout() {
     }).catch(() => {});
   }, []);
 
+  const [walletBalance, setWalletBalance] = useState(null);
+
   useEffect(() => {
     if (!user) return;
     base44.entities.UserStats.filter({ user_id: user.id }).then(r => r[0] && setStats(r[0]));
+    base44.functions.invoke('getWallet', {}).then(r => setWalletBalance(r?.data?.balance ?? 0)).catch(() => {});
   }, [user]);
 
   const xpForLevel = (level) => level * 200;
@@ -56,7 +59,7 @@ export default function Layout() {
           <div className="px-5 py-4 border-b border-border">
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-medium text-muted-foreground">Level {stats.current_level}</span>
-              <span className="text-xs font-semibold text-primary">{stats.total_xp} XP</span>
+              <span className="text-xs font-semibold text-primary flex items-center gap-1"><Coins className="w-3 h-3" />{walletBalance ?? stats.total_xp} Base Coins</span>
             </div>
             <div className="h-2 bg-secondary rounded-full overflow-hidden">
               <div
