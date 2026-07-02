@@ -16,7 +16,6 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Onboarding from './pages/Onboarding';
 import LessonView from './pages/LessonView';
-import Finance from './pages/Finance';
 import Profile from './pages/Profile';
 import Admin from './pages/Admin';
 import Goals from './pages/Goals';
@@ -46,7 +45,6 @@ const AuthenticatedApp = () => {
         <Route element={<Layout />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/learn/:moduleId" element={<LessonView />} />
-          <Route path="/finance" element={<Finance />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/goals" element={<Goals />} />

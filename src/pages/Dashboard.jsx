@@ -322,13 +322,7 @@ export default function Dashboard() {
                 <span className="text-sm font-medium">Add a Goal</span>
                 <ChevronRight className="w-4 h-4 text-muted-foreground ml-auto group-hover:translate-x-0.5 transition-transform" />
               </Link>
-              <Link to="/finance" className="flex items-center gap-3 p-3 rounded-xl hover:bg-secondary transition-all group">
-                <div className="w-8 h-8 rounded-lg bg-blue-500/15 flex items-center justify-center">
-                  <TrendingUp className="w-4 h-4 text-blue-400" />
-                </div>
-                <span className="text-sm font-medium">Track Spending</span>
-                <ChevronRight className="w-4 h-4 text-muted-foreground ml-auto group-hover:translate-x-0.5 transition-transform" />
-              </Link>
+
               <Link to="/learn" className="flex items-center gap-3 p-3 rounded-xl hover:bg-secondary transition-all group">
                 <div className="w-8 h-8 rounded-lg bg-amber-500/15 flex items-center justify-center">
                   <BookOpen className="w-4 h-4 text-amber-400" />
