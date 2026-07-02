@@ -21,6 +21,7 @@ import Admin from './pages/Admin';
 import Goals from './pages/Goals';
 import Dashboard from './pages/Dashboard';
 import Money from './pages/Money';
+import Basecamp from './pages/Basecamp';
 
 const AuthenticatedApp = () => {
   const { isLoadingPublicSettings } = useAuth();
@@ -49,6 +50,7 @@ const AuthenticatedApp = () => {
           <Route path="/admin" element={<Admin />} />
           <Route path="/goals" element={<Goals />} />
           <Route path="/money" element={<Money />} />
+          <Route path="/basecamp" element={<Basecamp />} />
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />
