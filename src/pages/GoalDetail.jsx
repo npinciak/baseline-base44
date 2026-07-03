@@ -1,8 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { ArrowLeft, Target, CheckCircle, Pencil, Trash2, ImageIcon, X, Camera } from 'lucide-react';
+import {
+  ArrowLeft, Target, CheckCircle, Pencil, Trash2, ImageIcon, X,
+  Link2, Wallet, TrendingUp, CreditCard, PiggyBank, BookOpen, CalendarDays
+} from 'lucide-react';
+import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import { formatDistanceToNow } from 'date-fns';
 import ImagePickerModal from '@/components/ImagePickerModal';
+import ConnectBankButton from '@/components/ConnectBankButton';
 
 const GOAL_TYPES = [
   { value: 'vacation', label: 'Go on Vacation' },
@@ -11,6 +17,69 @@ const GOAL_TYPES = [
   { value: 'other', label: 'Something Else' },
   { value: 'unknown', label: 'Not Sure Yet' },
 ];
+
+const GOAL_TOPIC_MAP = {
+  vacation: ['saving'],
+  travel: ['saving'],
+  buyHome: ['investing', 'saving'],
+  newCar: ['budgeting'],
+  other: ['saving', 'budgeting'],
+  unknown: ['saving', 'budgeting'],
+};
+
+const TOPIC_ICONS = {
+  budgeting: CreditCard,
+  investing: TrendingUp,
+  credit: Wallet,
+  saving: PiggyBank,
+};
+
+const TOPIC_COLORS = {
+  budgeting: 'bg-orange-500/20 text-orange-400',
+  investing: 'bg-blue-500/20 text-blue-400',
+  credit: 'bg-purple-500/20 text-purple-400',
+  saving: 'bg-teal-500/20 text-primary',
+  taxes: 'bg-amber-500/20 text-amber-400',
+  debt: 'bg-red-500/20 text-red-400',
+  insurance: 'bg-sky-500/20 text-sky-400',
+  retirement: 'bg-yellow-500/20 text-yellow-400',
+};
+
+function DonutChart({ saved, target }) {
+  const remaining = Math.max(0, target - saved);
+  const data = saved === 0 && remaining === 0
+    ? [{ value: 1 }]
+    : [{ value: saved }, { value: remaining }];
+  const isEmpty = saved === 0 && remaining > 0;
+
+  return (
+    <div className="relative w-44 h-44 mx-auto">
+      <ResponsiveContainer width="100%" height="100%">
+        <PieChart>
+          <Pie
+            data={isEmpty ? [{ value: 1 }, { value: target }] : data}
+            cx="50%"
+            cy="50%"
+            innerRadius={60}
+            outerRadius={85}
+            startAngle={90}
+            endAngle={-270}
+            dataKey="value"
+            strokeWidth={0}
+          >
+            <Cell fill={isEmpty ? 'hsl(var(--secondary))' : 'hsl(var(--primary))'} />
+            <Cell fill="hsl(var(--secondary))" />
+          </Pie>
+        </PieChart>
+      </ResponsiveContainer>
+      {/* Center label */}
+      <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+        <p className="text-xs text-muted-foreground font-medium">Goal</p>
+        <p className="text-lg font-display font-extrabold">${target.toLocaleString()}</p>
+      </div>
+    </div>
+  );
+}
 
 export default function GoalDetail() {
   const { goalId } = useParams();
@@ -21,14 +90,21 @@ export default function GoalDetail() {
   const [form, setForm] = useState({});
   const [saving, setSaving] = useState(false);
   const [showImagePicker, setShowImagePicker] = useState(false);
-  const [imagePickerTarget, setImagePickerTarget] = useState('hero'); // 'hero' | 'edit'
+  const [imagePickerTarget, setImagePickerTarget] = useState('edit');
+  const [relevantModules, setRelevantModules] = useState([]);
+  const [userProgress, setUserProgress] = useState([]);
 
   useEffect(() => {
-    base44.functions.invoke('getSupabaseGoals', {})
-      .then(res => {
-        const found = (res?.data?.goals || []).find(g => g.id === goalId);
-        setGoal(found || null);
-        if (found) setForm({
+    const init = async () => {
+      const [goalsRes, user] = await Promise.all([
+        base44.functions.invoke('getSupabaseGoals', {}),
+        base44.auth.me(),
+      ]);
+      const found = (goalsRes?.data?.goals || []).find(g => g.id === goalId);
+      setGoal(found || null);
+
+      if (found) {
+        setForm({
           name: found.name || '',
           goal_type: found.goal_type || '',
           target_amount: found.target_amount || '',
@@ -36,8 +112,20 @@ export default function GoalDetail() {
           target_date: found.target_date || '',
           image_url: found.image || '',
         });
-      })
-      .finally(() => setLoading(false));
+
+        // Fetch relevant modules + user progress in parallel
+        const [mods, prog] = await Promise.all([
+          base44.entities.Module.filter({ is_published: true }, 'order_index', 50),
+          base44.entities.UserProgress.filter({ user_id: user.id }),
+        ]);
+
+        const relevantTags = GOAL_TOPIC_MAP[found.goal_type] || ['saving', 'budgeting'];
+        const filtered = mods.filter(m => relevantTags.includes(m.topic_tag)).slice(0, 3);
+        setRelevantModules(filtered);
+        setUserProgress(prog);
+      }
+    };
+    init().finally(() => setLoading(false));
   }, [goalId]);
 
   const handleSave = async () => {
@@ -60,7 +148,15 @@ export default function GoalDetail() {
       current_amount: parseFloat(form.saved_amount) || 0,
       target_date: form.target_date || null,
     });
-    setGoal(g => ({ ...g, name: form.name, goal_type: form.goal_type, image: imageUrl, current_amount: parseFloat(form.saved_amount) || 0, target_amount: parseFloat(form.target_amount), target_date: form.target_date }));
+    setGoal(g => ({
+      ...g,
+      name: form.name,
+      goal_type: form.goal_type,
+      image: imageUrl,
+      current_amount: parseFloat(form.saved_amount) || 0,
+      target_amount: parseFloat(form.target_amount),
+      target_date: form.target_date,
+    }));
     setSaving(false);
     setShowEdit(false);
   };
@@ -83,13 +179,15 @@ export default function GoalDetail() {
     if (imagePickerTarget === 'hero') {
       setGoal(g => ({ ...g, image: url }));
       setForm(p => ({ ...p, image_url: url }));
-      // Persist immediately
       base44.functions.invoke('updateSupabaseGoal', { supabaseGoalId: goalId, image: url }).catch(() => {});
     } else {
       setForm(p => ({ ...p, image_url: url }));
     }
     setShowImagePicker(false);
   };
+
+  const isModuleCompleted = (moduleId) =>
+    userProgress.some(p => p.module_id === moduleId && p.completed);
 
   if (loading) {
     return (
@@ -109,101 +207,195 @@ export default function GoalDetail() {
   }
 
   const saved = goal.current_amount || 0;
-  const pct = Math.min(100, Math.round((saved / goal.target_amount) * 100));
-  const isComplete = saved >= goal.target_amount;
-  const remaining = Math.max(0, goal.target_amount - saved);
+  const target = goal.target_amount || 0;
+  const pct = Math.min(100, Math.round((saved / target) * 100));
+  const isComplete = saved >= target;
+  const remaining = Math.max(0, target - saved);
 
   return (
-    <div className="max-w-lg mx-auto">
-      {/* Full-width hero card header */}
-      <div className="relative h-72 bg-secondary overflow-hidden mb-6">
-        {goal.image ? (
-          <img src={goal.image} alt={goal.name} className="w-full h-full object-cover" />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <Target className="w-14 h-14 text-muted-foreground/30" />
+    <div className="max-w-5xl mx-auto px-4 py-6">
+      {/* Back */}
+      <button
+        onClick={() => navigate('/goals')}
+        className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground text-sm font-medium mb-5 transition-colors"
+      >
+        <ArrowLeft className="w-4 h-4" /> Back to Goals
+      </button>
+
+      {/* Two-column layout */}
+      <div className="grid md:grid-cols-5 gap-5">
+
+        {/* LEFT COLUMN */}
+        <div className="md:col-span-3 space-y-4">
+
+          {/* Hero card */}
+          <div className="bg-card border border-border rounded-3xl overflow-hidden">
+            {/* Image */}
+            <div className="relative h-56 bg-secondary">
+              {goal.image ? (
+                <img src={goal.image} alt={goal.name} className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <Target className="w-14 h-14 text-muted-foreground/30" />
+                </div>
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
+
+              {/* Name + category bottom-left */}
+              <div className="absolute bottom-0 left-0 right-0 px-5 pb-4 flex items-end justify-between gap-3">
+                <div>
+                  <h1 className="text-xl font-display font-extrabold text-white leading-tight mb-0.5">{goal.name}</h1>
+                  {goal.goal_type && (
+                    <span className="text-xs font-semibold text-white/65 uppercase tracking-wider">
+                      {GOAL_TYPES.find(t => t.value === goal.goal_type)?.label || goal.goal_type}
+                    </span>
+                  )}
+                </div>
+                {/* Edit Goal button — bottom-right of overlay */}
+                <button
+                  onClick={() => setShowEdit(true)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-white/15 backdrop-blur-sm text-white border border-white/25 rounded-xl text-xs font-semibold hover:bg-white/25 transition-all shrink-0"
+                >
+                  <Pencil className="w-3.5 h-3.5" /> Edit Goal
+                </button>
+              </div>
+
+              {isComplete && (
+                <div className="absolute top-4 right-4">
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 bg-primary/90 text-primary-foreground rounded-full text-xs font-bold">
+                    <CheckCircle className="w-3.5 h-3.5" /> Complete
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Action strip under image */}
+            <div className="flex items-center justify-between px-5 py-3 border-t border-border">
+              <div className="flex items-center gap-2">
+                {!isComplete && (
+                  <button
+                    onClick={handleMarkComplete}
+                    className="text-xs text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 font-medium"
+                  >
+                    <CheckCircle className="w-3.5 h-3.5" /> Mark complete
+                  </button>
+                )}
+              </div>
+              <button
+                onClick={handleDelete}
+                className="text-xs text-muted-foreground hover:text-destructive transition-colors flex items-center gap-1 font-medium"
+              >
+                <Trash2 className="w-3.5 h-3.5" /> Delete
+              </button>
+            </div>
           </div>
-        )}
 
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+          {/* Link Account card */}
+          <div className="bg-card border border-border rounded-2xl p-5">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-8 h-8 rounded-lg bg-primary/15 flex items-center justify-center">
+                <Link2 className="w-4 h-4 text-primary" />
+              </div>
+              <h3 className="text-sm font-heading font-semibold">Linked Account</h3>
+            </div>
 
-        {/* Back — top left */}
-        <button
-          onClick={() => navigate('/goals')}
-          className="absolute top-4 left-4 flex items-center gap-1.5 px-3 py-1.5 bg-black/40 backdrop-blur-sm text-white rounded-full text-sm font-medium hover:bg-black/60 transition-all"
-        >
-          <ArrowLeft className="w-4 h-4" /> Back
-        </button>
-
-        {/* Edit image — top right */}
-        <button
-          onClick={() => { setImagePickerTarget('hero'); setShowImagePicker(true); }}
-          title="Change image"
-          className="absolute top-4 right-4 w-9 h-9 bg-black/40 backdrop-blur-sm text-white rounded-full flex items-center justify-center hover:bg-black/60 transition-all"
-        >
-          <Camera className="w-4 h-4" />
-        </button>
-
-        {/* Name + category — bottom left */}
-        <div className="absolute bottom-0 left-0 right-0 px-5 pb-5">
-          <h1 className="text-2xl font-display font-extrabold text-white mb-1">{goal.name}</h1>
-          {goal.goal_type && (
-            <span className="text-xs font-semibold text-white/70 uppercase tracking-wider">
-              {GOAL_TYPES.find(t => t.value === goal.goal_type)?.label || goal.goal_type}
-            </span>
-          )}
+            {goal.linked_accounts_balance && goal.linked_accounts_balance > 0 ? (
+              <div>
+                <p className="text-3xl font-display font-extrabold text-primary mb-1">
+                  ${parseFloat(goal.linked_accounts_balance).toLocaleString()}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {goal.last_balance_sync_at
+                    ? `Last synced ${formatDistanceToNow(new Date(goal.last_balance_sync_at), { addSuffix: true })}`
+                    : 'Balance from linked bank account'}
+                </p>
+              </div>
+            ) : (
+              <div className="text-center py-4">
+                <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center mx-auto mb-3">
+                  <Wallet className="w-5 h-5 text-muted-foreground" />
+                </div>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Connect a bank account to track this goal automatically
+                </p>
+                <ConnectBankButton />
+              </div>
+            )}
+          </div>
         </div>
 
-        {isComplete && (
-          <div className="absolute inset-0 bg-primary/20 flex items-center justify-center pointer-events-none">
-            <div className="bg-primary rounded-full p-3">
-              <CheckCircle className="w-8 h-8 text-primary-foreground" />
-            </div>
-          </div>
-        )}
-      </div>
+        {/* RIGHT COLUMN */}
+        <div className="md:col-span-2 space-y-4">
 
-      <div className="px-4 pb-8">
-        {/* Actions row */}
-        <div className="flex items-center justify-end gap-2 mb-6">
-          {!isComplete && (
-            <button onClick={handleMarkComplete} title="Mark complete" className="p-2 rounded-xl bg-secondary text-muted-foreground hover:text-primary transition-colors">
-              <CheckCircle className="w-4 h-4" />
-            </button>
-          )}
-          <button onClick={() => setShowEdit(true)} className="p-2 rounded-xl bg-secondary text-muted-foreground hover:text-foreground transition-colors">
-            <Pencil className="w-4 h-4" />
-          </button>
-          <button onClick={handleDelete} className="p-2 rounded-xl bg-secondary text-muted-foreground hover:text-destructive transition-colors">
-            <Trash2 className="w-4 h-4" />
-          </button>
-        </div>
+          {/* Overview / Donut chart card */}
+          <div className="bg-card border border-border rounded-2xl p-5">
+            <h3 className="text-sm font-heading font-semibold mb-4">Overview</h3>
 
-        {/* Progress card */}
-        <div className="bg-card border border-border rounded-2xl p-6 mb-4">
-          <div className="flex items-end justify-between mb-4">
-            <div>
-              <p className="text-4xl font-display font-extrabold text-primary">${saved.toLocaleString()}</p>
-              <p className="text-sm text-muted-foreground">saved of ${goal.target_amount.toLocaleString()}</p>
+            <DonutChart saved={saved} target={target} />
+
+            {/* Legend */}
+            <div className="space-y-2 mt-5">
+              <div className="flex items-center justify-between text-sm">
+                <div className="flex items-center gap-2">
+                  <span className="w-3 h-3 rounded-full bg-primary shrink-0" />
+                  <span className="text-muted-foreground text-xs">Total Saved</span>
+                </div>
+                <span className="font-semibold text-xs">${saved.toLocaleString()}</span>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <div className="flex items-center gap-2">
+                  <span className="w-3 h-3 rounded-full bg-secondary border border-border shrink-0" />
+                  <span className="text-muted-foreground text-xs">Need to save</span>
+                </div>
+                <span className="font-semibold text-xs">${remaining.toLocaleString()}</span>
+              </div>
+              {goal.target_date && (
+                <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border">
+                  <CalendarDays className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                  <span className="text-xs text-muted-foreground">Target: <span className="text-foreground font-medium">{goal.target_date}</span></span>
+                </div>
+              )}
             </div>
-            <span className="text-2xl font-display font-extrabold">{pct}%</span>
           </div>
-          <div className="h-3 bg-secondary rounded-full overflow-hidden mb-4">
-            <div
-              className={`h-full rounded-full transition-all duration-700 ${isComplete ? 'xp-shimmer' : 'bg-primary'}`}
-              style={{ width: `${pct}%` }}
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-secondary rounded-xl p-4">
-              <p className="text-xs text-muted-foreground mb-1">Still needed</p>
-              <p className="text-lg font-display font-bold">${remaining.toLocaleString()}</p>
-            </div>
-            {goal.target_date && (
-              <div className="bg-secondary rounded-xl p-4">
-                <p className="text-xs text-muted-foreground mb-1">Target date</p>
-                <p className="text-lg font-display font-bold">{goal.target_date}</p>
+
+          {/* My Base Plan card */}
+          <div className="bg-card border border-border rounded-2xl p-5">
+            <h3 className="text-sm font-heading font-semibold mb-4">My Base Plan</h3>
+
+            {relevantModules.length === 0 ? (
+              <div className="text-center py-4">
+                <BookOpen className="w-8 h-8 text-muted-foreground/40 mx-auto mb-2" />
+                <p className="text-xs text-muted-foreground">No relevant lessons found.</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {relevantModules.map(mod => {
+                  const completed = isModuleCompleted(mod.id);
+                  const IconComp = TOPIC_ICONS[mod.topic_tag] || BookOpen;
+                  const colorClass = TOPIC_COLORS[mod.topic_tag] || 'bg-primary/15 text-primary';
+                  return (
+                    <button
+                      key={mod.id}
+                      onClick={() => navigate(`/lesson/${mod.id}`)}
+                      className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-secondary transition-all group text-left"
+                    >
+                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${colorClass}`}>
+                        <IconComp className="w-4 h-4" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold leading-tight truncate">{mod.title}</p>
+                        {mod.description && (
+                          <p className="text-xs text-muted-foreground truncate mt-0.5">{mod.description}</p>
+                        )}
+                      </div>
+                      {completed && (
+                        <div className="w-5 h-5 rounded-full bg-green-500/20 flex items-center justify-center shrink-0">
+                          <CheckCircle className="w-3.5 h-3.5 text-green-400" />
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             )}
           </div>
@@ -225,17 +417,28 @@ export default function GoalDetail() {
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-background/60 to-transparent" />
               <div className="absolute bottom-3 left-3 flex gap-2">
-                <button type="button" onClick={() => { setImagePickerTarget('edit'); setShowImagePicker(true); }} className="flex items-center gap-1.5 px-3 py-1.5 bg-background/80 backdrop-blur-sm text-foreground rounded-lg text-xs font-semibold hover:bg-background transition-all">
+                <button
+                  type="button"
+                  onClick={() => { setImagePickerTarget('edit'); setShowImagePicker(true); }}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-background/80 backdrop-blur-sm text-foreground rounded-lg text-xs font-semibold hover:bg-background transition-all"
+                >
                   <ImageIcon className="w-3.5 h-3.5" />
                   {form.image_url ? 'Change' : 'Add Image'}
                 </button>
                 {form.image_url && (
-                  <button type="button" onClick={() => setForm(p => ({ ...p, image_url: '' }))} className="px-3 py-1.5 bg-background/80 backdrop-blur-sm text-muted-foreground rounded-lg text-xs font-semibold hover:bg-background hover:text-foreground transition-all">
+                  <button
+                    type="button"
+                    onClick={() => setForm(p => ({ ...p, image_url: '' }))}
+                    className="px-3 py-1.5 bg-background/80 backdrop-blur-sm text-muted-foreground rounded-lg text-xs font-semibold hover:bg-background hover:text-foreground transition-all"
+                  >
                     Remove
                   </button>
                 )}
               </div>
-              <button onClick={() => setShowEdit(false)} className="absolute top-3 right-3 w-7 h-7 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
+              <button
+                onClick={() => setShowEdit(false)}
+                className="absolute top-3 right-3 w-7 h-7 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+              >
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -243,11 +446,19 @@ export default function GoalDetail() {
               <h3 className="text-lg font-heading font-bold">Edit Goal</h3>
               <div>
                 <label className="text-xs text-muted-foreground font-medium mb-1 block">Goal Name</label>
-                <input value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors" />
+                <input
+                  value={form.name}
+                  onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
+                  className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
+                />
               </div>
               <div>
                 <label className="text-xs text-muted-foreground font-medium mb-1 block">Category</label>
-                <select value={form.goal_type} onChange={e => setForm(p => ({ ...p, goal_type: e.target.value }))} className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors">
+                <select
+                  value={form.goal_type}
+                  onChange={e => setForm(p => ({ ...p, goal_type: e.target.value }))}
+                  className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
+                >
                   <option value="">Select a category...</option>
                   {GOAL_TYPES.map(({ value, label }) => <option key={value} value={value}>{label}</option>)}
                 </select>
@@ -255,20 +466,43 @@ export default function GoalDetail() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs text-muted-foreground font-medium mb-1 block">Target Amount ($)</label>
-                  <input type="number" value={form.target_amount} onChange={e => setForm(p => ({ ...p, target_amount: e.target.value }))} placeholder="0.00" className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors" />
+                  <input
+                    type="number"
+                    value={form.target_amount}
+                    onChange={e => setForm(p => ({ ...p, target_amount: e.target.value }))}
+                    placeholder="0.00"
+                    className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
+                  />
                 </div>
                 <div>
                   <label className="text-xs text-muted-foreground font-medium mb-1 block">Already Saved ($)</label>
-                  <input type="number" value={form.saved_amount} onChange={e => setForm(p => ({ ...p, saved_amount: e.target.value }))} placeholder="0.00" className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors" />
+                  <input
+                    type="number"
+                    value={form.saved_amount}
+                    onChange={e => setForm(p => ({ ...p, saved_amount: e.target.value }))}
+                    placeholder="0.00"
+                    className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
+                  />
                 </div>
               </div>
               <div>
                 <label className="text-xs text-muted-foreground font-medium mb-1 block">Target Date (optional)</label>
-                <input type="date" value={form.target_date} onChange={e => setForm(p => ({ ...p, target_date: e.target.value }))} className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors" />
+                <input
+                  type="date"
+                  value={form.target_date}
+                  onChange={e => setForm(p => ({ ...p, target_date: e.target.value }))}
+                  className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
+                />
               </div>
               <div className="flex gap-3 pt-2">
-                <button onClick={() => setShowEdit(false)} className="flex-1 py-3 bg-secondary text-foreground rounded-xl font-semibold hover:bg-secondary/80 transition-all">Cancel</button>
-                <button onClick={handleSave} disabled={saving || !form.name || !form.target_amount} className="flex-1 py-3 bg-primary text-primary-foreground rounded-xl font-semibold hover:bg-primary/90 transition-all disabled:opacity-50">
+                <button onClick={() => setShowEdit(false)} className="flex-1 py-3 bg-secondary text-foreground rounded-xl font-semibold hover:bg-secondary/80 transition-all">
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSave}
+                  disabled={saving || !form.name || !form.target_amount}
+                  className="flex-1 py-3 bg-primary text-primary-foreground rounded-xl font-semibold hover:bg-primary/90 transition-all disabled:opacity-50"
+                >
                   {saving ? 'Saving...' : 'Save Changes'}
                 </button>
               </div>
