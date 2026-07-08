@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 
 // Helper component to reconstruct text from individual letter images fluidly
 const ImageWord = ({ images, width, height, ariaLabel, className="" }) => {
@@ -90,35 +91,6 @@ export default function Baseline30() {
         className="absolute inset-0 w-full h-full object-cover z-0"
         alt=""
       />
-
-      {/* Giant Abstract Graphic (Parametrically positioned for fluidity) */}
-      <div
-        className="absolute z-[2] overflow-clip pointer-events-none"
-        style={{
-          width: "max(68.48vw, 600px)",
-          height: "max(122.5vh, 800px)",
-          left: "-7.13vw",
-          top: "-10vh",
-        }}
-      >
-        <motion.div
-          className="absolute"
-          style={{
-            width: "237.03%",
-            height: "238.17%",
-            left: "-72.62%",
-            top: "-50.18%",
-          }}
-          animate={{ rotate: 360 }}
-          transition={{ duration: 180, repeat: Infinity, ease: "linear" }}
-        >
-          <img
-            src="https://media.base44.com/images/public/6a3542676f9044e70b439a84/9e90c1ecf_e9031d7d2_b567a13c189ab17b1195db0aba380e0ba8854e8c.png"
-            className="w-full h-full object-cover object-center"
-            alt="Abstract Graphic"
-          />
-        </motion.div>
-      </div>
 
       {/* Main Content Container */}
       <div className="relative z-10 max-w-[1920px] mx-auto w-full min-h-screen flex flex-col">
