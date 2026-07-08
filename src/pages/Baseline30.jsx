@@ -2,56 +2,31 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
-// Helper component to reconstruct text from individual letter images fluidly
-const ImageWord = ({ images, width, height, ariaLabel, className="" }) => {
-  return (
-    <div
-      className={`relative shrink-0 ${className}`}
-      style={{
-        maxWidth: `${width}px`,
-        width: "100%",
-        aspectRatio: `${width} / ${height}`,
-      }}
-      aria-label={ariaLabel}
-      role="img"
-    >
-      {images.map((img, i) => (
-        <img
-          key={i}
-          src={img.src}
-          className="absolute object-contain"
-          style={{
-            left: `${(img.left / width) * 100}%`,
-            top: img.top !== undefined ? `${(img.top / height) * 100}%` : "0%",
-            width: `${(img.width / width) * 100}%`,
-            height: img.height !== undefined ? `${(img.height / height) * 100}%` : "100%",
-          }}
-          alt=""
-        />
-      ))}
-    </div>
-  );
-};
+const ImageWord = ({ images, width, height, ariaLabel, className = "" }) => (
+  <div
+    className={`relative shrink-0 ${className}`}
+    style={{ maxWidth: `${width}px`, width: "100%", aspectRatio: `${width} / ${height}` }}
+    aria-label={ariaLabel}
+    role="img"
+  >
+    {images.map((img, i) => (
+      <img
+        key={i}
+        src={img.src}
+        className="absolute object-contain"
+        style={{
+          left: `${(img.left / width) * 100}%`,
+          top: img.top !== undefined ? `${(img.top / height) * 100}%` : "0%",
+          width: `${(img.width / width) * 100}%`,
+          height: img.height !== undefined ? `${(img.height / height) * 100}%` : "100%",
+        }}
+        alt=""
+      />
+    ))}
+  </div>
+);
 
 export default function Baseline30() {
-  // Reconstructed data arrays for the image-based text
-  const logInImages = [
-    { src: "https://media.base44.com/images/public/6a3542676f9044e70b439a84/4b538695f_cb7722815_93_463.svg", width: 14, left: 0 },
-    { src: "https://media.base44.com/images/public/6a3542676f9044e70b439a84/56382b27d_ea6081d5a_93_467.svg", width: 20, left: 19 },
-    { src: "https://media.base44.com/images/public/6a3542676f9044e70b439a84/f3eb6cd0e_001119171_93_471.svg", width: 18, left: 45 },
-    { src: "https://media.base44.com/images/public/6a3542676f9044e70b439a84/77e220a4e_35273e809_93_475.svg", width: 2, left: 82 },
-    { src: "https://media.base44.com/images/public/6a3542676f9044e70b439a84/3d0b6ab00_4f22fb268_93_479.svg", width: 17, left: 93 },
-  ];
-
-  const signUpImages = [
-    { src: "https://media.base44.com/images/public/6a3542676f9044e70b439a84/1f5f36d78_3f8ce4a94_93_439.svg", width: 16, left: 0 },
-    { src: "https://media.base44.com/images/public/6a3542676f9044e70b439a84/1bfb3298d_2ddf7fb30_93_443.svg", width: 2, left: 23 },
-    { src: "https://media.base44.com/images/public/6a3542676f9044e70b439a84/776d9d7d1_9f410a7a9_93_447.svg", width: 18, left: 33 },
-    { src: "https://media.base44.com/images/public/6a3542676f9044e70b439a84/a3f7af035_05417aa50_93_451.svg", width: 17, left: 59 },
-    { src: "https://media.base44.com/images/public/6a3542676f9044e70b439a84/1d24b7275_12b44f957_93_455.svg", width: 18, left: 96 },
-    { src: "https://media.base44.com/images/public/6a3542676f9044e70b439a84/a35eb2378_44344110e_93_459.svg", width: 15, left: 122 },
-  ];
-
   const baselineImages = [
     { src: "https://media.base44.com/images/public/6a3542676f9044e70b439a84/f5993dcb0_5579a0908_93_355.svg", width: 72, height: 85, left: 0, top: 2 },
     { src: "https://media.base44.com/images/public/6a3542676f9044e70b439a84/068919593_cf4dcbdb5_93_359.svg", width: 68, height: 66, left: 78, top: 23 },
@@ -93,58 +68,76 @@ export default function Baseline30() {
         alt=""
       />
 
-      {/* Main Content Container */}
-      <div className="relative z-10 max-w-[1920px] mx-auto w-full min-h-screen flex flex-col">
-        {/* Header Navigation */}
-        <header className="absolute top-[80px] left-0 w-full px-8 lg:px-[clamp(16px,5.7vw,109px)] flex justify-end pointer-events-none">
+      {/* Header Navigation */}
+      <header className="absolute top-[80px] left-0 w-full px-8 lg:px-[clamp(16px,5.7vw,109px)] flex justify-end z-20 pointer-events-none">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.2 }}
+          className="flex items-center gap-[clamp(16px,2.8vw,54px)] pointer-events-auto"
+        >
+          <Link to="/login" className="text-white font-semibold text-sm hover:opacity-70 transition-opacity">
+            Log In
+          </Link>
+          <Link to="/register" className="px-4 py-2 bg-white text-black font-semibold text-sm rounded-full hover:bg-white/90 transition-all">
+            Sign Up
+          </Link>
+        </motion.div>
+      </header>
+
+      {/* Hero: two-column layout */}
+      <div className="relative z-10 w-full min-h-screen flex flex-col lg:flex-row items-center">
+
+        {/* LEFT — Power Core orb */}
+        <div className="w-full lg:w-1/2 flex items-center justify-center min-h-[50vh] lg:min-h-screen overflow-hidden">
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.2 }}
-            className="flex items-center gap-[clamp(16px,2.8vw,54px)] pointer-events-auto"
+            className="relative w-full max-w-[660px] aspect-square overflow-hidden"
+            initial={{ opacity: 0, scale: 0.85 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
           >
-            <Link to="/login" className="text-white font-semibold text-sm hover:opacity-70 transition-opacity">
-              Log In
-            </Link>
-            <Link to="/register" className="px-4 py-2 bg-white text-black font-semibold text-sm rounded-full hover:bg-white/90 transition-all">
-              Sign Up
-            </Link>
-          </motion.div>
-        </header>
-
-        {/* Hero Content Grid */}
-        <div className="flex-1 grid grid-cols-1 lg:grid-cols-[1240fr_680fr] w-full h-full">
-          {/* Left spacer to push content to the right on desktop */}
-          <div className="hidden lg:block" />
-
-          {/* Right Content Column */}
-          <div className="flex flex-col justify-center items-center lg:items-start px-8 lg:px-0 pt-32 lg:pt-0">
-            <motion.div
-              initial={{ opacity: 0, x: 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{
-                duration: 1.2,
-                delay: 0.4,
-                type: "spring",
-                stiffness: 40,
+            <motion.img
+              src="https://media.base44.com/images/public/6a3542676f9044e70b439a84/156742c3c_2c64e420d_b567a13c189ab17b1195db0aba380e0ba8854e8c.png"
+              alt="Power Core"
+              className="absolute max-w-none"
+              style={{
+                width: "237.034%",
+                height: "238.171%",
+                left: "-72.624%",
+                top: "-50.189%",
+                objectFit: "cover",
+                objectPosition: "center",
               }}
-              className="flex flex-col gap-[clamp(16px,2.4vw,47px)] w-full max-w-[508px]"
-            >
-              <ImageWord
-                images={baselineImages}
-                width={508}
-                height={89}
-                ariaLabel="Baseline"
-              />
-              <ImageWord
-                images={mindOverMoneyImages}
-                width={327}
-                height={21}
-                ariaLabel="Mind Over Money"
-                className="lg:ml-[7px] max-w-[80%] lg:max-w-full mx-auto lg:mx-0"
-              />
-            </motion.div>
-          </div>
+              animate={{
+                filter: ["brightness(1)", "brightness(1.25)", "brightness(1)"],
+                scale: [1, 1.015, 1],
+              }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            />
+          </motion.div>
+        </div>
+
+        {/* RIGHT — Brand text */}
+        <div className="w-full lg:w-1/2 flex items-center justify-start px-8 lg:px-[clamp(32px,5vw,80px)] pb-24 lg:pb-0">
+          <motion.div
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 1.2, delay: 0.4, type: "spring", stiffness: 40 }}
+            className="flex flex-col gap-[clamp(12px,2.4vw,47px)] w-full max-w-[508px]"
+          >
+            <ImageWord
+              images={baselineImages}
+              width={508}
+              height={89}
+              ariaLabel="Baseline"
+            />
+            <ImageWord
+              images={mindOverMoneyImages}
+              width={327}
+              height={21}
+              ariaLabel="Mind Over Money"
+            />
+          </motion.div>
         </div>
       </div>
     </main>
