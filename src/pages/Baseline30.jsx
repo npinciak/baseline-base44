@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 // Helper component to reconstruct text from individual letter images fluidly
 const ImageWord = ({ images, width, height, ariaLabel, className="" }) => {
@@ -102,22 +103,22 @@ export default function Baseline30() {
             transition={{ duration: 1, delay: 0.2 }}
             className="flex items-center gap-[clamp(16px,2.8vw,54px)] pointer-events-auto"
           >
-            <button className="hover:opacity-70 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded">
+            <Link to="/login" className="hover:opacity-70 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded">
               <ImageWord
                 images={logInImages}
                 width={110}
                 height={21}
                 ariaLabel="Log In"
               />
-            </button>
-            <button className="hover:opacity-70 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded">
+            </Link>
+            <Link to="/register" className="hover:opacity-70 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded">
               <ImageWord
                 images={signUpImages}
                 width={137}
                 height={21}
                 ariaLabel="Sign Up"
               />
-            </button>
+            </Link>
           </motion.div>
         </header>
 
