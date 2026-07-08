@@ -1,5 +1,4 @@
 import React from "react";
-import { motion } from "framer-motion";
 
 // Helper component to reconstruct text from individual letter images fluidly
 const ImageWord = ({ images, width, height, ariaLabel, className="" }) => {
