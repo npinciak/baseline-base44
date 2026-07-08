@@ -58,8 +58,6 @@ const AuthenticatedApp = () => {
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />
-      <Route path="/Baseline30" element={<Baseline30 />} />
-      <Route path="/ClipPathGroup" element={<ClipPathGroup />} />
     </Routes>
   );
 };
