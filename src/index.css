@@ -52,6 +52,10 @@
     --navy: 222 47% 6%;
     --navy-card: 222 40% 9%;
     --navy-elevated: 222 30% 14%;
+    /* figma:baseline-3-0 (2eR5Sr6c) — start */
+    --figma-primary: 0 0% 100%;
+    --figma-secondary: 0 0% 0%;
+    /* figma:baseline-3-0 (2eR5Sr6c) — end */
   }
 
   /* Admin portal uses light mode */

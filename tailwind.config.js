@@ -10,6 +10,11 @@ module.exports = {
   			sm: 'calc(var(--radius) - 4px)'
   		},
   		colors: {
+        // figma:baseline-3-0 (2eR5Sr6c) — start
+        "figma-primary": "hsl(var(--figma-primary))",
+        "figma-secondary": "hsl(var(--figma-secondary))",
+        // figma:baseline-3-0 (2eR5Sr6c) — end
+      
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
