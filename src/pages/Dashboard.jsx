@@ -311,28 +311,6 @@ export default function Dashboard() {
 
         {/* Sidebar widgets */}
         <div className="md:col-span-1 space-y-5">
-          {/* Quick links */}
-          <div className="bg-card border border-border rounded-2xl p-5">
-            <h3 className="text-sm font-heading font-semibold mb-4">Quick Actions</h3>
-            <div className="space-y-2">
-              <Link to="/goals" className="flex items-center gap-3 p-3 rounded-xl hover:bg-secondary transition-all group">
-                <div className="w-8 h-8 rounded-lg bg-primary/15 flex items-center justify-center">
-                  <Target className="w-4 h-4 text-primary" />
-                </div>
-                <span className="text-sm font-medium">Add a Goal</span>
-                <ChevronRight className="w-4 h-4 text-muted-foreground ml-auto group-hover:translate-x-0.5 transition-transform" />
-              </Link>
-
-              <Link to="/dashboard" className="flex items-center gap-3 p-3 rounded-xl hover:bg-secondary transition-all group">
-                <div className="w-8 h-8 rounded-lg bg-amber-500/15 flex items-center justify-center">
-                  <BookOpen className="w-4 h-4 text-amber-400" />
-                </div>
-                <span className="text-sm font-medium">Continue Learning</span>
-                <ChevronRight className="w-4 h-4 text-muted-foreground ml-auto group-hover:translate-x-0.5 transition-transform" />
-              </Link>
-            </div>
-          </div>
-
           {/* Goals summary widget */}
           {goals.length > 0 && (
             <div className="bg-card border border-border rounded-2xl p-5">
@@ -360,23 +338,7 @@ export default function Dashboard() {
             </div>
           )}
 
-          {/* Streak widget */}
-          {stats && (
-            <div className="bg-gradient-to-br from-orange-500/10 to-amber-500/10 border border-orange-500/20 rounded-2xl p-5">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-xl bg-orange-500/20 flex items-center justify-center">
-                  <Flame className="w-5 h-5 text-orange-400" />
-                </div>
-                <div>
-                  <p className="text-2xl font-display font-extrabold">{stats.current_streak} days</p>
-                  <p className="text-xs text-muted-foreground">Current streak</p>
-                </div>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Best: <span className="text-foreground font-semibold">{stats.longest_streak} days</span>
-              </p>
-            </div>
-          )}
+
         </div>
       </div>
 
