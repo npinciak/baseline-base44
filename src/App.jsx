@@ -24,6 +24,7 @@ import Dashboard from './pages/Dashboard';
 import Money from './pages/Money';
 import Basecamp from './pages/Basecamp';
 import Baseline30 from './pages/Baseline30';
+import ClipPathGroup from './pages/ClipPathGroup';
 
 const AuthenticatedApp = () => {
   const { isLoadingPublicSettings } = useAuth();
@@ -58,6 +59,7 @@ const AuthenticatedApp = () => {
       </Route>
       <Route path="*" element={<PageNotFound />} />
       <Route path="/Baseline30" element={<Baseline30 />} />
+      <Route path="/ClipPathGroup" element={<ClipPathGroup />} />
     </Routes>
   );
 };
