@@ -103,21 +103,11 @@ export default function Baseline30() {
             transition={{ duration: 1, delay: 0.2 }}
             className="flex items-center gap-[clamp(16px,2.8vw,54px)] pointer-events-auto"
           >
-            <Link to="/login" className="hover:opacity-70 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded">
-              <ImageWord
-                images={logInImages}
-                width={110}
-                height={21}
-                ariaLabel="Log In"
-              />
+            <Link to="/login" className="text-white font-semibold text-sm hover:opacity-70 transition-opacity">
+              Log In
             </Link>
-            <Link to="/register" className="hover:opacity-70 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded">
-              <ImageWord
-                images={signUpImages}
-                width={137}
-                height={21}
-                ariaLabel="Sign Up"
-              />
+            <Link to="/register" className="px-4 py-2 bg-white text-black font-semibold text-sm rounded-full hover:bg-white/90 transition-all">
+              Sign Up
             </Link>
           </motion.div>
         </header>
