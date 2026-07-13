@@ -85,11 +85,11 @@ export default function Baseline30() {
         </motion.div>
       </header>
 
-      {/* Hero: two-column layout */}
+      {/* Hero: two-column on large, overlapping stack on small */}
       <div className="relative z-10 w-full min-h-screen flex flex-col lg:flex-row items-center">
 
-        {/* LEFT — Power Core orb */}
-        <div className="w-full lg:w-1/2 flex items-center justify-center min-h-[50vh] lg:min-h-screen overflow-hidden">
+        {/* Orb — full width on mobile, half on desktop */}
+        <div className="w-full lg:w-1/2 flex items-center justify-center min-h-screen lg:min-h-screen overflow-hidden">
           <motion.div
             className="relative w-full max-w-[660px] aspect-square overflow-hidden"
             initial={{ opacity: 0, scale: 0.85 }}
@@ -117,13 +117,13 @@ export default function Baseline30() {
           </motion.div>
         </div>
 
-        {/* RIGHT — Brand text */}
-        <div className="w-full lg:w-1/2 flex items-center justify-start px-8 lg:px-[clamp(32px,5vw,80px)] pb-24 lg:pb-0">
+        {/* Brand text — overlays orb on mobile (absolute centered), normal flow on desktop */}
+        <div className="absolute inset-0 flex items-center justify-center px-8 lg:static lg:w-1/2 lg:flex lg:items-center lg:justify-start lg:px-[clamp(32px,5vw,80px)]">
           <motion.div
-            initial={{ opacity: 0, x: 40 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, x: 0, y: 20 }}
+            animate={{ opacity: 1, x: 0, y: 0 }}
             transition={{ duration: 1.2, delay: 0.4, type: "spring", stiffness: 40 }}
-            className="flex flex-col gap-[clamp(12px,2.4vw,47px)] w-full max-w-[508px]"
+            className="flex flex-col gap-[clamp(10px,2.4vw,47px)] w-full max-w-[min(508px,85vw)]"
           >
             <ImageWord
               images={baselineImages}
