@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const ImageWord = ({ images, width, height, ariaLabel, className = "" }) => (
   <div
@@ -27,6 +27,14 @@ const ImageWord = ({ images, width, height, ariaLabel, className = "" }) => (
 );
 
 export default function Baseline30() {
+  const navigate = useNavigate();
+  const [isExiting, setIsExiting] = useState(false);
+
+  const handleNav = (path) => {
+    setIsExiting(true);
+    setTimeout(() => navigate(path), 500);
+  };
+
   const baselineImages = [
     { src: "https://media.base44.com/images/public/6a3542676f9044e70b439a84/f5993dcb0_5579a0908_93_355.svg", width: 72, height: 85, left: 0, top: 2 },
     { src: "https://media.base44.com/images/public/6a3542676f9044e70b439a84/068919593_cf4dcbdb5_93_359.svg", width: 68, height: 66, left: 78, top: 23 },
@@ -55,7 +63,11 @@ export default function Baseline30() {
   ];
 
   return (
-    <main className="relative w-full min-h-screen bg-black overflow-clip font-sans">
+    <motion.main
+      className="relative w-full min-h-screen bg-black overflow-clip font-sans"
+      animate={{ opacity: isExiting ? 0 : 1, scale: isExiting ? 0.97 : 1 }}
+      transition={{ duration: 0.45, ease: "easeInOut" }}
+    >
       {/* Background Layers */}
       <img
         src="https://media.base44.com/images/public/6a3542676f9044e70b439a84/5cb8a5204_323ee374e_93_338.svg"
@@ -76,12 +88,18 @@ export default function Baseline30() {
           transition={{ duration: 1, delay: 0.2 }}
           className="flex items-center gap-[clamp(16px,2.8vw,54px)] pointer-events-auto"
         >
-          <Link to="/login" className="text-white font-semibold text-sm hover:opacity-70 transition-opacity">
+          <button
+            onClick={() => handleNav("/login")}
+            className="text-white font-semibold text-sm hover:opacity-70 transition-opacity"
+          >
             Log In
-          </Link>
-          <Link to="/register" className="px-4 py-2 bg-white text-black font-semibold text-sm rounded-full hover:bg-white/90 transition-all">
+          </button>
+          <button
+            onClick={() => handleNav("/register")}
+            className="px-4 py-2 bg-white text-black font-semibold text-sm rounded-full hover:bg-white/90 transition-all"
+          >
             Sign Up
-          </Link>
+          </button>
         </motion.div>
       </header>
 
@@ -117,7 +135,7 @@ export default function Baseline30() {
           </motion.div>
         </div>
 
-        {/* Brand text — overlays orb on mobile (absolute centered), normal flow on desktop */}
+        {/* Brand text — overlays orb on mobile, normal flow on desktop */}
         <div className="absolute inset-0 flex items-center justify-center px-8 lg:static lg:w-1/2 lg:flex lg:items-center lg:justify-start lg:px-[clamp(32px,5vw,80px)]">
           <motion.div
             initial={{ opacity: 0, x: 0, y: 20 }}
@@ -140,6 +158,6 @@ export default function Baseline30() {
           </motion.div>
         </div>
       </div>
-    </main>
+    </motion.main>
   );
 }
