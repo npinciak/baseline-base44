@@ -1,31 +1,211 @@
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  BookOpen, Lock, CheckCircle, Coins,
-  Wallet, TrendingUp, CreditCard, FileText, Unlock, Umbrella, Shield, PiggyBank
+  BookOpen, Lock, CheckCircle, Star, Trophy,
+  ChevronUp, ChevronDown
 } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
 
-const TOPIC_ICONS = {
-  budgeting: Wallet, investing: TrendingUp, credit: CreditCard,
-  taxes: FileText, saving: PiggyBank, debt: Unlock,
-  insurance: Umbrella, retirement: Shield,
-};
+// Fixed layout constants
+const NODE_X = { left: 75, right: 225 };
+const NODE_Y_STEP = 120;
+const NODE_R = 32;
 
-const TOPIC_GRADIENTS = {
-  budgeting: ['#14b8a6', '#10b981'],
-  investing: ['#3b82f6', '#6366f1'],
-  credit: ['#a855f7', '#8b5cf6'],
-  taxes: ['#f97316', '#f59e0b'],
-  saving: ['#22c55e', '#14b8a6'],
-  debt: ['#ef4444', '#f43f5e'],
-  insurance: ['#0ea5e9', '#3b82f6'],
-  retirement: ['#f59e0b', '#eab308'],
-};
+function buildPath(count) {
+  if (count < 2) return '';
+  let d = '';
+  for (let i = 0; i < count; i++) {
+    const side = i % 2 === 0 ? 'left' : 'right';
+    const x = NODE_X[side];
+    const y = NODE_R + i * NODE_Y_STEP;
+    if (i === 0) {
+      d += `M ${x} ${y}`;
+    } else {
+      const prevSide = (i - 1) % 2 === 0 ? 'left' : 'right';
+      const px = NODE_X[prevSide];
+      const py = NODE_R + (i - 1) * NODE_Y_STEP;
+      const cp1x = px + (x - px) * 0.5;
+      const cp1y = py + NODE_Y_STEP * 0.45;
+      const cp2x = x - (x - px) * 0.5;
+      const cp2y = y - NODE_Y_STEP * 0.45;
+      d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${x} ${y}`;
+    }
+  }
+  return d;
+}
 
-// Alternating positions for the winding road: left-center, right-center
-const POSITIONS = ['left', 'right'];
+function ModuleSection({ module, moduleIndex, isUnlocked, completedLessonIds, onNavigate }) {
+  const [open, setOpen] = useState(moduleIndex === 0);
+  const [lessons, setLessons] = useState(null); // null = not loaded yet
+
+  useEffect(() => {
+    if (open && lessons === null) {
+      base44.entities.Lesson.filter({ module_id: module.id, is_published: true }, 'order_index', 50)
+        .then(setLessons)
+        .catch(() => setLessons([]));
+    }
+  }, [open, module.id, lessons]);
+
+  // Build nodes from lessons + trophy
+  const nodes = lessons
+    ? [
+        ...lessons.map(lesson => ({
+          id: lesson.id,
+          label: lesson.title,
+          xp: lesson.xp_reward || 20,
+          completed: completedLessonIds.has(lesson.id),
+          isLesson: true,
+        })),
+        {
+          id: `complete-${module.id}`,
+          label: `${module.title} Complete!`,
+          xp: module.xp_reward || 100,
+          completed: lessons.length > 0 && lessons.every(l => completedLessonIds.has(l.id)),
+          isLesson: false,
+          isTrophy: true,
+        },
+      ]
+    : [];
+
+  const completedCount = lessons ? lessons.filter(l => completedLessonIds.has(l.id)).length : 0;
+  const totalCount = lessons ? lessons.length : 0;
+  const pct = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
+
+  const svgH = nodes.length > 0
+    ? NODE_R + (nodes.length - 1) * NODE_Y_STEP + NODE_R + 48
+    : 0;
+  const pathD = buildPath(nodes.length);
+
+  return (
+    <div className="rounded-2xl overflow-hidden border border-border mb-4">
+      {/* Header */}
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="w-full flex items-center justify-between px-5 py-4 bg-card hover:bg-secondary/40 transition-colors"
+      >
+        <div className="text-left">
+          <p className="text-sm font-heading font-bold leading-tight">{module.title}</p>
+          <p className="text-xs text-muted-foreground mt-0.5 capitalize">{module.topic_tag?.replace(/_/g, ' ')}</p>
+        </div>
+        <div className="flex items-center gap-3 shrink-0 ml-4">
+          <span className="text-xs font-semibold text-muted-foreground">
+            {completedCount}/{totalCount}
+          </span>
+          {open
+            ? <ChevronUp className="w-4 h-4 text-muted-foreground" />
+            : <ChevronDown className="w-4 h-4 text-muted-foreground" />
+          }
+        </div>
+      </button>
+
+      {/* Progress bar */}
+      <div className="h-1 bg-secondary">
+        <div
+          className="h-full bg-primary transition-all duration-500"
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+
+      {/* Expanded content */}
+      {open && (
+        <div className="bg-background py-6">
+          {!isUnlocked ? (
+            <div className="flex flex-col items-center justify-center py-8 gap-2 text-muted-foreground">
+              <Lock className="w-6 h-6" />
+              <p className="text-xs">Complete the previous module to unlock</p>
+            </div>
+          ) : lessons === null ? (
+            <div className="flex justify-center py-8">
+              <div className="w-6 h-6 border-2 border-border border-t-primary rounded-full animate-spin" />
+            </div>
+          ) : nodes.length === 0 ? (
+            <p className="text-center text-xs text-muted-foreground py-6">No lessons yet.</p>
+          ) : (
+            <div className="relative mx-auto" style={{ width: 300, height: svgH }}>
+              {/* Dashed path */}
+              <svg
+                className="absolute inset-0 pointer-events-none"
+                width={300}
+                height={svgH}
+                viewBox={`0 0 300 ${svgH}`}
+              >
+                <path
+                  d={pathD}
+                  fill="none"
+                  stroke="hsl(var(--border))"
+                  strokeWidth="2.5"
+                  strokeDasharray="7 5"
+                  strokeLinecap="round"
+                />
+              </svg>
+
+              {/* Nodes */}
+              {nodes.map((node, i) => {
+                const side = i % 2 === 0 ? 'left' : 'right';
+                const cx = NODE_X[side];
+                const cy = NODE_R + i * NODE_Y_STEP;
+                const nodeUnlocked = i === 0 || nodes[i - 1]?.completed;
+                const isNextUp = !node.completed && nodeUnlocked && !node.isTrophy;
+
+                return (
+                  <div
+                    key={node.id}
+                    className="absolute flex flex-col items-center"
+                    style={{ left: cx - NODE_R, top: cy - NODE_R, width: NODE_R * 2 }}
+                  >
+                    <button
+                      onClick={() => node.isLesson && nodeUnlocked && onNavigate(module.id)}
+                      disabled={!node.isLesson || !nodeUnlocked}
+                      className={`relative w-16 h-16 rounded-full flex items-center justify-center shadow-md transition-all duration-200
+                        ${nodeUnlocked && node.isLesson ? 'hover:scale-110 active:scale-95 cursor-pointer' : 'cursor-default'}
+                        ${isNextUp ? 'ring-4 ring-primary/25' : ''}
+                      `}
+                      style={{
+                        background: nodeUnlocked
+                          ? (node.completed ? '#0d9488' : '#14b8a6')
+                          : '#1e2640',
+                      }}
+                    >
+                      {node.isTrophy ? (
+                        <Trophy className={`w-7 h-7 ${nodeUnlocked ? 'text-white' : 'text-muted-foreground'}`} />
+                      ) : node.completed ? (
+                        <CheckCircle className="w-7 h-7 text-white" />
+                      ) : nodeUnlocked ? (
+                        <Star className="w-7 h-7 text-white" />
+                      ) : (
+                        <Lock className="w-6 h-6 text-muted-foreground" />
+                      )}
+                      {isNextUp && (
+                        <span className="absolute inset-0 rounded-full animate-ping opacity-20 bg-primary" />
+                      )}
+                    </button>
+
+                    {/* Label */}
+                    <div className="mt-2 text-center w-20 -ml-2 mr-auto" style={{ marginLeft: -(20 - NODE_R) }}>
+                      <p className="text-foreground font-medium leading-tight" style={{ fontSize: 10 }}>
+                        {node.label}
+                      </p>
+                      <p className="text-primary font-semibold" style={{ fontSize: 10 }}>
+                        +{node.xp} XP
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function WindingLearningPath({ modules, progress }) {
   const navigate = useNavigate();
+
+  const completedLessonIds = new Set(
+    progress.filter(p => p.completed).map(p => p.lesson_id)
+  );
 
   const getModuleCompletedCount = (moduleId) =>
     progress.filter(p => p.module_id === moduleId && p.completed).length;
@@ -45,149 +225,17 @@ export default function WindingLearningPath({ modules, progress }) {
   }
 
   return (
-    <div className="relative px-4">
-      {/* SVG winding path drawn behind the nodes */}
-      <WindingPathSVG count={modules.length} />
-
-      <div className="relative space-y-2">
-        {modules.map((module, index) => {
-          const unlocked = isModuleUnlocked(index);
-          const completedCount = getModuleCompletedCount(module.id);
-          const isCompleted = completedCount > 0;
-          const TopicIcon = TOPIC_ICONS[module.topic_tag] || BookOpen;
-          const [fromColor, toColor] = TOPIC_GRADIENTS[module.topic_tag] || ['#14b8a6', '#14b8a6'];
-          const side = POSITIONS[index % 2];
-
-          return (
-            <div key={module.id} className={`relative flex items-center gap-4 py-3 ${side === 'right' ? 'flex-row-reverse' : ''}`}>
-              {/* Node button */}
-              <button
-                onClick={() => unlocked && navigate(`/lesson/${module.id}`)}
-                disabled={!unlocked}
-                className={`relative shrink-0 w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-300 shadow-lg
-                  ${unlocked ? 'hover:scale-110 cursor-pointer active:scale-95' : 'cursor-not-allowed opacity-50 grayscale'}
-                  ${isCompleted ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : ''}
-                `}
-                style={unlocked ? { background: `linear-gradient(135deg, ${fromColor}, ${toColor})` } : {}}
-              >
-                {unlocked
-                  ? <TopicIcon className="w-7 h-7 text-white drop-shadow" />
-                  : <Lock className="w-6 h-6 text-muted-foreground" />
-                }
-                {isCompleted && (
-                  <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-primary rounded-full flex items-center justify-center ring-2 ring-background">
-                    <CheckCircle className="w-3 h-3 text-primary-foreground" />
-                  </span>
-                )}
-                {/* pulse ring for next unlocked incomplete */}
-                {unlocked && !isCompleted && (
-                  <span className="absolute inset-0 rounded-2xl animate-ping opacity-20"
-                    style={{ background: `linear-gradient(135deg, ${fromColor}, ${toColor})` }} />
-                )}
-              </button>
-
-              {/* Card */}
-              <button
-                onClick={() => unlocked && navigate(`/lesson/${module.id}`)}
-                disabled={!unlocked}
-                className={`flex-1 text-left bg-card border rounded-2xl p-4 transition-all duration-200
-                  ${unlocked
-                    ? 'border-border hover:border-primary/40 hover:shadow-md hover:-translate-y-0.5 cursor-pointer'
-                    : 'border-border opacity-50 cursor-not-allowed'
-                  }
-                `}
-              >
-                <div className="flex items-center gap-2 mb-1 flex-wrap">
-                  <span className={`text-xs font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${
-                    module.difficulty === 'beginner' ? 'bg-primary/15 text-primary' :
-                    module.difficulty === 'intermediate' ? 'bg-amber-400/15 text-amber-400' :
-                    'bg-red-400/15 text-red-400'
-                  }`}>{module.difficulty}</span>
-                  <span className="text-xs text-muted-foreground capitalize">{module.topic_tag?.replace('_', ' ')}</span>
-                </div>
-                <h3 className="text-sm font-heading font-semibold leading-snug mb-2">{module.title}</h3>
-                <div className="flex items-center gap-3">
-                  <span className="flex items-center gap-1 text-xs text-primary font-medium">
-                    <Coins className="w-3 h-3" /> {module.xp_reward} BC
-                  </span>
-                  {isCompleted && (
-                    <span className="flex items-center gap-1 text-xs text-green-400 font-medium">
-                      <CheckCircle className="w-3 h-3" /> Done
-                    </span>
-                  )}
-                  {!unlocked && (
-                    <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                      <Lock className="w-3 h-3" /> Locked
-                    </span>
-                  )}
-                </div>
-              </button>
-            </div>
-          );
-        })}
-      </div>
+    <div>
+      {modules.map((module, index) => (
+        <ModuleSection
+          key={module.id}
+          module={module}
+          moduleIndex={index}
+          isUnlocked={isModuleUnlocked(index)}
+          completedLessonIds={completedLessonIds}
+          onNavigate={(moduleId) => navigate(`/lesson/${moduleId}`)}
+        />
+      ))}
     </div>
-  );
-}
-
-// Renders an SVG winding dashed path behind the nodes
-function WindingPathSVG({ count }) {
-  if (count < 2) return null;
-
-  // Each row is ~88px tall (py-3 + h-16 node). Path winds left→right→left
-  const rowH = 88;
-  const totalH = count * rowH;
-  const leftX = 32;   // center of left node
-  const rightX = 268; // center of right node (approx, card area excluded)
-  const midX = (leftX + rightX) / 2;
-
-  const points = Array.from({ length: count }, (_, i) => {
-    const x = i % 2 === 0 ? leftX : rightX;
-    const y = i * rowH + rowH / 2;
-    return { x, y };
-  });
-
-  let d = '';
-  points.forEach((pt, i) => {
-    if (i === 0) {
-      d += `M ${pt.x} ${pt.y}`;
-    } else {
-      const prev = points[i - 1];
-      // Cubic bezier: control points fan out toward center then back
-      const cp1x = midX;
-      const cp1y = prev.y + rowH * 0.4;
-      const cp2x = midX;
-      const cp2y = pt.y - rowH * 0.4;
-      d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${pt.x} ${pt.y}`;
-    }
-  });
-
-  return (
-    <svg
-      className="absolute inset-0 w-full pointer-events-none"
-      style={{ height: totalH }}
-      viewBox={`0 0 300 ${totalH}`}
-      preserveAspectRatio="none"
-    >
-      <path
-        d={d}
-        fill="none"
-        stroke="hsl(var(--border))"
-        strokeWidth="3"
-        strokeDasharray="8 6"
-        strokeLinecap="round"
-      />
-      {/* Filled progress overlay — up to the last completed node */}
-      <path
-        d={d}
-        fill="none"
-        stroke="hsl(var(--primary))"
-        strokeWidth="3"
-        strokeDasharray="8 6"
-        strokeLinecap="round"
-        opacity="0.5"
-        style={{ strokeDashoffset: 0 }}
-      />
-    </svg>
   );
 }
