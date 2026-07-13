@@ -2,30 +2,15 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import {
-  Flame, Coins, Star, Target, ChevronRight, ChevronLeft,
-  Plus, BookOpen, Lock, CheckCircle, X,
-  Wallet, TrendingUp, CreditCard, FileText, Unlock, Umbrella, Shield, PiggyBank
+  Target, ChevronRight, ChevronLeft,
+  Plus, CheckCircle, X,
+  Coins
 } from 'lucide-react';
 import LinkedAccountsWidget from '@/components/LinkedAccountsWidget';
+import WindingLearningPath from '@/components/WindingLearningPath';
 
 const EMPTY_FORM = { name: '', description: '', target_amount: '', saved_amount: '', target_date: '', image_url: '' };
 
-const TOPIC_ICONS = {
-  budgeting: Wallet, investing: TrendingUp, credit: CreditCard,
-  taxes: FileText, saving: PiggyBank, debt: Unlock,
-  insurance: Umbrella, retirement: Shield,
-};
-
-const TOPIC_COLORS = {
-  budgeting: 'from-teal-500 to-emerald-500',
-  investing: 'from-blue-500 to-indigo-500',
-  credit: 'from-purple-500 to-violet-500',
-  taxes: 'from-orange-500 to-amber-500',
-  saving: 'from-green-500 to-teal-500',
-  debt: 'from-red-500 to-rose-500',
-  insurance: 'from-sky-500 to-blue-500',
-  retirement: 'from-amber-500 to-yellow-500',
-};
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
@@ -65,14 +50,6 @@ export default function Dashboard() {
 
   const xpForLevel = (level) => level * 200;
   const xpProgress = stats ? ((stats.total_xp % xpForLevel(stats.current_level)) / xpForLevel(stats.current_level)) * 100 : 0;
-
-  const getModuleCompletedCount = (moduleId) =>
-    progress.filter(p => p.module_id === moduleId && p.completed).length;
-
-  const isModuleUnlocked = (index) => {
-    if (index === 0) return true;
-    return getModuleCompletedCount(modules[index - 1]?.id) > 0;
-  };
 
   const activeGoals = goals.filter(g => (g.current_amount || 0) < g.target_amount);
 
@@ -237,78 +214,7 @@ export default function Dashboard() {
               <h2 className="text-lg font-heading font-bold">Learning Path</h2>
               <p className="text-xs text-muted-foreground">Master personal finance one lesson at a time</p>
             </div>
-
-            {modules.length === 0 ? (
-              <div className="bg-card border border-border rounded-2xl p-8 text-center">
-                <BookOpen className="w-10 h-10 text-muted-foreground/40 mx-auto mb-3" />
-                <p className="text-sm text-muted-foreground">No modules published yet — check back soon!</p>
-              </div>
-            ) : (
-              <div className="relative">
-                <div className="absolute left-8 top-8 bottom-8 w-0.5 bg-border" />
-                <div className="space-y-4">
-                  {modules.map((module, index) => {
-                    const unlocked = isModuleUnlocked(index);
-                    const completedCount = getModuleCompletedCount(module.id);
-                    const colorClass = TOPIC_COLORS[module.topic_tag] || 'from-primary to-primary';
-                    const TopicIcon = TOPIC_ICONS[module.topic_tag] || BookOpen;
-                    return (
-                      <div key={module.id} className="relative pl-20">
-                        <div className={`absolute left-0 w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-300 ${
-                          unlocked
-                            ? `bg-gradient-to-br ${colorClass} shadow-lg ${completedCount > 0 ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : ''}`
-                            : 'bg-secondary grayscale'
-                        }`}>
-                          {unlocked ? <TopicIcon className="w-7 h-7 text-white" /> : <Lock className="w-6 h-6 text-muted-foreground" />}
-                          {completedCount > 0 && (
-                            <div className="absolute -top-1 -right-1 w-5 h-5 bg-primary rounded-full flex items-center justify-center">
-                              <CheckCircle className="w-3 h-3 text-primary-foreground" />
-                            </div>
-                          )}
-                        </div>
-                        <button
-                          onClick={() => unlocked && navigate(`/lesson/${module.id}`)}
-                          disabled={!unlocked}
-                          className={`w-full text-left bg-card border rounded-2xl p-5 transition-all duration-300 ${
-                            unlocked
-                              ? 'border-border hover:border-primary/40 hover:bg-card/80 cursor-pointer hover:-translate-y-0.5'
-                              : 'border-border opacity-60 cursor-not-allowed'
-                          }`}
-                        >
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-1">
-                                <span className={`text-xs font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${
-                                  module.difficulty === 'beginner' ? 'bg-primary/15 text-primary' :
-                                  module.difficulty === 'intermediate' ? 'bg-amber-400/15 text-amber-400' :
-                                  'bg-red-400/15 text-red-400'
-                                }`}>{module.difficulty}</span>
-                                <span className="text-xs text-muted-foreground capitalize">{module.topic_tag?.replace('_', ' ')}</span>
-                              </div>
-                              <h3 className="text-base font-heading font-semibold mb-1">{module.title}</h3>
-                              {module.description && (
-                                <p className="text-sm text-muted-foreground line-clamp-2">{module.description}</p>
-                              )}
-                              <div className="flex items-center gap-3 mt-3">
-                                <span className="flex items-center gap-1 text-xs text-primary font-medium">
-                                  <Coins className="w-3 h-3" /> {module.xp_reward} BC
-                                </span>
-                                {completedCount > 0 && (
-                                  <span className="flex items-center gap-1 text-xs text-green-400 font-medium">
-                                    <CheckCircle className="w-3 h-3" /> In progress
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                            {unlocked && <ChevronRight className="w-5 h-5 text-muted-foreground mt-1" />}
-                          </div>
-                        </button>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
+            <WindingLearningPath modules={modules} progress={progress} />
           </section>
         </div>
 
