@@ -84,10 +84,11 @@ export default function LessonView() {
         const s = statsArr[0];
         const today = new Date().toISOString().slice(0, 10);
         const lastActivity = s.last_activity_date;
-        const isConsecutive = lastActivity && (
-          new Date(today) - new Date(lastActivity) <= 86400000
-        );
-        const newStreak = isConsecutive ? (s.current_streak + 1) : 1;
+        const daysDiff = lastActivity
+          ? (new Date(today) - new Date(lastActivity)) / 86400000
+          : null;
+        // Only extend streak if last activity was exactly yesterday (not today, not 2+ days ago)
+        const newStreak = daysDiff === 1 ? (s.current_streak + 1) : daysDiff === 0 ? s.current_streak : 1;
         const newXp = (s.total_xp || 0) + xp;
         const newLevel = Math.floor(newXp / 200) + 1;
         await base44.entities.UserStats.update(s.id, {
