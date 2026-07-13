@@ -6,6 +6,7 @@ import {
   Plus, BookOpen, Lock, CheckCircle, X,
   Wallet, TrendingUp, CreditCard, FileText, Unlock, Umbrella, Shield, PiggyBank
 } from 'lucide-react';
+import LinkedAccountsWidget from '@/components/LinkedAccountsWidget';
 
 const EMPTY_FORM = { name: '', description: '', target_amount: '', saved_amount: '', target_date: '', image_url: '' };
 
@@ -341,6 +342,7 @@ export default function Dashboard() {
           )}
 
 
+          <LinkedAccountsWidget />
         </div>
       </div>
 
