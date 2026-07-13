@@ -73,8 +73,10 @@ export default function Dashboard() {
     return getModuleCompletedCount(modules[index - 1]?.id) > 0;
   };
 
+  const activeGoals = goals.filter(g => (g.current_amount || 0) < g.target_amount);
+
   const prevGoal = () => setCarouselIndex(i => Math.max(0, i - 1));
-  const nextGoal = () => setCarouselIndex(i => Math.min(goals.length - 1, i + 1));
+  const nextGoal = () => setCarouselIndex(i => Math.min(activeGoals.length - 1, i + 1));
 
   const handleCreateGoal = async () => {
     if (!goalForm.name || !goalForm.target_amount) return;
@@ -135,7 +137,7 @@ export default function Dashboard() {
               </Link>
             </div>
 
-            {goals.length === 0 ? (
+            {activeGoals.length === 0 ? (
               <button
                 onClick={() => setShowGoalModal(true)}
                 className="w-full flex flex-col items-center justify-center bg-card border border-dashed border-border rounded-2xl p-10 hover:border-primary/40 transition-all group"
@@ -143,7 +145,7 @@ export default function Dashboard() {
                 <div className="w-12 h-12 bg-secondary rounded-xl flex items-center justify-center mb-3 group-hover:bg-primary/15 transition-all">
                   <Target className="w-6 h-6 text-muted-foreground group-hover:text-primary transition-all" />
                 </div>
-                <p className="text-sm font-semibold mb-1">No goals yet</p>
+                <p className="text-sm font-semibold mb-1">No active goals</p>
                 <p className="text-xs text-muted-foreground mb-3">Start saving towards something meaningful</p>
                 <span className="inline-flex items-center gap-1.5 px-4 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-semibold">
                   <Plus className="w-4 h-4" /> Create a Goal
@@ -153,7 +155,7 @@ export default function Dashboard() {
               <div className="relative">
                 {/* Carousel card */}
                 <div className="overflow-hidden rounded-2xl">
-                  {goals.map((goal, i) => {
+                  {activeGoals.map((goal, i) => {
                     const saved = goal.current_amount || 0;
                     const pct = Math.min(100, Math.round((saved / goal.target_amount) * 100));
                     return (
@@ -197,7 +199,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Carousel controls */}
-                {goals.length > 1 && (
+                {activeGoals.length > 1 && (
                   <div className="flex items-center justify-between mt-3">
                     <button
                       onClick={prevGoal}
@@ -207,7 +209,7 @@ export default function Dashboard() {
                       <ChevronLeft className="w-4 h-4" />
                     </button>
                     <div className="flex gap-1.5">
-                      {goals.map((_, i) => (
+                      {activeGoals.map((_, i) => (
                         <button
                           key={i}
                           onClick={() => setCarouselIndex(i)}
@@ -217,7 +219,7 @@ export default function Dashboard() {
                     </div>
                     <button
                       onClick={nextGoal}
-                      disabled={carouselIndex === goals.length - 1}
+                      disabled={carouselIndex === activeGoals.length - 1}
                       className="p-1.5 rounded-lg bg-secondary text-muted-foreground hover:text-foreground disabled:opacity-30 transition-all"
                     >
                       <ChevronRight className="w-4 h-4" />
