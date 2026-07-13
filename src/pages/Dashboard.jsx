@@ -141,7 +141,7 @@ export default function Dashboard() {
                     key={goal.id}
                     className={`transition-all duration-300 ${i === carouselIndex ? 'block' : 'hidden'}`}
                     >
-                    <div className="bg-card border border-border rounded-2xl overflow-hidden">
+                    <div onClick={() => navigate(`/goals/${goal.id}`)} className="bg-card border border-border rounded-2xl overflow-hidden cursor-pointer hover:border-primary/40 transition-colors">
                       {goal.image ? (
                         <div className="h-36 overflow-hidden">
                           <img src={goal.image} alt={goal.name} className="w-full h-full object-cover" />
