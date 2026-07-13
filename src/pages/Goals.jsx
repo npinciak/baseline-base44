@@ -189,94 +189,123 @@ export default function Goals() {
         </button>
       </div>
 
-      {goals.length === 0 ? (
-        <div className="bg-card border border-dashed border-border rounded-3xl p-16 text-center">
-          <div className="w-16 h-16 bg-secondary rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <Target className="w-8 h-8 text-muted-foreground" />
-          </div>
-          <h3 className="text-xl font-heading font-bold mb-2">No goals yet</h3>
-          <p className="text-muted-foreground text-sm mb-6">Create your first savings goal to stay motivated.</p>
-          <button
-            onClick={openCreate}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-xl font-semibold hover:bg-primary/90 transition-all"
-          >
-            <Plus className="w-4 h-4" /> Create a Goal
-          </button>
-        </div>
-      ) : (
-        <div className="grid sm:grid-cols-2 gap-5">
-          {goals.map(goal => {
-            const saved = goal.current_amount || 0;
-            const pct = Math.min(100, Math.round((saved / goal.target_amount) * 100));
-            const isComplete = saved >= goal.target_amount;
-            return (
-              <div
-                key={goal.id}
-                onClick={() => navigate(`/goals/${goal.id}`)}
-                className={`bg-card border rounded-2xl overflow-hidden flex flex-col transition-all cursor-pointer hover:-translate-y-0.5 hover:border-primary/40 ${isComplete ? 'border-primary/30' : 'border-border'}`}
-              >
-                <div className="relative h-40 bg-secondary overflow-hidden">
-                  {goal.image ? (
-                    <img src={goal.image} alt={goal.name} className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <Target className="w-10 h-10 text-muted-foreground/40" />
+      {(() => {
+        const activeGoals = goals.filter(g => (g.current_amount || 0) < g.target_amount);
+        const completedGoals = goals.filter(g => (g.current_amount || 0) >= g.target_amount);
+
+        const GoalCard = ({ goal, isComplete }) => {
+          const saved = goal.current_amount || 0;
+          const pct = Math.min(100, Math.round((saved / goal.target_amount) * 100));
+          return (
+            <div
+              key={goal.id}
+              onClick={() => navigate(`/goals/${goal.id}`)}
+              className={`bg-card border rounded-2xl overflow-hidden flex flex-col transition-all cursor-pointer hover:-translate-y-0.5 hover:border-primary/40 ${isComplete ? 'border-primary/30 opacity-80' : 'border-border'}`}
+            >
+              <div className="relative h-40 bg-secondary overflow-hidden">
+                {goal.image ? (
+                  <img src={goal.image} alt={goal.name} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <Target className="w-10 h-10 text-muted-foreground/40" />
+                  </div>
+                )}
+                {isComplete && (
+                  <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
+                    <div className="bg-primary rounded-full p-2">
+                      <CheckCircle className="w-6 h-6 text-primary-foreground" />
                     </div>
-                  )}
-                  {isComplete && (
-                    <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
-                      <div className="bg-primary rounded-full p-2">
-                        <CheckCircle className="w-6 h-6 text-primary-foreground" />
-                      </div>
-                    </div>
-                  )}
+                  </div>
+                )}
+              </div>
+
+              <div className="p-4 flex flex-col flex-1">
+                <div className="flex items-start justify-between gap-2 mb-1">
+                  <h3 className="text-base font-heading font-bold leading-tight">{goal.name}</h3>
+                  <div className="flex items-center gap-1 shrink-0">
+                    {!isComplete && (
+                      <>
+                        <button onClick={e => { e.stopPropagation(); openEdit(goal); }} className="p-1 text-muted-foreground hover:text-foreground transition-colors">
+                          <Pencil className="w-3.5 h-3.5" />
+                        </button>
+                        <button onClick={e => { e.stopPropagation(); handleMarkComplete(goal); }} title="Mark complete" className="p-1 text-muted-foreground hover:text-primary transition-colors">
+                          <CheckCircle className="w-3.5 h-3.5" />
+                        </button>
+                      </>
+                    )}
+                    <button onClick={e => { e.stopPropagation(); handleDelete(goal); }} title="Delete goal" className="p-1 text-muted-foreground hover:text-destructive transition-colors">
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
 
-                <div className="p-4 flex flex-col flex-1">
-                  <div className="flex items-start justify-between gap-2 mb-1">
-                    <h3 className="text-base font-heading font-bold leading-tight">{goal.name}</h3>
-                    <div className="flex items-center gap-1 shrink-0">
-                      {!isComplete && (
-                        <>
-                          <button onClick={e => { e.stopPropagation(); openEdit(goal); }} className="p-1 text-muted-foreground hover:text-foreground transition-colors">
-                            <Pencil className="w-3.5 h-3.5" />
-                          </button>
-                          <button onClick={e => { e.stopPropagation(); handleMarkComplete(goal); }} title="Mark complete" className="p-1 text-muted-foreground hover:text-primary transition-colors">
-                            <CheckCircle className="w-3.5 h-3.5" />
-                          </button>
-                        </>
-                      )}
-                      <button onClick={e => { e.stopPropagation(); handleDelete(goal); }} title="Delete goal" className="p-1 text-muted-foreground hover:text-destructive transition-colors">
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
+                <div className="mt-auto">
+                  <div className="flex items-end justify-between mb-2">
+                    <div>
+                      <p className="text-2xl font-display font-extrabold text-primary">${saved.toLocaleString()}</p>
+                      <p className="text-xs text-muted-foreground">of ${goal.target_amount.toLocaleString()} goal</p>
                     </div>
+                    <span className="text-sm font-bold text-foreground">{pct}%</span>
                   </div>
-
-                  <div className="mt-auto">
-                    <div className="flex items-end justify-between mb-2">
-                      <div>
-                        <p className="text-2xl font-display font-extrabold text-primary">${saved.toLocaleString()}</p>
-                        <p className="text-xs text-muted-foreground">of ${goal.target_amount.toLocaleString()} goal</p>
-                      </div>
-                      <span className="text-sm font-bold text-foreground">{pct}%</span>
-                    </div>
-                    <div className="h-2 bg-secondary rounded-full overflow-hidden">
-                      <div
-                        className={`h-full rounded-full transition-all duration-500 ${isComplete ? 'xp-shimmer' : 'bg-primary'}`}
-                        style={{ width: `${pct}%` }}
-                      />
-                    </div>
-                    <LinkedBalanceRow balance={goal.linked_accounts_balance} syncedAt={goal.last_balance_sync_at} />
-                    {goal.target_date && (
-                      <p className="text-xs text-muted-foreground mt-2">Target: {goal.target_date}</p>
-                    )}
+                  <div className="h-2 bg-secondary rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all duration-500 ${isComplete ? 'xp-shimmer' : 'bg-primary'}`}
+                      style={{ width: `${pct}%` }}
+                    />
                   </div>
+                  <LinkedBalanceRow balance={goal.linked_accounts_balance} syncedAt={goal.last_balance_sync_at} />
+                  {goal.target_date && (
+                    <p className="text-xs text-muted-foreground mt-2">Target: {goal.target_date}</p>
+                  )}
                 </div>
               </div>
-            );
-          })}
-        </div>
-      )}
+            </div>
+          );
+        };
+
+        return (
+          <>
+            {/* My Goals */}
+            {activeGoals.length === 0 && completedGoals.length === 0 ? (
+              <div className="bg-card border border-dashed border-border rounded-3xl p-16 text-center">
+                <div className="w-16 h-16 bg-secondary rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <Target className="w-8 h-8 text-muted-foreground" />
+                </div>
+                <h3 className="text-xl font-heading font-bold mb-2">No goals yet</h3>
+                <p className="text-muted-foreground text-sm mb-6">Create your first savings goal to stay motivated.</p>
+                <button
+                  onClick={openCreate}
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-xl font-semibold hover:bg-primary/90 transition-all"
+                >
+                  <Plus className="w-4 h-4" /> Create a Goal
+                </button>
+              </div>
+            ) : (
+              <>
+                {activeGoals.length > 0 && (
+                  <div className="mb-8">
+                    <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4">My Goals</h2>
+                    <div className="grid sm:grid-cols-2 gap-5">
+                      {activeGoals.map(goal => <GoalCard key={goal.id} goal={goal} isComplete={false} />)}
+                    </div>
+                  </div>
+                )}
+
+                {completedGoals.length > 0 && (
+                  <div>
+                    <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4 flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-primary" /> Completed Goals
+                    </h2>
+                    <div className="grid sm:grid-cols-2 gap-5">
+                      {completedGoals.map(goal => <GoalCard key={goal.id} goal={goal} isComplete={true} />)}
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </>
+        );
+      })()}
 
       {showImagePicker && (
         <ImagePickerModal
