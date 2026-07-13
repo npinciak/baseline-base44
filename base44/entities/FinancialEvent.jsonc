@@ -1,0 +1,72 @@
+{
+  "name": "FinancialEvent",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "amount": {
+      "type": "number"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "expense",
+        "income"
+      ],
+      "default": "expense"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "bills_utilities",
+        "food_dining",
+        "shopping",
+        "transportation",
+        "entertainment",
+        "health",
+        "travel",
+        "education",
+        "savings",
+        "income",
+        "other"
+      ],
+      "default": "other"
+    },
+    "day_of_month": {
+      "type": "number"
+    },
+    "is_recurring": {
+      "type": "boolean",
+      "default": true
+    },
+    "frequency": {
+      "type": "string",
+      "enum": [
+        "monthly",
+        "weekly",
+        "biweekly",
+        "yearly",
+        "once"
+      ],
+      "default": "monthly"
+    },
+    "one_time_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "user_id",
+    "name",
+    "amount",
+    "type",
+    "day_of_month"
+  ]
+}
