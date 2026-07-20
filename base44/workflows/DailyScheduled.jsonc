@@ -1,5 +1,29 @@
 {
-  "description": "Runs every day at midnight, indefinitely.",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "daily_scheduled_workflow",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "insert_heartbeat": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "insertHeartbeat",
+            "args": {}
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Insert Heartbeat",
+            "description": "Writes a row to public.heartbeat"
+          }
+        }
+      }
+    ]
+  },
+  "name": "Daily Scheduled Workflow",
   "trigger": {
     "condition": null,
     "config": {
@@ -17,29 +41,5 @@
       "ends_after_count": null
     }
   },
-  "definition": {
-    "document": {
-      "dsl": "1.0.0",
-      "name": "daily_scheduled_workflow",
-      "version": "1.0",
-      "namespace": "base44"
-    },
-    "do": [
-      {
-        "run_daily_task": {
-          "call": "invoke_backend_function",
-          "with": {
-            "function_name": "syncUserProfile",
-            "args": {}
-          },
-          "then": "end",
-          "x-base44": {
-            "title": "Run Daily Task",
-            "description": "Executes every day"
-          }
-        }
-      }
-    ]
-  },
-  "name": "Daily Scheduled Workflow"
+  "description": "Runs every day at midnight, inserting a row into public.heartbeat."
 }
