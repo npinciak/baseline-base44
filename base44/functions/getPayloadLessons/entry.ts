@@ -63,7 +63,7 @@ export default async function(req) {
 
     // Fetch all published lessons ordered by order_position
     const lessonsRes = await fetch(
-      `${supabaseUrl}/rest/v1/lessons?_status=eq.published&order=order_position.asc`,
+      `${supabaseUrl}/rest/v1/lessons?status=eq.published&order=order_position.asc`,
       { headers }
     );
     const lessons = await lessonsRes.json();
@@ -86,7 +86,7 @@ export default async function(req) {
 
     if (contentIds.length > 0) {
       const contentsRes = await fetch(
-        `${supabaseUrl}/rest/v1/lesson_contents?id=in.(${contentIds.join(',')})&_status=eq.published`,
+        `${supabaseUrl}/rest/v1/lesson_contents?id=in.(${contentIds.join(',')})&status=eq.published`,
         { headers }
       );
       const contents = await contentsRes.json();
