@@ -1,5 +1,55 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 
+// Convert a Lexical JSON string to plain HTML
+// Falls back to manually extracting text nodes if the npm package isn't available
+function lexicalToHtml(raw: string | null | undefined): string {
+  if (!raw) return '';
+  let parsed: any;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    // Not JSON — already plain text
+    return raw;
+  }
+  // Must have Lexical root structure
+  if (!parsed?.root?.children) return raw;
+
+  function nodeToHtml(node: any): string {
+    if (!node) return '';
+    if (node.type === 'text') {
+      let t = node.text || '';
+      // Apply Lexical format bitmask: 1=bold, 2=italic, 4=strikethrough, 8=underline, 16=code
+      if (node.format & 1) t = `<strong>${t}</strong>`;
+      if (node.format & 2) t = `<em>${t}</em>`;
+      if (node.format & 8) t = `<u>${t}</u>`;
+      if (node.format & 4) t = `<s>${t}</s>`;
+      if (node.format & 16) t = `<code>${t}</code>`;
+      return t;
+    }
+    if (node.type === 'linebreak') return '<br>';
+    if (node.type === 'link') {
+      const url = node.fields?.url || node.url || '#';
+      const children = (node.children || []).map(nodeToHtml).join('');
+      return `<a href="${url}" target="_blank" rel="noopener noreferrer">${children}</a>`;
+    }
+    const children = (node.children || []).map(nodeToHtml).join('');
+    switch (node.type) {
+      case 'heading': return `<h${node.tag?.replace('h','') || 2}>${children}</h${node.tag?.replace('h','') || 2}>`;
+      case 'list': return node.listType === 'number' ? `<ol>${children}</ol>` : `<ul>${children}</ul>`;
+      case 'listitem': return `<li>${children}</li>`;
+      case 'quote': return `<blockquote>${children}</blockquote>`;
+      case 'paragraph': return `<p>${children}</p>`;
+      default: return children;
+    }
+  }
+
+  try {
+    return (parsed.root.children || []).map(nodeToHtml).join('');
+  } catch {
+    return raw;
+  }
+}
+
 // Map lesson code -> topic_tag + difficulty for WindingLearningPath visuals
 const CODE_MAP = {
   // Budgeting
@@ -121,10 +171,10 @@ export default async function(req) {
           lesson_type: c.content_type === 'question' ? 'quiz' : c.content_type === 'key_takeaway' ? 'flashcard' : 'text',
           content_type: c.content_type,
           // text_card fields
-          text_content: c.text_content,
+          text_content: lexicalToHtml(c.text_content),
           text_cta: c.text_cta || 'Next',
           // question fields
-          question_prompt: c.question_prompt,
+          question_prompt: lexicalToHtml(c.question_prompt),
           correct_answer: c.correct_answer,
           explanation: c.explanation,
           // key_takeaway fields

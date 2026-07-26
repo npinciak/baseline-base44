@@ -188,7 +188,10 @@ export default function LessonView() {
         {/* text_card */}
         {currentLesson.content_type === 'text_card' && (
           <div className="bg-card border border-border rounded-2xl p-6 mb-6">
-            <p className="text-base leading-relaxed text-foreground">{currentLesson.text_content || 'No content yet.'}</p>
+            <div
+              className="prose prose-invert max-w-none text-base leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: currentLesson.text_content || '<p>No content yet.</p>' }}
+            />
           </div>
         )}
 
@@ -214,7 +217,10 @@ export default function LessonView() {
         {currentLesson.content_type === 'question' && (
           <div className="mb-6">
             <div className="bg-card border border-border rounded-2xl p-6 mb-4">
-              <p className="text-lg font-heading font-semibold">{currentLesson.question_prompt}</p>
+              <div
+                className="prose prose-invert max-w-none text-lg font-heading font-semibold"
+                dangerouslySetInnerHTML={{ __html: currentLesson.question_prompt || '' }}
+              />
             </div>
             {currentLesson.question_type === 'true_false' ? (
               <div className="grid grid-cols-2 gap-3">
@@ -276,7 +282,10 @@ export default function LessonView() {
         {/* Fallback for unmapped content types */}
         {!['text_card', 'key_takeaway', 'question'].includes(currentLesson.content_type) && (
           <div className="bg-card border border-border rounded-2xl p-6 mb-6">
-            <p className="text-base leading-relaxed text-foreground">{currentLesson.text_content || currentLesson.takeaway_text || 'No content yet.'}</p>
+            <div
+              className="prose prose-invert max-w-none text-base leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: currentLesson.text_content || currentLesson.takeaway_text || 'No content yet.' }}
+            />
           </div>
         )}
 
