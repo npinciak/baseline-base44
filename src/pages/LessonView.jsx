@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { ArrowLeft, ArrowRight, CheckCircle, Coins, X } from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
+import { ArrowRight, CheckCircle, Coins, X } from 'lucide-react';
 
 export default function LessonView() {
   const { moduleId } = useParams();
@@ -10,7 +9,6 @@ export default function LessonView() {
   const [module, setModule] = useState(null);
   const [lessons, setLessons] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [questions, setQuestions] = useState([]);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [answered, setAnswered] = useState(false);
   const [score, setScore] = useState(0);
@@ -24,13 +22,14 @@ export default function LessonView() {
     const init = async () => {
       const u = await base44.auth.me();
       setUser(u);
-      const [mod, lsns, prog] = await Promise.all([
-        base44.entities.Module.filter({ id: moduleId }),
-        base44.entities.Lesson.filter({ module_id: moduleId, is_published: true }, 'order_index', 50),
+      const [modulesRes, prog] = await Promise.all([
+        base44.functions.invoke('getPayloadLessons', {}),
         base44.entities.UserProgress.filter({ user_id: u.id, module_id: moduleId }),
       ]);
-      setModule(mod[0]);
-      setLessons(lsns);
+      const allModules = modulesRes?.data?.modules || [];
+      const mod = allModules.find(m => m.id === moduleId);
+      setModule(mod || null);
+      setLessons(mod?.lessons || []);
       setProgress(prog);
       setLoading(false);
     };
@@ -38,13 +37,7 @@ export default function LessonView() {
   }, [moduleId]);
 
   useEffect(() => {
-    if (!lessons[currentIndex]) return;
-    const lesson = lessons[currentIndex];
-    if (lesson.lesson_type === 'quiz') {
-      base44.entities.QuizQuestion.filter({ lesson_id: lesson.id }, 'order_index', 20).then(setQuestions);
-    } else {
-      setQuestions([]);
-    }
+    // For PayloadCMS question content, options come from the correct_answer field
     setSelectedAnswer(null);
     setAnswered(false);
   }, [currentIndex, lessons]);
@@ -108,11 +101,11 @@ export default function LessonView() {
     }
   };
 
-  const handleAnswer = (idx) => {
+  const handleAnswer = (answer) => {
     if (answered) return;
-    setSelectedAnswer(idx);
+    setSelectedAnswer(answer);
     setAnswered(true);
-    if (questions[0] && idx === questions[0].correct_index) {
+    if (currentLesson && answer === currentLesson.correct_answer) {
       setScore(s => s + 1);
     }
   };
@@ -192,69 +185,110 @@ export default function LessonView() {
           </div>
         </div>
 
-        {/* Text lesson */}
-        {currentLesson.lesson_type === 'text' && (
-          <div className="bg-card border border-border rounded-2xl p-6 mb-6 prose prose-invert max-w-none">
-            <ReactMarkdown>{currentLesson.content || 'No content yet.'}</ReactMarkdown>
+        {/* text_card */}
+        {currentLesson.content_type === 'text_card' && (
+          <div className="bg-card border border-border rounded-2xl p-6 mb-6">
+            <p className="text-base leading-relaxed text-foreground">{currentLesson.text_content || 'No content yet.'}</p>
           </div>
         )}
 
-        {/* Flashcard lesson */}
-        {currentLesson.lesson_type === 'flashcard' && (
+        {/* key_takeaway */}
+        {currentLesson.content_type === 'key_takeaway' && (
           <div className="bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20 rounded-3xl p-8 mb-6 min-h-48 flex items-center justify-center text-center">
             <div>
+              <p className="text-4xl mb-4">
+                {currentLesson.takeaway_icon === 'lightbulb' ? '💡'
+                  : currentLesson.takeaway_icon === 'star' ? '⭐'
+                  : currentLesson.takeaway_icon === 'fire' ? '🔥'
+                  : currentLesson.takeaway_icon === 'rocket' ? '🚀'
+                  : '💡'}
+              </p>
               <p className="text-lg font-heading font-semibold leading-relaxed">
-                {currentLesson.content || 'Flashcard content here.'}
+                {currentLesson.takeaway_text || 'Key takeaway here.'}
               </p>
             </div>
           </div>
         )}
 
-        {/* Quiz lesson */}
-        {currentLesson.lesson_type === 'quiz' && questions.length > 0 && (
+        {/* question */}
+        {currentLesson.content_type === 'question' && (
           <div className="mb-6">
             <div className="bg-card border border-border rounded-2xl p-6 mb-4">
-              <p className="text-lg font-heading font-semibold">{questions[0].question}</p>
+              <p className="text-lg font-heading font-semibold">{currentLesson.question_prompt}</p>
             </div>
-            <div className="space-y-3">
-              {questions[0].options.map((opt, idx) => {
-                let buttonClass = 'border-border bg-card hover:border-primary/40';
-                if (answered) {
-                  if (idx === questions[0].correct_index) buttonClass = 'border-primary bg-primary/15 text-primary';
-                  else if (idx === selectedAnswer) buttonClass = 'border-destructive bg-destructive/15 text-destructive';
-                  else buttonClass = 'border-border bg-card opacity-50';
-                } else if (selectedAnswer === idx) {
-                  buttonClass = 'border-primary bg-primary/15';
-                }
-                return (
-                  <button
-                    key={idx}
-                    onClick={() => handleAnswer(idx)}
-                    className={`w-full text-left p-4 rounded-xl border transition-all duration-200 font-medium ${buttonClass}`}
-                  >
-                    {opt}
-                  </button>
-                );
-              })}
-            </div>
-            {answered && questions[0].explanation && (
-              <div className={`mt-4 p-4 rounded-xl border text-sm ${selectedAnswer === questions[0].correct_index ? 'border-primary/30 bg-primary/10 text-primary' : 'border-destructive/30 bg-destructive/10 text-destructive'}`}>
-                <strong>{selectedAnswer === questions[0].correct_index ? '✓ Correct! ' : '✗ Not quite. '}</strong>
-                {questions[0].explanation}
+            {currentLesson.question_type === 'true_false' ? (
+              <div className="grid grid-cols-2 gap-3">
+                {['True', 'False'].map((opt) => {
+                  let buttonClass = 'border-border bg-card hover:border-primary/40';
+                  if (answered) {
+                    if (opt === currentLesson.correct_answer) buttonClass = 'border-primary bg-primary/15 text-primary';
+                    else if (opt === selectedAnswer) buttonClass = 'border-destructive bg-destructive/15 text-destructive';
+                    else buttonClass = 'border-border bg-card opacity-50';
+                  } else if (selectedAnswer === opt) {
+                    buttonClass = 'border-primary bg-primary/15';
+                  }
+                  return (
+                    <button key={opt} onClick={() => handleAnswer(opt)}
+                      className={`p-4 rounded-xl border transition-all duration-200 font-medium text-center ${buttonClass}`}>
+                      {opt}
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              /* multiple_choice — treat correct_answer as one of the options; generate plausible distractors from explanation */
+              <div className="space-y-3">
+                {(() => {
+                  const correct = currentLesson.correct_answer || '';
+                  // Build options: correct answer + "False" / "I don't know" as distractors for single-answer questions
+                  const opts = correct ? [correct, 'I\'m not sure', 'None of the above'] : [];
+                  return opts.map((opt) => {
+                    let buttonClass = 'border-border bg-card hover:border-primary/40';
+                    if (answered) {
+                      if (opt === correct) buttonClass = 'border-primary bg-primary/15 text-primary';
+                      else if (opt === selectedAnswer) buttonClass = 'border-destructive bg-destructive/15 text-destructive';
+                      else buttonClass = 'border-border bg-card opacity-50';
+                    } else if (selectedAnswer === opt) {
+                      buttonClass = 'border-primary bg-primary/15';
+                    }
+                    return (
+                      <button key={opt} onClick={() => handleAnswer(opt)}
+                        className={`w-full text-left p-4 rounded-xl border transition-all duration-200 font-medium ${buttonClass}`}>
+                        {opt}
+                      </button>
+                    );
+                  });
+                })()}
               </div>
             )}
+            {answered && (
+              <div className={`mt-4 p-4 rounded-xl border text-sm ${selectedAnswer === currentLesson.correct_answer ? 'border-primary/30 bg-primary/10 text-primary' : 'border-destructive/30 bg-destructive/10 text-destructive'}`}>
+                <strong>{selectedAnswer === currentLesson.correct_answer ? '✓ Correct! ' : '✗ Not quite. '}</strong>
+                {selectedAnswer !== currentLesson.correct_answer && (
+                  <span>The correct answer is: <strong>{currentLesson.correct_answer}</strong>. </span>
+                )}
+                {currentLesson.explanation}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Fallback for unmapped content types */}
+        {!['text_card', 'key_takeaway', 'question'].includes(currentLesson.content_type) && (
+          <div className="bg-card border border-border rounded-2xl p-6 mb-6">
+            <p className="text-base leading-relaxed text-foreground">{currentLesson.text_content || currentLesson.takeaway_text || 'No content yet.'}</p>
           </div>
         )}
 
         {/* Action */}
         <button
           onClick={handleComplete}
-          disabled={currentLesson.lesson_type === 'quiz' && questions.length > 0 && !answered}
+          disabled={currentLesson.content_type === 'question' && !answered}
           className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-bold text-lg hover:bg-primary/90 transition-all duration-200 disabled:opacity-40 flex items-center justify-center gap-2 group glow-teal"
         >
           {isCompleted(currentLesson.id)
-            ? (currentIndex < lessons.length - 1 ? 'Next Lesson' : 'Finish Review')
-            : (currentIndex < lessons.length - 1 ? 'Continue' : 'Complete Module')}
+            ? (currentIndex < lessons.length - 1 ? 'Next' : 'Finish Review')
+            : (currentIndex < lessons.length - 1 ? currentLesson.text_cta || 'Continue' : 'Complete Module')}
           <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
         </button>
       </div>

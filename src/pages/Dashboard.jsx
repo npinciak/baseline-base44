@@ -32,16 +32,16 @@ export default function Dashboard() {
       setUser(u);
       const profileRes = await base44.functions.invoke('getUserProfile', {}).catch(() => null);
       setProfile(profileRes?.data?.profile || null);
-      const [statsArr, goalsRes, mods, prog] = await Promise.all([
+      const [statsArr, goalsRes, modulesRes, prog] = await Promise.all([
         base44.entities.UserStats.filter({ user_id: u.id }),
         base44.functions.invoke('getSupabaseGoals', {}).catch(() => ({ data: { goals: [] } })),
-        base44.entities.Module.filter({ is_published: true }, 'order_index', 50),
+        base44.functions.invoke('getPayloadLessons', {}).catch(() => ({ data: { modules: [] } })),
         base44.entities.UserProgress.filter({ user_id: u.id }),
       ]);
       if (statsArr.length === 0) { navigate('/onboarding'); return; }
       setStats(statsArr[0]);
       setGoals(goalsRes?.data?.goals || []);
-      setModules(mods);
+      setModules(modulesRes?.data?.modules || []);
       setProgress(prog);
       setLoading(false);
     };

@@ -54,10 +54,8 @@ function ModuleSection({ module, moduleIndex, isUnlocked, completedLessonIds, on
 
   useEffect(() => {
     if (open && lessons === null) {
-      base44.entities.Lesson
-        .filter({ module_id: module.id, is_published: true }, 'order_index', 50)
-        .then(setLessons)
-        .catch(() => setLessons([]));
+      // Use pre-loaded lessons embedded in the module object from getPayloadLessons
+      setLessons(module.lessons || []);
     }
   }, [open, module.id, lessons]);
 
