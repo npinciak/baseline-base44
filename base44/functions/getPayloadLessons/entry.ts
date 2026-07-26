@@ -178,7 +178,7 @@ export default async function(req) {
           correct_answer: c.correct_answer,
           explanation: c.explanation,
           // key_takeaway fields
-          takeaway_text: c.takeaway_text,
+          takeaway_text: lexicalToHtml(c.takeaway_text),
           takeaway_icon: c.takeaway_icon,
           // shared
           xp_reward: c.points || 5,

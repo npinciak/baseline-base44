@@ -206,9 +206,10 @@ export default function LessonView() {
                   : currentLesson.takeaway_icon === 'rocket' ? '🚀'
                   : '💡'}
               </p>
-              <p className="text-lg font-heading font-semibold leading-relaxed">
-                {currentLesson.takeaway_text || 'Key takeaway here.'}
-              </p>
+              <div
+                className="prose prose-invert max-w-none text-lg font-heading font-semibold leading-relaxed"
+                dangerouslySetInnerHTML={{ __html: currentLesson.takeaway_text || '<p>Key takeaway here.</p>' }}
+              />
             </div>
           </div>
         )}
