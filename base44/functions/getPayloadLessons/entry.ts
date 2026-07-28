@@ -176,7 +176,7 @@ export default async function(req) {
           // question fields
           question_prompt: lexicalToHtml(c.question_prompt),
           correct_answer: c.correct_answer,
-          explanation: c.explanation,
+          explanation: lexicalToHtml(c.explanation),
           // key_takeaway fields
           takeaway_text: lexicalToHtml(c.takeaway_text),
           takeaway_icon: c.takeaway_icon,

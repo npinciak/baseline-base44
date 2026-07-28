@@ -274,7 +274,7 @@ export default function LessonView() {
                 {selectedAnswer !== currentLesson.correct_answer && (
                   <span>The correct answer is: <strong>{currentLesson.correct_answer}</strong>. </span>
                 )}
-                {currentLesson.explanation}
+                <span dangerouslySetInnerHTML={{ __html: currentLesson.explanation || '' }} />
               </div>
             )}
           </div>
