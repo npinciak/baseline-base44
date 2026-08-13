@@ -29,8 +29,135 @@ const ImageWord = ({ images, width, height, ariaLabel, className = "" }) => (
 
 // Section-specific phone screenshot images from the Figma designs
 const PhoneScreenshot = ({ src, alt }) => (
-  <div className="relative w-[240px] lg:w-[280px] rounded-[36px] border border-white/15 shadow-2xl overflow-hidden" style={{ aspectRatio: '9/19' }}>
-    <img src={src} alt={alt} className="w-full h-full object-cover object-top" />
+  <div className="relative w-[240px] lg:w-[280px] rounded-[36px] border border-white/15 shadow-2xl overflow-hidden bg-[#0a0e1a]" style={{ aspectRatio: '9/19' }}>
+    <img src={src} alt={alt} className="w-full h-full object-cover object-top" onError={(e) => { e.target.style.display = 'none'; }} />
+  </div>
+);
+
+// Onboarding quiz phone mockup — shows the financial profile questions
+const OnboardingPhoneMockup = () => (
+  <div className="relative w-[240px] lg:w-[280px] rounded-[36px] border border-white/15 shadow-2xl overflow-hidden bg-[#0a0e1a] flex flex-col" style={{ aspectRatio: '9/19' }}>
+    {/* status bar */}
+    <div className="flex justify-between px-5 pt-4 pb-1 text-white/50 text-[9px]">
+      <span>9:41</span><span>●●● WiFi ▮</span>
+    </div>
+    {/* progress bar */}
+    <div className="px-5 pt-3 pb-4">
+      <div className="flex gap-1 mb-4">
+        {[1,2,3,4,5].map(i => (
+          <div key={i} className={`flex-1 h-1 rounded-full ${i <= 2 ? 'bg-teal-400' : 'bg-white/15'}`} />
+        ))}
+      </div>
+      {/* Step label */}
+      <p className="text-white/50 text-[9px] uppercase tracking-widest mb-2">Step 2 of 5</p>
+      <h3 className="text-white font-bold text-sm leading-snug mb-4">How would you describe your financial knowledge?</h3>
+      {/* Options */}
+      {[
+        { label: "Complete Beginner", sub: "Just starting out", active: false },
+        { label: "Some Knowledge", sub: "Know the basics", active: true },
+        { label: "Intermediate", sub: "Comfortable with investing", active: false },
+      ].map((opt) => (
+        <div key={opt.label} className={`flex items-center gap-3 p-3 rounded-xl mb-2 border ${opt.active ? 'border-teal-400 bg-teal-400/10' : 'border-white/10 bg-white/5'}`}>
+          <div className={`w-4 h-4 rounded-full border-2 shrink-0 ${opt.active ? 'border-teal-400 bg-teal-400' : 'border-white/30'}`} />
+          <div>
+            <p className={`text-xs font-semibold ${opt.active ? 'text-teal-400' : 'text-white/80'}`}>{opt.label}</p>
+            <p className="text-[9px] text-white/40">{opt.sub}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+    {/* Divider */}
+    <div className="mx-5 border-t border-white/10 mb-3" />
+    {/* Risk appetite question peek */}
+    <div className="px-5">
+      <p className="text-white/30 text-[9px] uppercase tracking-widest mb-2">Up next</p>
+      <p className="text-white/50 text-xs font-medium">What's your risk appetite?</p>
+      <div className="flex gap-2 mt-2">
+        {['Conservative', 'Moderate', 'Aggressive'].map(r => (
+          <span key={r} className="text-[8px] text-white/30 border border-white/10 px-2 py-1 rounded-full">{r}</span>
+        ))}
+      </div>
+    </div>
+    {/* CTA */}
+    <div className="absolute bottom-0 left-0 right-0 p-4">
+      <div className="bg-teal-400 rounded-2xl py-3 text-center">
+        <span className="text-black font-bold text-xs">Continue</span>
+      </div>
+    </div>
+  </div>
+);
+
+// Goals phone mockup
+const GoalsPhoneMockup = () => (
+  <div className="relative w-[240px] lg:w-[280px] rounded-[36px] border border-white/15 shadow-2xl overflow-hidden bg-[#0a0e1a] flex flex-col" style={{ aspectRatio: '9/19' }}>
+    <div className="flex justify-between px-5 pt-4 pb-1 text-white/50 text-[9px]">
+      <span>9:41</span><span>●●● WiFi ▮</span>
+    </div>
+    <div className="px-5 pt-3 flex-1">
+      <p className="text-white/50 text-[9px] uppercase tracking-widest mb-1">My Goals</p>
+      <h3 className="text-white font-bold text-sm mb-4">Saving Together 🎯</h3>
+      {[
+        { name: "College Fund", emoji: "🎓", saved: 4200, target: 20000, pct: 21 },
+        { name: "Family Vacation", emoji: "✈️", saved: 1800, target: 5000, pct: 36 },
+        { name: "Emergency Fund", emoji: "🛡️", saved: 3000, target: 10000, pct: 30 },
+      ].map(g => (
+        <div key={g.name} className="bg-white/5 border border-white/10 rounded-xl p-3 mb-2">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-base">{g.emoji}</span>
+            <div className="flex-1">
+              <p className="text-white text-xs font-semibold">{g.name}</p>
+              <p className="text-white/40 text-[9px]">${g.saved.toLocaleString()} of ${g.target.toLocaleString()}</p>
+            </div>
+            <span className="text-teal-400 font-bold text-xs">{g.pct}%</span>
+          </div>
+          <div className="h-1.5 bg-white/10 rounded-full">
+            <div className="h-full bg-teal-400 rounded-full" style={{ width: `${g.pct}%` }} />
+          </div>
+        </div>
+      ))}
+    </div>
+    <div className="px-5 pb-6">
+      <div className="bg-teal-400 rounded-2xl py-2.5 text-center">
+        <span className="text-black font-bold text-xs">+ Add Goal</span>
+      </div>
+    </div>
+  </div>
+);
+
+// Learning path phone mockup
+const LearningPhoneMockup = () => (
+  <div className="relative w-[240px] lg:w-[280px] rounded-[36px] border border-white/15 shadow-2xl overflow-hidden bg-[#0a0e1a] flex flex-col" style={{ aspectRatio: '9/19' }}>
+    <div className="flex justify-between px-5 pt-4 pb-1 text-white/50 text-[9px]">
+      <span>9:41</span><span>●●● WiFi ▮</span>
+    </div>
+    <div className="px-5 pt-3 flex-1">
+      <div className="flex justify-between items-center mb-3">
+        <p className="text-white font-bold text-sm">Learning Path 📚</p>
+        <div className="flex items-center gap-1 bg-yellow-400/20 rounded-full px-2 py-1">
+          <span className="text-yellow-400 text-[9px] font-bold">🪙 245 XP</span>
+        </div>
+      </div>
+      {[
+        { title: "Budgeting Basics", tag: "budgeting", pct: 100, color: "bg-teal-400" },
+        { title: "Smart Saving", tag: "saving", pct: 60, color: "bg-blue-400" },
+        { title: "Investing 101", tag: "investing", pct: 0, color: "bg-purple-400" },
+        { title: "Credit & Debt", tag: "credit", pct: 0, color: "bg-orange-400" },
+      ].map((m, i) => (
+        <div key={m.title} className={`flex items-center gap-3 p-3 rounded-xl mb-2 border ${m.pct === 100 ? 'border-teal-400/30 bg-teal-400/5' : 'border-white/10 bg-white/5'}`}>
+          <div className={`w-8 h-8 rounded-full ${m.color} flex items-center justify-center text-black text-xs font-bold`}>
+            {m.pct === 100 ? '✓' : i + 1}
+          </div>
+          <div className="flex-1">
+            <p className="text-white text-xs font-semibold">{m.title}</p>
+            <div className="h-1 bg-white/10 rounded-full mt-1">
+              <div className={`h-full ${m.color} rounded-full`} style={{ width: `${m.pct}%` }} />
+            </div>
+          </div>
+          {m.pct === 0 && i !== 2 && <span className="text-white/20 text-xs">🔒</span>}
+          {i === 1 && <span className="text-[8px] bg-teal-400 text-black px-1.5 py-0.5 rounded-full font-bold">Active</span>}
+        </div>
+      ))}
+    </div>
   </div>
 );
 
@@ -162,7 +289,7 @@ export default function Baseline30() {
       </section>
 
       {/* ─── INTRODUCING BASESCORE ─── */}
-      <section className="w-full flex flex-col lg:flex-row items-center px-8 lg:px-[clamp(48px,8vw,140px)] py-20 gap-12">
+      <section className="w-full flex flex-col lg:flex-row items-center px-8 lg:px-[clamp(48px,8vw,140px)] py-[86px] gap-12">
         <motion.div
           className="flex-1 max-w-lg"
           initial="hidden"
@@ -186,16 +313,12 @@ export default function Baseline30() {
           viewport={{ once: true, margin: "-100px" }}
           variants={{ hidden: { opacity: 0, x: 60 }, visible: { opacity: 1, x: 0, transition: { duration: 0.9, ease: "easeOut" } } }}
         >
-          {/* Dashboard / learning path screen */}
-          <PhoneScreenshot
-            src="https://media.base44.com/images/public/6a3542676f9044e70b439a84/56d220e0c_Screenshot2026-08-13at12708PM.png"
-            alt="Baseline app dashboard showing learning path"
-          />
+          <OnboardingPhoneMockup />
         </motion.div>
       </section>
 
       {/* ─── WHAT'S YOUR BASESCORE ─── */}
-      <section className="w-full flex flex-col items-center justify-center px-8 py-20 gap-8">
+      <section className="w-full flex flex-col items-center justify-center px-8 py-[86px] gap-8">
         <motion.div
           className="text-center"
           initial="hidden"
@@ -226,7 +349,7 @@ export default function Baseline30() {
       </section>
 
       {/* ─── FOR PARENTS ─── */}
-      <section className="w-full flex flex-col lg:flex-row items-center px-8 lg:px-[clamp(48px,8vw,140px)] py-20 gap-12">
+      <section className="w-full flex flex-col lg:flex-row items-center px-8 lg:px-[clamp(48px,8vw,140px)] py-[86px] gap-12">
         <motion.div
           className="flex justify-center lg:order-first"
           initial="hidden"
@@ -234,11 +357,7 @@ export default function Baseline30() {
           viewport={{ once: true, margin: "-100px" }}
           variants={{ hidden: { opacity: 0, x: -60 }, visible: { opacity: 1, x: 0, transition: { duration: 0.9, ease: "easeOut" } } }}
         >
-          {/* Goals screen — tracability & saving towards goals */}
-          <PhoneScreenshot
-            src="https://media.base44.com/images/public/6a3542676f9044e70b439a84/fafa507d5_Screenshot2026-08-13at12642PM.png"
-            alt="Baseline app goals tracking screen"
-          />
+          <GoalsPhoneMockup />
         </motion.div>
         <motion.div
           className="flex-1 max-w-lg"
@@ -259,7 +378,7 @@ export default function Baseline30() {
       </section>
 
       {/* ─── FOR KIDS ─── */}
-      <section className="w-full flex flex-col lg:flex-row items-center px-8 lg:px-[clamp(48px,8vw,140px)] py-20 gap-12">
+      <section className="w-full flex flex-col lg:flex-row items-center px-8 lg:px-[clamp(48px,8vw,140px)] py-[86px] gap-12">
         <motion.div
           className="flex-1 max-w-lg"
           initial="hidden"
@@ -283,16 +402,12 @@ export default function Baseline30() {
           viewport={{ once: true, margin: "-100px" }}
           variants={{ hidden: { opacity: 0, x: 60 }, visible: { opacity: 1, x: 0, transition: { duration: 0.9, ease: "easeOut" } } }}
         >
-          {/* Learning path screen — education & goals */}
-          <PhoneScreenshot
-            src="https://media.base44.com/images/public/6a3542676f9044e70b439a84/55c322eb2_Screenshot2026-08-13at12657PM.png"
-            alt="Baseline app learning path screen"
-          />
+          <LearningPhoneMockup />
         </motion.div>
       </section>
 
       {/* ─── CTA: SET A GOAL & START SAVING ─── */}
-      <section className="w-full flex flex-col items-center justify-center px-8 py-20 gap-8 min-h-[60vh]">
+      <section className="w-full flex flex-col items-center justify-center px-8 py-[86px] gap-8 min-h-[60vh]">
         <motion.div
           className="text-center"
           initial="hidden"
