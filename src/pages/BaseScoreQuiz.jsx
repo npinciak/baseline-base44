@@ -74,7 +74,6 @@ const STEPS = [
       "Earning more money by investing in high-risk stocks.",
     ],
     key: "knowledge_1",
-    correct: 2,
   },
   {
     section: "Financial Knowledge",
@@ -85,7 +84,6 @@ const STEPS = [
       "You will pay a one-time 5% fee when taking out the loan.",
     ],
     key: "knowledge_2",
-    correct: 1,
   },
   {
     section: "Financial Knowledge",
@@ -97,9 +95,50 @@ const STEPS = [
       "Investing only in stocks because they have the highest returns.",
     ],
     key: "knowledge_3",
-    correct: 1,
   },
 ];
+
+// Reuse the same SVG wordmark images from the hero
+const baselineImages = [
+  { src: "https://media.base44.com/images/public/6a3542676f9044e70b439a84/f5993dcb0_5579a0908_93_355.svg", width: 72, height: 85, left: 0, top: 2 },
+  { src: "https://media.base44.com/images/public/6a3542676f9044e70b439a84/068919593_cf4dcbdb5_93_359.svg", width: 68, height: 66, left: 78, top: 23 },
+  { src: "https://media.base44.com/images/public/6a3542676f9044e70b439a84/e00160cd9_d36d4f5e0_93_363.svg", width: 60, height: 66, left: 149, top: 23 },
+  { src: "https://media.base44.com/images/public/6a3542676f9044e70b439a84/000a4f3b9_0e64c97bf_93_367.svg", width: 69, height: 66, left: 214, top: 23 },
+  { src: "https://media.base44.com/images/public/6a3542676f9044e70b439a84/261042c37_165540f3c_93_371.svg", width: 38, height: 89, left: 290, top: 0 },
+  { src: "https://media.base44.com/images/public/6a3542676f9044e70b439a84/3aa2025ae_7733732c3_93_375.svg", width: 23, height: 88, left: 334, top: 0 },
+  { src: "https://media.base44.com/images/public/6a3542676f9044e70b439a84/0b22860f7_28b850e24_93_379.svg", width: 64, height: 64, left: 368, top: 23 },
+  { src: "https://media.base44.com/images/public/6a3542676f9044e70b439a84/a315ba224_12790a648_93_383.svg", width: 69, height: 66, left: 439, top: 23 },
+];
+
+const WORDMARK_W = 508;
+const WORDMARK_H = 89;
+
+function BaselineWordmark({ scale = 0.38 }) {
+  const w = WORDMARK_W * scale;
+  const h = WORDMARK_H * scale;
+  return (
+    <div
+      className="relative shrink-0"
+      style={{ width: w, height: h }}
+      aria-label="Baseline"
+    >
+      {baselineImages.map((img, i) => (
+        <img
+          key={i}
+          src={img.src}
+          className="absolute object-contain"
+          style={{
+            left: (img.left / WORDMARK_W) * w,
+            top: (img.top / WORDMARK_H) * h,
+            width: (img.width / WORDMARK_W) * w,
+            height: (img.height / WORDMARK_H) * h,
+          }}
+          alt=""
+        />
+      ))}
+    </div>
+  );
+}
 
 export default function BaseScoreQuiz() {
   const navigate = useNavigate();
@@ -120,7 +159,6 @@ export default function BaseScoreQuiz() {
       setDirection(1);
       setCurrentStep((s) => s + 1);
     } else {
-      // Store answers in sessionStorage so register page can access them
       sessionStorage.setItem("basescore_quiz", JSON.stringify(answers));
       navigate("/register");
     }
@@ -136,113 +174,143 @@ export default function BaseScoreQuiz() {
   };
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center px-6">
-      {/* Baseline branding — left */}
-      <div className="hidden lg:flex flex-col items-center justify-center w-56 shrink-0 mr-16">
-        <div className="flex items-center gap-3">
-          {/* Power icon orb */}
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-teal-400 to-blue-500 flex items-center justify-center shadow-lg">
-            <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7" stroke="white" strokeWidth="2.5" strokeLinecap="round">
-              <path d="M12 2v6" />
-              <path d="M6.3 5.7a8 8 0 1 0 11.4 0" />
-            </svg>
-          </div>
-          <span className="text-white font-bold text-2xl tracking-wide">Baseline</span>
-        </div>
-      </div>
+    <div
+      className="min-h-screen flex font-body"
+      style={{ background: "hsl(222,47%,6%)" }}
+    >
+      {/* Left panel — branding */}
+      <div className="hidden lg:flex flex-col justify-between w-[340px] xl:w-[400px] shrink-0 px-14 py-16 border-r border-white/5">
+        <BaselineWordmark scale={0.38} />
 
-      {/* Quiz card */}
-      <div className="w-full max-w-[480px]">
-        <AnimatePresence mode="wait" custom={direction}>
-          <motion.div
-            key={currentStep}
-            custom={direction}
-            initial={{ opacity: 0, x: direction * 40 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: direction * -40 }}
-            transition={{ duration: 0.25, ease: "easeOut" }}
-            className="bg-[#1a1f2e] rounded-2xl p-8 shadow-2xl border border-white/5"
-          >
-            {/* Section title */}
-            <h2 className="text-white text-xl font-semibold mb-4">{step.section}</h2>
-
-            {/* Progress dots */}
-            <div className="flex items-center gap-1.5 mb-8">
-              {STEPS.map((_, i) => (
-                <div key={i} className="flex items-center gap-1.5">
-                  <div
-                    className={`w-5 h-5 rounded-full flex items-center justify-center transition-all duration-300 ${
-                      i < currentStep
-                        ? "bg-[#2EFD7A]"
-                        : i === currentStep
-                        ? "bg-[#2EFD7A] ring-2 ring-[#2EFD7A]/30"
-                        : "bg-white/15"
-                    }`}
-                  >
-                    {i < currentStep && <Check className="w-3 h-3 text-black" strokeWidth={3} />}
-                  </div>
-                  {i < total - 1 && (
-                    <div
-                      className={`h-[2px] w-5 rounded-full transition-all duration-300 ${
-                        i < currentStep ? "bg-[#2EFD7A]" : "bg-white/15"
-                      }`}
-                    />
-                  )}
-                </div>
-              ))}
-            </div>
-
-            {/* Question */}
-            <p className="text-white text-lg font-medium leading-snug mb-6">{step.question}</p>
-
-            {/* Options */}
-            <div className="space-y-2.5 mb-8">
-              {step.options.map((opt, i) => (
-                <button
-                  key={i}
-                  onClick={() => handleSelect(opt)}
-                  className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border text-left text-sm transition-all duration-150 ${
-                    selected === opt
-                      ? "border-[#2EFD7A]/60 bg-[#2EFD7A]/10 text-white"
-                      : "border-white/10 bg-white/5 text-white/70 hover:border-white/25 hover:text-white"
+        {/* Tenet labels — progress context */}
+        <div className="space-y-6">
+          {["Preparedness", "Money Mindset", "Credit Health", "Risk Appetite", "Financial Knowledge"].map((label, i) => {
+            const stepIndices = {
+              "Preparedness": [0, 1],
+              "Money Mindset": [2],
+              "Credit Health": [3],
+              "Risk Appetite": [4, 5, 6],
+              "Financial Knowledge": [7, 8, 9],
+            };
+            const steps = stepIndices[label];
+            const isActive = steps.includes(currentStep);
+            const isDone = steps.every(s => s < currentStep);
+            return (
+              <div key={label} className="flex items-center gap-3">
+                <div
+                  className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                    isDone ? "bg-[#2EFD7A]" : isActive ? "bg-[#2EFD7A]" : "bg-white/15"
+                  }`}
+                />
+                <span
+                  className={`text-sm font-light tracking-wide transition-all duration-300 ${
+                    isDone ? "text-[#2EFD7A]/60" : isActive ? "text-white" : "text-white/25"
                   }`}
                 >
-                  <div
-                    className={`w-5 h-5 rounded-full border-2 shrink-0 flex items-center justify-center transition-all ${
-                      selected === opt ? "border-[#2EFD7A] bg-[#2EFD7A]" : "border-white/30"
-                    }`}
-                  >
-                    {selected === opt && <div className="w-2 h-2 rounded-full bg-black" />}
-                  </div>
-                  <span>{opt}</span>
-                </button>
-              ))}
-            </div>
+                  {label}
+                </span>
+              </div>
+            );
+          })}
+        </div>
 
-            {/* Navigation */}
-            <div className="flex items-center justify-between gap-3">
-              <button
-                onClick={handlePrev}
-                className="px-5 py-2.5 rounded-xl bg-white/10 text-white/70 text-sm font-semibold hover:bg-white/15 transition-all flex items-center gap-2"
-              >
-                {currentStep === 0 ? "Cancel" : (
-                  <>
-                    <ArrowLeft className="w-4 h-4" />
-                    Previous
-                  </>
-                )}
-              </button>
-              <button
-                onClick={handleNext}
-                disabled={!selected}
-                className="px-6 py-2.5 rounded-xl bg-[#2EFD7A] text-black text-sm font-bold hover:bg-[#2EFD7A]/90 transition-all flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                {currentStep === total - 1 ? "See My Score" : "Next"}
-                <ArrowRight className="w-4 h-4" />
-              </button>
+        <p className="text-white/20 text-xs font-light tracking-widest uppercase">
+          BaseScore™ Assessment
+        </p>
+      </div>
+
+      {/* Right panel — question */}
+      <div className="flex-1 flex flex-col justify-center items-center px-8 py-16">
+        {/* Mobile wordmark */}
+        <div className="lg:hidden mb-12">
+          <BaselineWordmark scale={0.28} />
+        </div>
+
+        <div className="w-full max-w-[520px]">
+          {/* Step counter + progress bar */}
+          <div className="mb-12">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-white/30 text-xs font-light tracking-widest uppercase">{step.section}</span>
+              <span className="text-white/20 text-xs font-light">{currentStep + 1} / {total}</span>
             </div>
-          </motion.div>
-        </AnimatePresence>
+            {/* Thin progress line */}
+            <div className="h-[1px] bg-white/10 rounded-full">
+              <motion.div
+                className="h-full bg-[#2EFD7A] rounded-full"
+                animate={{ width: `${((currentStep + 1) / total) * 100}%` }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+              />
+            </div>
+          </div>
+
+          {/* Question card */}
+          <AnimatePresence mode="wait" custom={direction}>
+            <motion.div
+              key={currentStep}
+              custom={direction}
+              initial={{ opacity: 0, y: direction > 0 ? 24 : -24 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: direction > 0 ? -24 : 24 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+            >
+              {/* Question */}
+              <h2 className="text-white text-2xl lg:text-3xl font-light leading-snug mb-10 tracking-tight">
+                {step.question}
+              </h2>
+
+              {/* Options */}
+              <div className="space-y-3 mb-12">
+                {step.options.map((opt, i) => {
+                  const isSelected = selected === opt;
+                  return (
+                    <button
+                      key={i}
+                      onClick={() => handleSelect(opt)}
+                      className={`group w-full flex items-center gap-4 px-5 py-4 rounded-xl border text-left text-sm font-light tracking-wide transition-all duration-200 ${
+                        isSelected
+                          ? "border-[#2EFD7A]/40 bg-[#2EFD7A]/8 text-white"
+                          : "border-white/8 bg-white/[0.02] text-white/50 hover:border-white/20 hover:text-white/80 hover:bg-white/[0.04]"
+                      }`}
+                      style={isSelected ? { background: "rgba(46,253,122,0.06)" } : {}}
+                    >
+                      {/* Radio dot */}
+                      <div
+                        className={`w-4 h-4 rounded-full border shrink-0 flex items-center justify-center transition-all duration-200 ${
+                          isSelected ? "border-[#2EFD7A]" : "border-white/20 group-hover:border-white/40"
+                        }`}
+                      >
+                        {isSelected && (
+                          <div className="w-1.5 h-1.5 rounded-full bg-[#2EFD7A]" />
+                        )}
+                      </div>
+                      <span>{opt}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Navigation */}
+              <div className="flex items-center justify-between">
+                <button
+                  onClick={handlePrev}
+                  className="flex items-center gap-2 text-white/30 hover:text-white/60 text-sm font-light tracking-wide transition-all duration-200"
+                >
+                  {currentStep > 0 && <ArrowLeft className="w-4 h-4" />}
+                  {currentStep === 0 ? "Cancel" : "Previous"}
+                </button>
+
+                <button
+                  onClick={handleNext}
+                  disabled={!selected}
+                  className="flex items-center gap-2.5 px-8 py-3.5 rounded-full bg-[#2EFD7A] text-black text-sm font-semibold tracking-wide hover:bg-[#2EFD7A]/90 transition-all duration-200 disabled:opacity-25 disabled:cursor-not-allowed"
+                >
+                  {currentStep === total - 1 ? "See My Score" : "Next"}
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   );
