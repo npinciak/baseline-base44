@@ -5,8 +5,11 @@ import { Search } from "lucide-react";
 
 const BASESCORE_QUESTIONS = [
   "How Healthy Is My Money?",
-  "Could I Be Doing More?",
-  "What Am I Missing?",
+  "Am I On Track For The Future I Want?",
+  "Could I Be Building Wealth Faster?",
+  "Is My Financial Foundation Strong Enough?",
+  "What Would It Take To Be Financially Free?",
+  "Am I Making The Most Of What I Earn?",
 ];
 
 // phases: typing → pause → selected (flash highlight) → clearing → next
