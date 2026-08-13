@@ -342,8 +342,7 @@ export default function Baseline30() {
 
   const mindOverMoneyImages = [
     { src: "https://media.base44.com/images/public/6a3542676f9044e70b439a84/973274d82_44e662a51_93_387.svg", width: 21, left: 0 },
-    { src: "https://media.base44.com/images/public/6a3542676f9044e70b439a84/b77acf1a6_48483fefe_93_391.svg", width: 2, left: 29 },
-    { src: "https://media.base44.com/images/public/6a3542676f9044e70b439a84/cb653cc88_65f2ea1f0_93_395.svg", width: 17, left: 40 },
+    { src: "https://media.base44.com/images/public/6a3542676f9044e70b439a84/cb653cc88_65f2ea1f0_93_395.svg", width: 17, left: 29 },
     { src: "https://media.base44.com/images/public/6a3542676f9044e70b439a84/37a09e0ec_5a2f677ab_93_399.svg", width: 17, left: 67 },
     { src: "https://media.base44.com/images/public/6a3542676f9044e70b439a84/8968055fe_89a0b436c_93_403.svg", width: 20, left: 101 },
     { src: "https://media.base44.com/images/public/6a3542676f9044e70b439a84/98fed13aa_c147abb07_93_407.svg", width: 19, left: 126 },
@@ -363,7 +362,7 @@ export default function Baseline30() {
       transition={{ duration: 0.45, ease: "easeInOut" }}
     >
       {/* Sticky Nav */}
-      <header className="fixed top-0 left-0 w-full px-8 lg:px-[clamp(16px,5.7vw,109px)] h-[72px] flex items-center justify-between z-50">
+      <header className="fixed top-0 left-0 w-full px-8 lg:px-[clamp(16px,5.7vw,109px)] h-[72px] flex items-center justify-between z-50 bg-black/60 backdrop-blur-md border-b border-white/8">
         <div className="text-white font-bold text-lg tracking-wide">Baseline</div>
         <div className="flex items-center gap-[clamp(16px,2.8vw,40px)]">
           <button
