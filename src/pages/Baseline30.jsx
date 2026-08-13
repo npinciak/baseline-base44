@@ -1,7 +1,58 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
+
+const BASESCORE_QUESTIONS = [
+  "How Healthy Is Your Money?",
+  "Is Your Money Growing As Fast As You Want?",
+  "How Can You Reach Your Goals Faster?",
+  "Are You On Track For Retirement?",
+  "Do You Know Your Debt-To-Income Ratio?",
+  "Is Your Credit Score Holding You Back?",
+  "Could You Survive 3 Months Without Income?",
+  "Are You Paying Too Much In Interest?",
+  "How Much Should You Be Saving Each Month?",
+  "Is Your Emergency Fund Big Enough?",
+  "Are You Investing As Much As You Could Be?",
+  "What Would It Take To Be Financially Free?",
+];
+
+function useTypingAnimation() {
+  const [displayed, setDisplayed] = useState("");
+  const [questionIndex, setQuestionIndex] = useState(0);
+  const [phase, setPhase] = useState("typing"); // typing | pausing | deleting
+  const timeoutRef = useRef(null);
+
+  useEffect(() => {
+    const current = BASESCORE_QUESTIONS[questionIndex];
+
+    if (phase === "typing") {
+      if (displayed.length < current.length) {
+        timeoutRef.current = setTimeout(() => {
+          setDisplayed(current.slice(0, displayed.length + 1));
+        }, 42);
+      } else {
+        timeoutRef.current = setTimeout(() => setPhase("pausing"), 1800);
+      }
+    } else if (phase === "pausing") {
+      timeoutRef.current = setTimeout(() => setPhase("deleting"), 400);
+    } else if (phase === "deleting") {
+      if (displayed.length > 0) {
+        timeoutRef.current = setTimeout(() => {
+          setDisplayed(displayed.slice(0, -1));
+        }, 22);
+      } else {
+        setQuestionIndex((i) => (i + 1) % BASESCORE_QUESTIONS.length);
+        setPhase("typing");
+      }
+    }
+
+    return () => clearTimeout(timeoutRef.current);
+  }, [displayed, phase, questionIndex]);
+
+  return displayed;
+}
 
 const ImageWord = ({ images, width, height, ariaLabel, className = "" }) => (
   <div
@@ -161,6 +212,42 @@ const LearningPhoneMockup = () => (
   </div>
 );
 
+function BaseScoreSection({ onNav }) {
+  const typedText = useTypingAnimation();
+
+  return (
+    <section className="w-full flex flex-col items-center justify-center px-8 pt-[120px] pb-[86px] gap-8">
+      <motion.div
+        className="text-center w-full"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        variants={{ hidden: { opacity: 0, y: 40 }, visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } } }}
+      >
+        <h2 className="text-white text-5xl lg:text-7xl font-light mb-10">
+          What's Your <span className="font-extrabold">BaseScore?</span>
+        </h2>
+        <div
+          className="relative max-w-xl mx-auto mb-7 cursor-pointer"
+          onClick={() => onNav("/register")}
+        >
+          <div className="w-full bg-transparent border-2 border-white text-white text-lg px-6 py-4 pr-14 rounded-full flex items-center min-h-[60px]">
+            <span className="text-white/90">{typedText}</span>
+            <span className="inline-block w-[2px] h-[1.1em] bg-white/80 ml-[2px] animate-pulse align-middle" />
+          </div>
+          <Search className="absolute right-5 top-1/2 -translate-y-1/2 text-white w-6 h-6" />
+        </div>
+        <button
+          onClick={() => onNav("/register")}
+          className="px-10 py-4 bg-[#2EFD7A] text-black font-semibold text-lg rounded-full hover:bg-[#2EFD7A]/90 transition-all"
+        >
+          Find Out
+        </button>
+      </motion.div>
+    </section>
+  );
+}
+
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } },
@@ -318,35 +405,7 @@ export default function Baseline30() {
       </section>
 
       {/* ─── WHAT'S YOUR BASESCORE ─── */}
-      <section className="w-full flex flex-col items-center justify-center px-8 py-[86px] gap-8">
-        <motion.div
-          className="text-center"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={fadeUp}
-        >
-          <h2 className="text-white text-5xl lg:text-7xl font-light mb-10">
-            What's Your <span className="font-extrabold">BaseScore?</span>
-          </h2>
-          <div className="relative max-w-xl mx-auto mb-7">
-            <input
-              type="text"
-              placeholder="How Healthy is Your Money?"
-              readOnly
-              onClick={() => handleNav("/register")}
-              className="w-full bg-transparent border-2 border-white text-white placeholder-white/60 text-lg px-6 py-4 pr-14 rounded-full cursor-pointer focus:outline-none focus:border-teal-400 transition-colors"
-            />
-            <Search className="absolute right-5 top-1/2 -translate-y-1/2 text-white w-6 h-6" />
-          </div>
-          <button
-            onClick={() => handleNav("/register")}
-            className="px-10 py-4 bg-[#2EFD7A] text-black font-semibold text-lg rounded-full hover:bg-[#2EFD7A]/90 transition-all"
-          >
-            Find Out
-          </button>
-        </motion.div>
-      </section>
+      <BaseScoreSection onNav={handleNav} />
 
       {/* ─── FOR PARENTS ─── */}
       <section className="w-full flex flex-col lg:flex-row items-center px-8 lg:px-[clamp(48px,8vw,140px)] py-[86px] gap-12">
