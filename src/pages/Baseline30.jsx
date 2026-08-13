@@ -551,6 +551,16 @@ export default function Baseline30() {
           </button>
         </motion.div>
       </section>
+      {/* ─── FOOTER ─── */}
+      <footer className="w-full border-t border-white/8 px-8 lg:px-[clamp(48px,8vw,140px)] py-12 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="text-white/20 text-sm font-light tracking-wide">© 2026 Baseline. All rights reserved.</div>
+        <div className="flex items-center gap-8">
+          <button onClick={() => handleNav("/basescore-quiz")} className="text-white/30 text-sm font-light hover:text-white/60 transition-colors">Get Your BaseScore™</button>
+          <button onClick={() => handleNav("/login")} className="text-white/30 text-sm font-light hover:text-white/60 transition-colors">Log In</button>
+          <button onClick={() => handleNav("/register")} className="text-white/30 text-sm font-light hover:text-white/60 transition-colors">Sign Up</button>
+        </div>
+      </footer>
+
     </motion.main>
   );
 }
