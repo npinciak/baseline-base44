@@ -25,6 +25,7 @@ import Money from './pages/Money';
 import Basecamp from './pages/Basecamp';
 import Baseline30 from './pages/Baseline30';
 import ClipPathGroup from './pages/ClipPathGroup';
+import BaseScoreQuiz from './pages/BaseScoreQuiz';
 
 const AuthenticatedApp = () => {
   const { isLoadingPublicSettings } = useAuth();
@@ -40,6 +41,7 @@ const AuthenticatedApp = () => {
   return (
     <Routes>
       <Route path="/" element={<Baseline30 />} />
+      <Route path="/basescore-quiz" element={<BaseScoreQuiz />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />

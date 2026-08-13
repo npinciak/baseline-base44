@@ -292,7 +292,7 @@ function BaseScoreSection({ onNav }) {
         </h2>
         <div
           className="relative max-w-xl mx-auto mb-7 cursor-pointer"
-          onClick={() => onNav("/register")}
+          onClick={() => onNav("/basescore-quiz")}
         >
           <div className="w-full bg-transparent border-2 border-white text-white text-lg px-6 py-4 pr-14 rounded-full h-[60px] flex items-center overflow-hidden">
             <span className="flex-1 overflow-hidden whitespace-nowrap relative text-left">
@@ -305,7 +305,7 @@ function BaseScoreSection({ onNav }) {
           <Search className="absolute right-5 top-1/2 -translate-y-1/2 text-white w-6 h-6" />
         </div>
         <button
-          onClick={() => onNav("/register")}
+          onClick={() => onNav("/basescore-quiz")}
           className="px-10 py-4 bg-[#2EFD7A] text-black font-semibold text-lg rounded-full hover:bg-[#2EFD7A]/90 transition-all"
         >
           Find Out
