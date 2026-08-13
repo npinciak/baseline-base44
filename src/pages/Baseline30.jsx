@@ -18,40 +18,47 @@ const BASESCORE_QUESTIONS = [
   "What Would It Take To Be Financially Free?",
 ];
 
+// phases: typing → pause → selected (flash highlight) → clearing → next
 function useTypingAnimation() {
-  const [displayed, setDisplayed] = useState("");
-  const [questionIndex, setQuestionIndex] = useState(0);
-  const [phase, setPhase] = useState("typing"); // typing | pausing | deleting
-  const timeoutRef = useRef(null);
+  const stateRef = useRef({ index: 0, phase: "typing", charCount: 0 });
+  const [display, setDisplay] = useState({ text: "", selected: false });
+  const timerRef = useRef(null);
 
   useEffect(() => {
-    const current = BASESCORE_QUESTIONS[questionIndex];
+    function tick() {
+      const s = stateRef.current;
+      const current = BASESCORE_QUESTIONS[s.index];
 
-    if (phase === "typing") {
-      if (displayed.length < current.length) {
-        timeoutRef.current = setTimeout(() => {
-          setDisplayed(current.slice(0, displayed.length + 1));
-        }, 42);
-      } else {
-        timeoutRef.current = setTimeout(() => setPhase("pausing"), 1800);
-      }
-    } else if (phase === "pausing") {
-      timeoutRef.current = setTimeout(() => setPhase("deleting"), 400);
-    } else if (phase === "deleting") {
-      if (displayed.length > 0) {
-        timeoutRef.current = setTimeout(() => {
-          setDisplayed(displayed.slice(0, -1));
-        }, 22);
-      } else {
-        setQuestionIndex((i) => (i + 1) % BASESCORE_QUESTIONS.length);
-        setPhase("typing");
+      if (s.phase === "typing") {
+        if (s.charCount < current.length) {
+          s.charCount += 1;
+          setDisplay({ text: current.slice(0, s.charCount), selected: false });
+          timerRef.current = setTimeout(tick, 44);
+        } else {
+          s.phase = "pause";
+          timerRef.current = setTimeout(tick, 1600);
+        }
+      } else if (s.phase === "pause") {
+        s.phase = "selected";
+        setDisplay({ text: current, selected: true });
+        timerRef.current = setTimeout(tick, 380);
+      } else if (s.phase === "selected") {
+        s.phase = "clearing";
+        setDisplay({ text: "", selected: false });
+        timerRef.current = setTimeout(tick, 120);
+      } else if (s.phase === "clearing") {
+        s.index = (s.index + 1) % BASESCORE_QUESTIONS.length;
+        s.charCount = 0;
+        s.phase = "typing";
+        timerRef.current = setTimeout(tick, 200);
       }
     }
 
-    return () => clearTimeout(timeoutRef.current);
-  }, [displayed, phase, questionIndex]);
+    timerRef.current = setTimeout(tick, 500);
+    return () => clearTimeout(timerRef.current);
+  }, []);
 
-  return displayed;
+  return display;
 }
 
 const ImageWord = ({ images, width, height, ariaLabel, className = "" }) => (
@@ -213,10 +220,10 @@ const LearningPhoneMockup = () => (
 );
 
 function BaseScoreSection({ onNav }) {
-  const typedText = useTypingAnimation();
+  const { text, selected } = useTypingAnimation();
 
   return (
-    <section className="w-full flex flex-col items-center justify-center px-8 pt-[120px] pb-[86px] gap-8">
+    <section className="w-full flex flex-col items-center justify-center px-8 pt-[160px] pb-[86px] gap-8">
       <motion.div
         className="text-center w-full"
         initial="hidden"
@@ -232,8 +239,14 @@ function BaseScoreSection({ onNav }) {
           onClick={() => onNav("/register")}
         >
           <div className="w-full bg-transparent border-2 border-white text-white text-lg px-6 py-4 pr-14 rounded-full flex items-center min-h-[60px]">
-            <span className="text-white/90">{typedText}</span>
-            <span className="inline-block w-[2px] h-[1.1em] bg-white/80 ml-[2px] animate-pulse align-middle" />
+            <span
+              className={`transition-colors duration-150 ${selected ? "bg-white/30 rounded" : ""}`}
+            >
+              {text}
+            </span>
+            {!selected && (
+              <span className="inline-block w-[2px] h-[1.1em] bg-white/80 ml-[2px] animate-pulse align-middle" />
+            )}
           </div>
           <Search className="absolute right-5 top-1/2 -translate-y-1/2 text-white w-6 h-6" />
         </div>
@@ -376,7 +389,7 @@ export default function Baseline30() {
       </section>
 
       {/* ─── INTRODUCING BASESCORE ─── */}
-      <section className="w-full flex flex-col lg:flex-row items-center px-8 lg:px-[clamp(48px,8vw,140px)] py-[86px] gap-12">
+      <section className="w-full flex flex-col lg:flex-row items-center px-8 lg:px-[clamp(48px,8vw,140px)] py-[86px] gap-20 lg:gap-32">
         <motion.div
           className="flex-1 max-w-lg"
           initial="hidden"
@@ -408,7 +421,7 @@ export default function Baseline30() {
       <BaseScoreSection onNav={handleNav} />
 
       {/* ─── FOR PARENTS ─── */}
-      <section className="w-full flex flex-col lg:flex-row items-center px-8 lg:px-[clamp(48px,8vw,140px)] py-[86px] gap-12">
+      <section className="w-full flex flex-col lg:flex-row items-center px-8 lg:px-[clamp(48px,8vw,140px)] py-[86px] gap-20 lg:gap-32">
         <motion.div
           className="flex justify-center lg:order-first"
           initial="hidden"
@@ -437,7 +450,7 @@ export default function Baseline30() {
       </section>
 
       {/* ─── FOR KIDS ─── */}
-      <section className="w-full flex flex-col lg:flex-row items-center px-8 lg:px-[clamp(48px,8vw,140px)] py-[86px] gap-12">
+      <section className="w-full flex flex-col lg:flex-row items-center px-8 lg:px-[clamp(48px,8vw,140px)] py-[86px] gap-20 lg:gap-32">
         <motion.div
           className="flex-1 max-w-lg"
           initial="hidden"
