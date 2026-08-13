@@ -89,11 +89,11 @@ const PhoneScreenshot = ({ src, alt }) => (
 // BaseScore result phone mockup — shows the score and its five tenets
 const BaseScoreMockup = () => {
   const tenets = [
-    { label: "Financial Knowledge", score: 72, color: "bg-purple-400", pct: 85 },
-    { label: "Income to Debt Ratio", score: 61, color: "bg-blue-400", pct: 72 },
-    { label: "Preparedness", score: 55, color: "bg-yellow-400", pct: 65 },
-    { label: "Risk Appetite", score: 68, color: "bg-orange-400", pct: 80 },
-    { label: "Credit Score", score: 58, color: "bg-pink-400", pct: 68 },
+    { label: "Financial Knowledge", score: 74, color: "bg-purple-400", pct: 74 },
+    { label: "Income to Debt Ratio", score: 61, color: "bg-blue-400", pct: 61 },
+    { label: "Preparedness", score: 55, color: "bg-yellow-400", pct: 55 },
+    { label: "Risk Appetite", score: 68, color: "bg-orange-400", pct: 68 },
+    { label: "Credit Health", score: 66, color: "bg-pink-400", pct: 66 },
   ];
   return (
     <div className="relative w-[240px] lg:w-[280px] rounded-[36px] border border-white/15 shadow-2xl overflow-hidden bg-[#0a0e1a] flex flex-col" style={{ aspectRatio: '9/19' }}>
@@ -109,12 +109,12 @@ const BaseScoreMockup = () => {
               <circle cx="48" cy="48" r="40" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="7" />
               <circle cx="48" cy="48" r="40" fill="none" stroke="#2EFD7A" strokeWidth="7"
                 strokeDasharray={`${2 * Math.PI * 40}`}
-                strokeDashoffset={`${2 * Math.PI * 40 * (1 - 0.76)}`}
+                strokeDashoffset={`${2 * Math.PI * 40 * (1 - 0.65)}`}
                 strokeLinecap="round" />
             </svg>
             <div className="text-center z-10">
-              <p className="text-white font-extrabold text-2xl leading-none">647</p>
-              <p className="text-white/40 text-[8px]">of 850</p>
+              <p className="text-white font-extrabold text-2xl leading-none">324</p>
+              <p className="text-white/40 text-[8px]">of 500</p>
             </div>
           </div>
           <span className="mt-1 text-[9px] font-bold px-3 py-1 rounded-full bg-teal-400/20 text-teal-400">Good Standing</span>
@@ -125,7 +125,7 @@ const BaseScoreMockup = () => {
             <div key={t.label}>
               <div className="flex justify-between items-center mb-0.5">
                 <span className="text-white/70 text-[9px]">{t.label}</span>
-                <span className="text-white/50 text-[9px] font-bold">{t.score}/85</span>
+                <span className="text-white/50 text-[9px] font-bold">{t.score}/100</span>
               </div>
               <div className="h-1 bg-white/10 rounded-full">
                 <div className={`h-full ${t.color} rounded-full`} style={{ width: `${t.pct}%` }} />
