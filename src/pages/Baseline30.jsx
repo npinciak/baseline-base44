@@ -27,76 +27,10 @@ const ImageWord = ({ images, width, height, ariaLabel, className = "" }) => (
   </div>
 );
 
-// Shared mock phone UI used across sections
-const AppPhoneUI = () => (
-  <div className="relative w-[260px] lg:w-[300px] bg-black rounded-[40px] border border-white/10 shadow-2xl overflow-hidden" style={{ aspectRatio: '9/19' }}>
-    {/* Status bar */}
-    <div className="flex justify-between items-center px-5 pt-4 pb-2 text-white text-[10px] font-medium">
-      <span>9:41</span>
-      <div className="flex gap-1 items-center">
-        <span>●●●</span>
-        <span>WiFi</span>
-        <span>▮</span>
-      </div>
-    </div>
-    {/* Header */}
-    <div className="flex justify-between items-center px-5 py-2">
-      <span className="text-white font-bold text-sm">Welcome 🔥</span>
-      <div className="flex items-center gap-1 bg-white/10 rounded-full px-2 py-1">
-        <span className="text-yellow-400 text-xs">●</span>
-        <span className="text-white text-xs font-bold">125</span>
-      </div>
-    </div>
-    {/* Goal card */}
-    <div className="mx-4 bg-white rounded-2xl p-3 mb-3">
-      <div className="flex gap-2 items-center">
-        <div className="w-10 h-8 bg-gray-200 rounded-lg overflow-hidden">
-          <img src="https://images.unsplash.com/photo-1555215695-3004980ad54e?w=80&h=60&fit=crop" alt="Porsche" className="w-full h-full object-cover" />
-        </div>
-        <div className="flex-1">
-          <p className="text-black font-bold text-xs">Porsche</p>
-          <p className="text-gray-500 text-[9px]">Buying a Car</p>
-        </div>
-        <div className="text-right">
-          <p className="text-black font-bold text-xs">$12,000.00</p>
-          <p className="text-gray-500 text-[9px]">Sep 01, 2030</p>
-        </div>
-      </div>
-      <div className="flex justify-between mt-2 pt-2 border-t border-gray-100">
-        <div><p className="text-gray-400 text-[8px]">Total Saved</p><p className="text-black font-bold text-[10px]">$0</p></div>
-        <div><p className="text-gray-400 text-[8px]">Days Till Goal</p><p className="text-black font-bold text-[10px]">0</p></div>
-      </div>
-    </div>
-    {/* Dots */}
-    <div className="flex justify-center gap-1 mb-3">
-      <span className="w-1.5 h-1.5 rounded-full bg-white/40"></span>
-      <span className="w-1.5 h-1.5 rounded-full bg-white/40"></span>
-      <span className="w-1.5 h-1.5 rounded-full bg-white/40"></span>
-    </div>
-    {/* Learning path nodes */}
-    <div className="px-4 space-y-1">
-      {[
-        { label: "Get Started with level 1", num: "01", completed: false, isNum: true },
-        { label: "Savings Plan", completed: true },
-        { label: "Set up Automatic Contributions", active: true },
-        { label: "Personal Finance 101", locked: true },
-      ].map((node, i) => (
-        <div key={i} className="flex items-center gap-3">
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-xs font-bold
-            ${node.isNum ? 'bg-teal-400 text-black' : node.completed ? 'bg-teal-400 text-black' : node.active ? 'bg-white/20 border border-white/40 text-white' : 'bg-white/10 text-white/40'}`}>
-            {node.isNum ? node.num : node.completed ? '✓' : node.active ? '✎' : '○'}
-          </div>
-          <span className={`text-[10px] ${node.locked ? 'text-white/30' : 'text-white/80'}`}>{node.label}</span>
-          {node.active && <span className="ml-auto text-[8px] bg-teal-400 text-black px-1.5 py-0.5 rounded-full font-bold">Start</span>}
-        </div>
-      ))}
-    </div>
-    {/* Bottom nav */}
-    <div className="absolute bottom-0 left-0 right-0 flex justify-around items-center px-4 py-3 border-t border-white/10 bg-black">
-      {['🏠', '🔍', '📊', '🛍️', '⚙️'].map((icon, i) => (
-        <span key={i} className={`text-sm ${i === 0 ? 'text-teal-400' : 'text-white/40'}`}>{icon}</span>
-      ))}
-    </div>
+// Section-specific phone screenshot images from the Figma designs
+const PhoneScreenshot = ({ src, alt }) => (
+  <div className="relative w-[240px] lg:w-[280px] rounded-[36px] border border-white/15 shadow-2xl overflow-hidden" style={{ aspectRatio: '9/19' }}>
+    <img src={src} alt={alt} className="w-full h-full object-cover object-top" />
   </div>
 );
 
@@ -228,7 +162,7 @@ export default function Baseline30() {
       </section>
 
       {/* ─── INTRODUCING BASESCORE ─── */}
-      <section className="w-full min-h-screen flex flex-col lg:flex-row items-center px-8 lg:px-[clamp(48px,8vw,140px)] py-24 gap-16">
+      <section className="w-full flex flex-col lg:flex-row items-center px-8 lg:px-[clamp(48px,8vw,140px)] py-20 gap-12">
         <motion.div
           className="flex-1 max-w-lg"
           initial="hidden"
@@ -236,7 +170,7 @@ export default function Baseline30() {
           viewport={{ once: true, margin: "-100px" }}
           variants={fadeUp}
         >
-          <h2 className="text-white text-5xl lg:text-6xl font-light leading-tight mb-10">
+          <h2 className="text-white text-5xl lg:text-6xl font-light leading-tight mb-8">
             Introducing <span className="font-extrabold">BaseScore™</span>
           </h2>
           <p className="text-white/70 text-lg leading-relaxed">
@@ -252,12 +186,16 @@ export default function Baseline30() {
           viewport={{ once: true, margin: "-100px" }}
           variants={{ hidden: { opacity: 0, x: 60 }, visible: { opacity: 1, x: 0, transition: { duration: 0.9, ease: "easeOut" } } }}
         >
-          <AppPhoneUI />
+          {/* Dashboard / learning path screen */}
+          <PhoneScreenshot
+            src="https://media.base44.com/images/public/6a3542676f9044e70b439a84/56d220e0c_Screenshot2026-08-13at12708PM.png"
+            alt="Baseline app dashboard showing learning path"
+          />
         </motion.div>
       </section>
 
       {/* ─── WHAT'S YOUR BASESCORE ─── */}
-      <section className="w-full min-h-screen flex flex-col items-center justify-center px-8 py-24 gap-10">
+      <section className="w-full flex flex-col items-center justify-center px-8 py-20 gap-8">
         <motion.div
           className="text-center"
           initial="hidden"
@@ -265,10 +203,10 @@ export default function Baseline30() {
           viewport={{ once: true, margin: "-100px" }}
           variants={fadeUp}
         >
-          <h2 className="text-white text-5xl lg:text-7xl font-light mb-12">
+          <h2 className="text-white text-5xl lg:text-7xl font-light mb-10">
             What's Your <span className="font-extrabold">BaseScore?</span>
           </h2>
-          <div className="relative max-w-xl mx-auto mb-8">
+          <div className="relative max-w-xl mx-auto mb-7">
             <input
               type="text"
               placeholder="How Healthy is Your Money?"
@@ -288,7 +226,7 @@ export default function Baseline30() {
       </section>
 
       {/* ─── FOR PARENTS ─── */}
-      <section className="w-full min-h-screen flex flex-col lg:flex-row items-center px-8 lg:px-[clamp(48px,8vw,140px)] py-24 gap-16">
+      <section className="w-full flex flex-col lg:flex-row items-center px-8 lg:px-[clamp(48px,8vw,140px)] py-20 gap-12">
         <motion.div
           className="flex justify-center lg:order-first"
           initial="hidden"
@@ -296,7 +234,11 @@ export default function Baseline30() {
           viewport={{ once: true, margin: "-100px" }}
           variants={{ hidden: { opacity: 0, x: -60 }, visible: { opacity: 1, x: 0, transition: { duration: 0.9, ease: "easeOut" } } }}
         >
-          <AppPhoneUI />
+          {/* Goals screen — tracability & saving towards goals */}
+          <PhoneScreenshot
+            src="https://media.base44.com/images/public/6a3542676f9044e70b439a84/fafa507d5_Screenshot2026-08-13at12642PM.png"
+            alt="Baseline app goals tracking screen"
+          />
         </motion.div>
         <motion.div
           className="flex-1 max-w-lg"
@@ -305,7 +247,7 @@ export default function Baseline30() {
           viewport={{ once: true, margin: "-100px" }}
           variants={fadeUp}
         >
-          <h2 className="text-white text-5xl lg:text-7xl font-light leading-tight mb-8">
+          <h2 className="text-white text-5xl lg:text-7xl font-light leading-tight mb-6">
             For <span className="font-extrabold">Parents</span>
           </h2>
           <p className="text-white font-bold text-lg mb-4">Tracability &amp; Collaboration</p>
@@ -317,7 +259,7 @@ export default function Baseline30() {
       </section>
 
       {/* ─── FOR KIDS ─── */}
-      <section className="w-full min-h-screen flex flex-col lg:flex-row items-center px-8 lg:px-[clamp(48px,8vw,140px)] py-24 gap-16">
+      <section className="w-full flex flex-col lg:flex-row items-center px-8 lg:px-[clamp(48px,8vw,140px)] py-20 gap-12">
         <motion.div
           className="flex-1 max-w-lg"
           initial="hidden"
@@ -325,11 +267,11 @@ export default function Baseline30() {
           viewport={{ once: true, margin: "-100px" }}
           variants={fadeUp}
         >
-          <h2 className="text-white text-5xl lg:text-7xl font-light leading-tight mb-8">
+          <h2 className="text-white text-5xl lg:text-7xl font-light leading-tight mb-6">
             For <span className="font-extrabold">Kids</span>
           </h2>
           <p className="text-white font-bold text-lg mb-4">Take Control Of Your Money</p>
-          <p className="text-white/70 text-lg leading-relaxed text-center lg:text-left">
+          <p className="text-white/70 text-lg leading-relaxed text-left">
             Learn about your money so that you can reach your goals and plan your future better (like paying for college and beyond).
             Get the tips and tools to reach your goals better and faster.
           </p>
@@ -341,12 +283,16 @@ export default function Baseline30() {
           viewport={{ once: true, margin: "-100px" }}
           variants={{ hidden: { opacity: 0, x: 60 }, visible: { opacity: 1, x: 0, transition: { duration: 0.9, ease: "easeOut" } } }}
         >
-          <AppPhoneUI />
+          {/* Learning path screen — education & goals */}
+          <PhoneScreenshot
+            src="https://media.base44.com/images/public/6a3542676f9044e70b439a84/55c322eb2_Screenshot2026-08-13at12657PM.png"
+            alt="Baseline app learning path screen"
+          />
         </motion.div>
       </section>
 
       {/* ─── CTA: SET A GOAL & START SAVING ─── */}
-      <section className="w-full min-h-screen flex flex-col items-center justify-center px-8 py-24 gap-8">
+      <section className="w-full flex flex-col items-center justify-center px-8 py-20 gap-8 min-h-[60vh]">
         <motion.div
           className="text-center"
           initial="hidden"
@@ -354,7 +300,7 @@ export default function Baseline30() {
           viewport={{ once: true, margin: "-100px" }}
           variants={fadeUp}
         >
-          <h2 className="text-white text-5xl lg:text-7xl font-light leading-tight mb-10">
+          <h2 className="text-white text-5xl lg:text-7xl font-light leading-tight mb-8">
             Set a <span className="font-extrabold">Goal</span>
             <br />&amp;<br />
             Start <span className="font-extrabold">Saving</span>
