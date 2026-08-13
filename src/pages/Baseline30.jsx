@@ -92,129 +92,191 @@ const PhoneScreenshot = ({ src, alt }) => (
   </div>
 );
 
-// Onboarding quiz phone mockup — shows the financial profile questions
-const OnboardingPhoneMockup = () => (
+// BaseScore result phone mockup — shows the score and its five tenets
+const BaseScoreMockup = () => {
+  const tenets = [
+    { label: "Financial Knowledge", score: 72, color: "bg-purple-400", pct: 85 },
+    { label: "Income to Debt Ratio", score: 61, color: "bg-blue-400", pct: 72 },
+    { label: "Preparedness", score: 55, color: "bg-yellow-400", pct: 65 },
+    { label: "Risk Appetite", score: 68, color: "bg-orange-400", pct: 80 },
+    { label: "Credit Score", score: 58, color: "bg-pink-400", pct: 68 },
+  ];
+  return (
+    <div className="relative w-[240px] lg:w-[280px] rounded-[36px] border border-white/15 shadow-2xl overflow-hidden bg-[#0a0e1a] flex flex-col" style={{ aspectRatio: '9/19' }}>
+      <div className="flex justify-between px-5 pt-4 pb-1 text-white/50 text-[9px]">
+        <span>9:41</span><span>●●● WiFi ▮</span>
+      </div>
+      <div className="px-5 pt-2 pb-5 flex-1 flex flex-col">
+        <p className="text-white/50 text-[9px] uppercase tracking-widest mb-3">Your BaseScore™</p>
+        {/* Score ring */}
+        <div className="flex flex-col items-center mb-4">
+          <div className="relative w-24 h-24 flex items-center justify-center">
+            <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 96 96">
+              <circle cx="48" cy="48" r="40" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="7" />
+              <circle cx="48" cy="48" r="40" fill="none" stroke="#2EFD7A" strokeWidth="7"
+                strokeDasharray={`${2 * Math.PI * 40}`}
+                strokeDashoffset={`${2 * Math.PI * 40 * (1 - 0.76)}`}
+                strokeLinecap="round" />
+            </svg>
+            <div className="text-center z-10">
+              <p className="text-white font-extrabold text-2xl leading-none">647</p>
+              <p className="text-white/40 text-[8px]">of 850</p>
+            </div>
+          </div>
+          <span className="mt-1 text-[9px] font-bold px-3 py-1 rounded-full bg-teal-400/20 text-teal-400">Good Standing</span>
+        </div>
+        {/* Tenets */}
+        <div className="space-y-2 flex-1">
+          {tenets.map(t => (
+            <div key={t.label}>
+              <div className="flex justify-between items-center mb-0.5">
+                <span className="text-white/70 text-[9px]">{t.label}</span>
+                <span className="text-white/50 text-[9px] font-bold">{t.score}/85</span>
+              </div>
+              <div className="h-1 bg-white/10 rounded-full">
+                <div className={`h-full ${t.color} rounded-full`} style={{ width: `${t.pct}%` }} />
+              </div>
+            </div>
+          ))}
+        </div>
+        {/* CTA */}
+        <div className="mt-3 bg-teal-400 rounded-2xl py-2.5 text-center">
+          <span className="text-black font-bold text-xs">Improve My Score</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Parents collaboration mockup — parent + child shared view
+const ParentsMockup = () => (
   <div className="relative w-[240px] lg:w-[280px] rounded-[36px] border border-white/15 shadow-2xl overflow-hidden bg-[#0a0e1a] flex flex-col" style={{ aspectRatio: '9/19' }}>
-    {/* status bar */}
     <div className="flex justify-between px-5 pt-4 pb-1 text-white/50 text-[9px]">
       <span>9:41</span><span>●●● WiFi ▮</span>
     </div>
-    {/* progress bar */}
-    <div className="px-5 pt-3 pb-4">
-      <div className="flex gap-1 mb-4">
-        {[1,2,3,4,5].map(i => (
-          <div key={i} className={`flex-1 h-1 rounded-full ${i <= 2 ? 'bg-teal-400' : 'bg-white/15'}`} />
-        ))}
+    <div className="px-5 pt-2 flex-1">
+      <p className="text-white/50 text-[9px] uppercase tracking-widest mb-2">Family Dashboard</p>
+      {/* Member avatars */}
+      <div className="flex items-center gap-2 mb-4">
+        <div className="flex -space-x-2">
+          <div className="w-8 h-8 rounded-full bg-purple-400 border-2 border-[#0a0e1a] flex items-center justify-center text-[10px] font-bold text-black">P</div>
+          <div className="w-8 h-8 rounded-full bg-teal-400 border-2 border-[#0a0e1a] flex items-center justify-center text-[10px] font-bold text-black">K</div>
+        </div>
+        <div>
+          <p className="text-white text-xs font-bold">The Johnson Family</p>
+          <p className="text-white/40 text-[9px]">Parent + 1 child</p>
+        </div>
       </div>
-      {/* Step label */}
-      <p className="text-white/50 text-[9px] uppercase tracking-widest mb-2">Step 2 of 5</p>
-      <h3 className="text-white font-bold text-sm leading-snug mb-4">How would you describe your financial knowledge?</h3>
-      {/* Options */}
-      {[
-        { label: "Complete Beginner", sub: "Just starting out", active: false },
-        { label: "Some Knowledge", sub: "Know the basics", active: true },
-        { label: "Intermediate", sub: "Comfortable with investing", active: false },
-      ].map((opt) => (
-        <div key={opt.label} className={`flex items-center gap-3 p-3 rounded-xl mb-2 border ${opt.active ? 'border-teal-400 bg-teal-400/10' : 'border-white/10 bg-white/5'}`}>
-          <div className={`w-4 h-4 rounded-full border-2 shrink-0 ${opt.active ? 'border-teal-400 bg-teal-400' : 'border-white/30'}`} />
+      {/* Child progress card */}
+      <div className="bg-teal-400/10 border border-teal-400/30 rounded-xl p-3 mb-3">
+        <div className="flex items-center gap-2 mb-2">
+          <div className="w-6 h-6 rounded-full bg-teal-400 flex items-center justify-center text-[9px] font-bold text-black">K</div>
           <div>
-            <p className={`text-xs font-semibold ${opt.active ? 'text-teal-400' : 'text-white/80'}`}>{opt.label}</p>
-            <p className="text-[9px] text-white/40">{opt.sub}</p>
+            <p className="text-white text-xs font-bold">Kyle's Progress</p>
+            <p className="text-teal-400 text-[9px]">3 lessons this week 🔥</p>
           </div>
         </div>
-      ))}
+        <div className="flex gap-1">
+          {['Budget', 'Saving', 'Credit'].map((tag, i) => (
+            <span key={tag} className={`text-[8px] px-1.5 py-0.5 rounded-full font-bold ${i === 0 ? 'bg-teal-400 text-black' : 'bg-white/10 text-white/50'}`}>{tag}</span>
+          ))}
+        </div>
+      </div>
+      {/* Nudge */}
+      <div className="bg-white/5 border border-white/10 rounded-xl p-3 mb-3">
+        <p className="text-white/60 text-[9px] uppercase tracking-widest mb-1">Parent Nudge</p>
+        <p className="text-white text-xs font-semibold mb-2">"Great job finishing Budgeting Basics! 🎉"</p>
+        <div className="flex gap-2">
+          <div className="flex-1 text-center py-1.5 rounded-lg bg-teal-400/20 text-teal-400 text-[9px] font-bold">Send Message</div>
+          <div className="flex-1 text-center py-1.5 rounded-lg bg-white/10 text-white/50 text-[9px] font-bold">Add Goal</div>
+        </div>
+      </div>
+      {/* Shared goal */}
+      <div className="bg-white/5 border border-white/10 rounded-xl p-3">
+        <div className="flex justify-between items-center mb-1">
+          <p className="text-white text-xs font-semibold">🎓 College Fund</p>
+          <span className="text-teal-400 text-[9px] font-bold">21%</span>
+        </div>
+        <div className="h-1.5 bg-white/10 rounded-full">
+          <div className="h-full bg-teal-400 rounded-full w-[21%]" />
+        </div>
+        <p className="text-white/40 text-[8px] mt-1">$4,200 of $20,000</p>
+      </div>
     </div>
-    {/* Divider */}
-    <div className="mx-5 border-t border-white/10 mb-3" />
-    {/* Risk appetite question peek */}
-    <div className="px-5">
-      <p className="text-white/30 text-[9px] uppercase tracking-widest mb-2">Up next</p>
-      <p className="text-white/50 text-xs font-medium">What's your risk appetite?</p>
-      <div className="flex gap-2 mt-2">
-        {['Conservative', 'Moderate', 'Aggressive'].map(r => (
-          <span key={r} className="text-[8px] text-white/30 border border-white/10 px-2 py-1 rounded-full">{r}</span>
+    <div className="px-5 pb-5 pt-3">
+      <div className="bg-white/10 rounded-2xl py-2.5 text-center">
+        <span className="text-white font-bold text-xs">Manage Family</span>
+      </div>
+    </div>
+  </div>
+);
+
+// Kids goals + rewards mockup
+const KidsMockup = () => (
+  <div className="relative w-[240px] lg:w-[280px] rounded-[36px] border border-white/15 shadow-2xl overflow-hidden bg-[#0a0e1a] flex flex-col" style={{ aspectRatio: '9/19' }}>
+    <div className="flex justify-between px-5 pt-4 pb-1 text-white/50 text-[9px]">
+      <span>9:41</span><span>●●● WiFi ▮</span>
+    </div>
+    <div className="px-5 pt-2 flex-1 flex flex-col">
+      {/* XP banner */}
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-white font-bold text-sm">My Journey 🚀</p>
+        <div className="flex items-center gap-1 bg-yellow-400/20 rounded-full px-2 py-1">
+          <span className="text-yellow-400 text-[9px] font-bold">🪙 480 XP</span>
+        </div>
+      </div>
+      {/* Level bar */}
+      <div className="bg-white/5 border border-white/10 rounded-xl p-3 mb-3">
+        <div className="flex justify-between text-[9px] mb-1">
+          <span className="text-white/60">Level 4 — Finance Rookie</span>
+          <span className="text-yellow-400 font-bold">80/100 XP</span>
+        </div>
+        <div className="h-1.5 bg-white/10 rounded-full">
+          <div className="h-full bg-yellow-400 rounded-full w-4/5" />
+        </div>
+      </div>
+      {/* Active goal */}
+      <div className="bg-teal-400/10 border border-teal-400/30 rounded-xl p-3 mb-3">
+        <p className="text-white/50 text-[9px] uppercase tracking-widest mb-1">Active Goal</p>
+        <div className="flex items-center gap-2 mb-2">
+          <span className="text-lg">🎓</span>
+          <div className="flex-1">
+            <p className="text-white text-xs font-bold">College Fund</p>
+            <p className="text-white/40 text-[9px]">$4,200 of $20,000</p>
+          </div>
+          <span className="text-teal-400 font-bold text-xs">21%</span>
+        </div>
+        <div className="h-1.5 bg-white/10 rounded-full">
+          <div className="h-full bg-teal-400 rounded-full w-[21%]" />
+        </div>
+      </div>
+      {/* Badges earned */}
+      <p className="text-white/50 text-[9px] uppercase tracking-widest mb-2">Badges Earned</p>
+      <div className="flex gap-2 mb-3">
+        {[
+          { emoji: '🏅', label: 'First Lesson' },
+          { emoji: '🔥', label: '7-Day Streak' },
+          { emoji: '💡', label: 'Budget Pro' },
+        ].map(b => (
+          <div key={b.label} className="flex flex-col items-center bg-white/5 rounded-xl p-2 flex-1">
+            <span className="text-lg mb-0.5">{b.emoji}</span>
+            <span className="text-[7px] text-white/50 text-center leading-tight">{b.label}</span>
+          </div>
         ))}
       </div>
-    </div>
-    {/* CTA */}
-    <div className="absolute bottom-0 left-0 right-0 p-4">
-      <div className="bg-teal-400 rounded-2xl py-3 text-center">
-        <span className="text-black font-bold text-xs">Continue</span>
+      {/* Next reward */}
+      <div className="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-2.5 flex items-center gap-2 mt-auto">
+        <span className="text-base">🎁</span>
+        <div>
+          <p className="text-yellow-400 text-[9px] font-bold">Next Reward at 500 XP!</p>
+          <p className="text-white/40 text-[8px]">20 XP to go — keep learning</p>
+        </div>
       </div>
     </div>
-  </div>
-);
-
-// Goals phone mockup
-const GoalsPhoneMockup = () => (
-  <div className="relative w-[240px] lg:w-[280px] rounded-[36px] border border-white/15 shadow-2xl overflow-hidden bg-[#0a0e1a] flex flex-col" style={{ aspectRatio: '9/19' }}>
-    <div className="flex justify-between px-5 pt-4 pb-1 text-white/50 text-[9px]">
-      <span>9:41</span><span>●●● WiFi ▮</span>
-    </div>
-    <div className="px-5 pt-3 flex-1">
-      <p className="text-white/50 text-[9px] uppercase tracking-widest mb-1">My Goals</p>
-      <h3 className="text-white font-bold text-sm mb-4">Saving Together 🎯</h3>
-      {[
-        { name: "College Fund", emoji: "🎓", saved: 4200, target: 20000, pct: 21 },
-        { name: "Family Vacation", emoji: "✈️", saved: 1800, target: 5000, pct: 36 },
-        { name: "Emergency Fund", emoji: "🛡️", saved: 3000, target: 10000, pct: 30 },
-      ].map(g => (
-        <div key={g.name} className="bg-white/5 border border-white/10 rounded-xl p-3 mb-2">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-base">{g.emoji}</span>
-            <div className="flex-1">
-              <p className="text-white text-xs font-semibold">{g.name}</p>
-              <p className="text-white/40 text-[9px]">${g.saved.toLocaleString()} of ${g.target.toLocaleString()}</p>
-            </div>
-            <span className="text-teal-400 font-bold text-xs">{g.pct}%</span>
-          </div>
-          <div className="h-1.5 bg-white/10 rounded-full">
-            <div className="h-full bg-teal-400 rounded-full" style={{ width: `${g.pct}%` }} />
-          </div>
-        </div>
-      ))}
-    </div>
-    <div className="px-5 pb-6">
+    <div className="px-5 pb-5 pt-3">
       <div className="bg-teal-400 rounded-2xl py-2.5 text-center">
-        <span className="text-black font-bold text-xs">+ Add Goal</span>
+        <span className="text-black font-bold text-xs">Continue Learning</span>
       </div>
-    </div>
-  </div>
-);
-
-// Learning path phone mockup
-const LearningPhoneMockup = () => (
-  <div className="relative w-[240px] lg:w-[280px] rounded-[36px] border border-white/15 shadow-2xl overflow-hidden bg-[#0a0e1a] flex flex-col" style={{ aspectRatio: '9/19' }}>
-    <div className="flex justify-between px-5 pt-4 pb-1 text-white/50 text-[9px]">
-      <span>9:41</span><span>●●● WiFi ▮</span>
-    </div>
-    <div className="px-5 pt-3 flex-1">
-      <div className="flex justify-between items-center mb-3">
-        <p className="text-white font-bold text-sm">Learning Path 📚</p>
-        <div className="flex items-center gap-1 bg-yellow-400/20 rounded-full px-2 py-1">
-          <span className="text-yellow-400 text-[9px] font-bold">🪙 245 XP</span>
-        </div>
-      </div>
-      {[
-        { title: "Budgeting Basics", tag: "budgeting", pct: 100, color: "bg-teal-400" },
-        { title: "Smart Saving", tag: "saving", pct: 60, color: "bg-blue-400" },
-        { title: "Investing 101", tag: "investing", pct: 0, color: "bg-purple-400" },
-        { title: "Credit & Debt", tag: "credit", pct: 0, color: "bg-orange-400" },
-      ].map((m, i) => (
-        <div key={m.title} className={`flex items-center gap-3 p-3 rounded-xl mb-2 border ${m.pct === 100 ? 'border-teal-400/30 bg-teal-400/5' : 'border-white/10 bg-white/5'}`}>
-          <div className={`w-8 h-8 rounded-full ${m.color} flex items-center justify-center text-black text-xs font-bold`}>
-            {m.pct === 100 ? '✓' : i + 1}
-          </div>
-          <div className="flex-1">
-            <p className="text-white text-xs font-semibold">{m.title}</p>
-            <div className="h-1 bg-white/10 rounded-full mt-1">
-              <div className={`h-full ${m.color} rounded-full`} style={{ width: `${m.pct}%` }} />
-            </div>
-          </div>
-          {m.pct === 0 && i !== 2 && <span className="text-white/20 text-xs">🔒</span>}
-          {i === 1 && <span className="text-[8px] bg-teal-400 text-black px-1.5 py-0.5 rounded-full font-bold">Active</span>}
-        </div>
-      ))}
     </div>
   </div>
 );
@@ -239,7 +301,7 @@ function BaseScoreSection({ onNav }) {
           onClick={() => onNav("/register")}
         >
           <div className="w-full bg-transparent border-2 border-white text-white text-lg px-6 py-4 pr-14 rounded-full h-[60px] flex items-center overflow-hidden">
-            <span className="flex-1 overflow-hidden whitespace-nowrap relative">
+            <span className="flex-1 overflow-hidden whitespace-nowrap relative text-left">
               <span className={`${selected ? "bg-white/25 rounded px-0.5" : ""}`}>{text}</span>
               {!selected && (
                 <span className="inline-block w-[2px] h-[1.1em] bg-white/80 ml-[1px] animate-pulse align-middle" />
@@ -399,9 +461,7 @@ export default function Baseline30() {
             Introducing <span className="font-extrabold">BaseScore™</span>
           </h2>
           <p className="text-white/70 text-lg leading-relaxed">
-            More than just a credit score or retirement preparedness,{" "}
-            <span className="text-white font-bold">BaseScore™</span> is a proprietary way to calculate your financial
-            health and truly understand your whole financial picture.
+            <span className="text-white font-bold">BaseScore™</span> is a proprietary way to calculate your financial health. More than just a credit score or retirement preparedness, it allows you to truly understand your whole financial picture.
           </p>
         </motion.div>
         <motion.div
@@ -411,7 +471,7 @@ export default function Baseline30() {
           viewport={{ once: true, margin: "-100px" }}
           variants={{ hidden: { opacity: 0, x: 60 }, visible: { opacity: 1, x: 0, transition: { duration: 0.9, ease: "easeOut" } } }}
         >
-          <OnboardingPhoneMockup />
+          <BaseScoreMockup />
         </motion.div>
       </section>
 
@@ -427,7 +487,7 @@ export default function Baseline30() {
           viewport={{ once: true, margin: "-100px" }}
           variants={{ hidden: { opacity: 0, x: -60 }, visible: { opacity: 1, x: 0, transition: { duration: 0.9, ease: "easeOut" } } }}
         >
-          <GoalsPhoneMockup />
+          <ParentsMockup />
         </motion.div>
         <motion.div
           className="flex-1 max-w-lg"
@@ -439,10 +499,9 @@ export default function Baseline30() {
           <h2 className="text-white text-5xl lg:text-7xl font-light leading-tight mb-6">
             For <span className="font-extrabold">Parents</span>
           </h2>
-          <p className="text-white font-bold text-lg mb-4">Tracability &amp; Collaboration</p>
+          <p className="text-white font-bold text-lg mb-4">Traceability &amp; Collaboration</p>
           <p className="text-white/70 text-lg leading-relaxed">
-            Map out the benefits of coaching your children on their financial journey.{" "}
-            <span className="text-white font-bold">Baseline</span> provides the guardrails for the education and planning process.
+            <span className="text-white font-bold">Baseline</span> provides the guardrails for the education and planning process with your children. Map out the benefits of coaching them on their financial journey.
           </p>
         </motion.div>
       </section>
@@ -459,10 +518,9 @@ export default function Baseline30() {
           <h2 className="text-white text-5xl lg:text-7xl font-light leading-tight mb-6">
             For <span className="font-extrabold">Kids</span>
           </h2>
-          <p className="text-white font-bold text-lg mb-4">Take Control Of Your Money</p>
+          <p className="text-white font-bold text-lg mb-4">Take Control &amp; Earn Rewards</p>
           <p className="text-white/70 text-lg leading-relaxed text-left">
-            Learn about your money so that you can reach your goals and plan your future better (like paying for college and beyond).
-            Get the tips and tools to reach your goals better and faster.
+            Learn about your money so that you can reach your goals and plan your future better (like paying for college and beyond). Earn rewards for reaching your goals and completing quizzes.
           </p>
         </motion.div>
         <motion.div
@@ -472,7 +530,7 @@ export default function Baseline30() {
           viewport={{ once: true, margin: "-100px" }}
           variants={{ hidden: { opacity: 0, x: 60 }, visible: { opacity: 1, x: 0, transition: { duration: 0.9, ease: "easeOut" } } }}
         >
-          <LearningPhoneMockup />
+          <KidsMockup />
         </motion.div>
       </section>
 
