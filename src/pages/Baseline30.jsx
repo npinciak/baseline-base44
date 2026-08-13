@@ -4,18 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
 
 const BASESCORE_QUESTIONS = [
-  "How Healthy Is Your Money?",
-  "Is Your Money Growing As Fast As You Want?",
-  "How Can You Reach Your Goals Faster?",
-  "Are You On Track For Retirement?",
-  "Do You Know Your Debt-To-Income Ratio?",
-  "Is Your Credit Score Holding You Back?",
-  "Could You Survive 3 Months Without Income?",
-  "Are You Paying Too Much In Interest?",
-  "How Much Should You Be Saving Each Month?",
-  "Is Your Emergency Fund Big Enough?",
-  "Are You Investing As Much As You Could Be?",
-  "What Would It Take To Be Financially Free?",
+  "How Healthy Is My Money?",
+  "Could I Be Doing More?",
+  "What Am I Missing?",
 ];
 
 // phases: typing → pause → selected (flash highlight) → clearing → next
