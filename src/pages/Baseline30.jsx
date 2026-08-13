@@ -423,7 +423,7 @@ export default function Baseline30() {
             className="flex flex-col gap-[clamp(10px,2.4vw,47px)] w-full max-w-[min(508px,85vw)]"
           >
             <ImageWord images={baselineImages} width={508} height={89} ariaLabel="Baseline" />
-            <ImageWord images={mindOverMoneyImages} width={327} height={21} ariaLabel="Mind Over Money" />
+            <p className="text-white/70 text-sm font-light tracking-[0.35em] uppercase">Mind Over Money</p>
           </motion.div>
         </div>
 
