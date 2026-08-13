@@ -238,15 +238,13 @@ function BaseScoreSection({ onNav }) {
           className="relative max-w-xl mx-auto mb-7 cursor-pointer"
           onClick={() => onNav("/register")}
         >
-          <div className="w-full bg-transparent border-2 border-white text-white text-lg px-6 py-4 pr-14 rounded-full flex items-center min-h-[60px]">
-            <span
-              className={`transition-colors duration-150 ${selected ? "bg-white/30 rounded" : ""}`}
-            >
-              {text}
+          <div className="w-full bg-transparent border-2 border-white text-white text-lg px-6 py-4 pr-14 rounded-full h-[60px] flex items-center overflow-hidden">
+            <span className="flex-1 overflow-hidden whitespace-nowrap relative">
+              <span className={`${selected ? "bg-white/25 rounded px-0.5" : ""}`}>{text}</span>
+              {!selected && (
+                <span className="inline-block w-[2px] h-[1.1em] bg-white/80 ml-[1px] animate-pulse align-middle" />
+              )}
             </span>
-            {!selected && (
-              <span className="inline-block w-[2px] h-[1.1em] bg-white/80 ml-[2px] animate-pulse align-middle" />
-            )}
           </div>
           <Search className="absolute right-5 top-1/2 -translate-y-1/2 text-white w-6 h-6" />
         </div>
@@ -389,7 +387,7 @@ export default function Baseline30() {
       </section>
 
       {/* ─── INTRODUCING BASESCORE ─── */}
-      <section className="w-full flex flex-col lg:flex-row items-center px-8 lg:px-[clamp(48px,8vw,140px)] py-[86px] gap-20 lg:gap-32">
+      <section className="w-full flex flex-col lg:flex-row items-center px-8 lg:px-[clamp(48px,8vw,140px)] py-[86px] gap-20 lg:gap-48">
         <motion.div
           className="flex-1 max-w-lg"
           initial="hidden"
@@ -421,7 +419,7 @@ export default function Baseline30() {
       <BaseScoreSection onNav={handleNav} />
 
       {/* ─── FOR PARENTS ─── */}
-      <section className="w-full flex flex-col lg:flex-row items-center px-8 lg:px-[clamp(48px,8vw,140px)] py-[86px] gap-20 lg:gap-32">
+      <section className="w-full flex flex-col lg:flex-row items-center px-8 lg:px-[clamp(48px,8vw,140px)] py-[86px] gap-20 lg:gap-48">
         <motion.div
           className="flex justify-center lg:order-first"
           initial="hidden"
@@ -450,7 +448,7 @@ export default function Baseline30() {
       </section>
 
       {/* ─── FOR KIDS ─── */}
-      <section className="w-full flex flex-col lg:flex-row items-center px-8 lg:px-[clamp(48px,8vw,140px)] py-[86px] gap-20 lg:gap-32">
+      <section className="w-full flex flex-col lg:flex-row items-center px-8 lg:px-[clamp(48px,8vw,140px)] py-[86px] gap-20 lg:gap-48">
         <motion.div
           className="flex-1 max-w-lg"
           initial="hidden"
@@ -487,6 +485,7 @@ export default function Baseline30() {
           viewport={{ once: true, margin: "-100px" }}
           variants={fadeUp}
         >
+          <p className="text-white/50 text-sm uppercase tracking-[0.25em] font-semibold mb-6">For Everyone</p>
           <h2 className="text-white text-5xl lg:text-7xl font-light leading-tight mb-8">
             Set a <span className="font-extrabold">Goal</span>
             <br />&amp;<br />
