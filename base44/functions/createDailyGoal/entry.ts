@@ -1,21 +1,21 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 
 const GOAL_ROTATION = [
-  { name: "Emergency Fund", goal_type: "emergency", target_amount: 5000, image: "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=400" },
-  { name: "Dream Vacation", goal_type: "vacation", target_amount: 3500, image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400" },
-  { name: "New Laptop", goal_type: "tech", target_amount: 1800, image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400" },
-  { name: "Investment Starter", goal_type: "investment", target_amount: 10000, image: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400" },
-  { name: "Down Payment Fund", goal_type: "buyHome", target_amount: 25000, image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400" },
-  { name: "New Car Savings", goal_type: "newCar", target_amount: 8000, image: "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=400" },
-  { name: "Wedding Fund", goal_type: "other", target_amount: 15000, image: "https://images.unsplash.com/photo-1519741497674-611481863552?w=400" },
-  { name: "Side Business Startup", goal_type: "investment", target_amount: 4000, image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=400" },
-  { name: "College Fund", goal_type: "education", target_amount: 20000, image: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=400" },
-  { name: "Holiday Travel", goal_type: "vacation", target_amount: 2200, image: "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=400" },
-  { name: "Home Renovation", goal_type: "buyHome", target_amount: 12000, image: "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?w=400" },
-  { name: "Retirement Boost", goal_type: "retirement", target_amount: 50000, image: "https://images.unsplash.com/photo-1434626881859-194d67b2b86f?w=400" },
-  { name: "Fitness Equipment", goal_type: "other", target_amount: 900, image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400" },
-  { name: "Rainy Day Reserve", goal_type: "emergency", target_amount: 3000, image: "https://images.unsplash.com/photo-1501854140801-50d01698950b?w=400" },
-  { name: "Music Studio Setup", goal_type: "other", target_amount: 2500, image: "https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=400" },
+  { name: "[Auto] Emergency Fund", goal_type: "emergency", target_amount: 5000, image: "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=400" },
+  { name: "[Auto] Dream Vacation", goal_type: "vacation", target_amount: 3500, image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400" },
+  { name: "[Auto] New Laptop", goal_type: "tech", target_amount: 1800, image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400" },
+  { name: "[Auto] Investment Starter", goal_type: "investment", target_amount: 10000, image: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400" },
+  { name: "[Auto] Down Payment Fund", goal_type: "buyHome", target_amount: 25000, image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400" },
+  { name: "[Auto] New Car Savings", goal_type: "newCar", target_amount: 8000, image: "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=400" },
+  { name: "[Auto] Wedding Fund", goal_type: "other", target_amount: 15000, image: "https://images.unsplash.com/photo-1519741497674-611481863552?w=400" },
+  { name: "[Auto] Side Business Startup", goal_type: "investment", target_amount: 4000, image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=400" },
+  { name: "[Auto] College Fund", goal_type: "education", target_amount: 20000, image: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=400" },
+  { name: "[Auto] Holiday Travel", goal_type: "vacation", target_amount: 2200, image: "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=400" },
+  { name: "[Auto] Home Renovation", goal_type: "buyHome", target_amount: 12000, image: "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?w=400" },
+  { name: "[Auto] Retirement Boost", goal_type: "retirement", target_amount: 50000, image: "https://images.unsplash.com/photo-1434626881859-194d67b2b86f?w=400" },
+  { name: "[Auto] Fitness Equipment", goal_type: "other", target_amount: 900, image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400" },
+  { name: "[Auto] Rainy Day Reserve", goal_type: "emergency", target_amount: 3000, image: "https://images.unsplash.com/photo-1501854140801-50d01698950b?w=400" },
+  { name: "[Auto] Music Studio Setup", goal_type: "other", target_amount: 2500, image: "https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=400" },
 ];
 
 export default async function(req) {
