@@ -33,7 +33,7 @@ export default async function(req) {
 
     // 1. Look up nathanp@base44.com in next_auth.users
     const userRes = await fetch(
-      `${supabaseUrl}/rest/v1/users?email=eq.nathanp%40base44.com&select=id&limit=1`,
+      `${supabaseUrl}/rest/v1/users?email=eq.pinciaknathand%40gmail.com&select=id&limit=1`,
       { headers: { ...headers, 'Accept-Profile': 'next_auth' } }
     );
     const users = await userRes.json();
