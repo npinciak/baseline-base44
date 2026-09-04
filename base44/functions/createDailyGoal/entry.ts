@@ -53,13 +53,27 @@ export default async function(req) {
     }
     const userProfileId = profiles[0].id;
 
-    // 3. Pick today's goal from the rotation using day-of-year index
+    // 3. Check existing goals count; if >= 10, delete the 5 oldest
+    const existingRes = await fetch(
+      `${supabaseUrl}/rest/v1/goals?user_profile_id=eq.${userProfileId}&select=id,created_at&order=created_at.asc`,
+      { headers }
+    );
+    const existingGoals = await existingRes.json();
+    if (Array.isArray(existingGoals) && existingGoals.length >= 10) {
+      const toDelete = existingGoals.slice(0, 5).map(g => g.id);
+      await fetch(
+        `${supabaseUrl}/rest/v1/goals?id=in.(${toDelete.join(',')})`,
+        { method: 'DELETE', headers }
+      );
+    }
+
+    // 4. Pick today's goal from the rotation using day-of-year index
     const now = new Date();
     const startOfYear = new Date(now.getUTCFullYear(), 0, 0);
     const dayOfYear = Math.floor((now - startOfYear) / 86400000);
     const pick = GOAL_ROTATION[dayOfYear % GOAL_ROTATION.length];
 
-    // 4. Build target date 12 months from today
+    // 5. Build target date 12 months from today
     const targetDate = new Date(now);
     targetDate.setFullYear(targetDate.getFullYear() + 1);
 
@@ -74,7 +88,7 @@ export default async function(req) {
       user_profile_id: userProfileId,
     };
 
-    // 5. Insert into Supabase goals table
+    // 6. Insert into Supabase goals table
     const goalRes = await fetch(`${supabaseUrl}/rest/v1/goals`, {
       method: 'POST',
       headers,
