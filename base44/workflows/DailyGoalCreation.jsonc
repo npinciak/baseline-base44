@@ -1,0 +1,45 @@
+{
+  "name": "Daily Goal Creation",
+  "description": "Fires every day at 9:00 AM ET and creates a rotating savings goal for nathanp@base44.com in Supabase.",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 9 * * *",
+      "one_time_date": null,
+      "timezone": "America/New_York",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "daily_goal_creation",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "create_daily_goal": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "createDailyGoal",
+            "args": {}
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Create Daily Goal",
+            "description": "Picks today's rotating goal and saves it to Supabase for nathanp@base44.com"
+          }
+        }
+      }
+    ]
+  }
+}
