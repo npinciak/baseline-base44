@@ -287,7 +287,7 @@ function BaseScoreSection({ onNav }) {
         viewport={{ once: true, margin: "-100px" }}
         variants={{ hidden: { opacity: 0, y: 40 }, visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } } }}
       >
-        <h2 className="text-white text-5xl lg:text-7xl font-light mb-10">
+        <h2 className="text-white text-4xl md:text-5xl lg:text-7xl font-light mb-10">
           What's Your <span className="font-extrabold">BaseScore?</span>
         </h2>
         <div
@@ -382,7 +382,7 @@ export default function Baseline30() {
       </header>
 
       {/* ─── HERO ─── */}
-      <section className="relative w-full min-h-screen flex flex-col lg:flex-row items-center overflow-hidden">
+      <section className="relative w-full min-h-screen flex flex-col md:flex-row items-center overflow-hidden">
         {/* Background */}
         <img
           src="https://media.base44.com/images/public/6a3542676f9044e70b439a84/5cb8a5204_323ee374e_93_338.svg"
@@ -396,7 +396,7 @@ export default function Baseline30() {
         />
 
         {/* Orb */}
-        <div className="w-full lg:w-1/2 flex items-center justify-center min-h-screen overflow-hidden z-10">
+        <div className="w-full md:w-1/2 flex items-center justify-center min-h-screen overflow-hidden z-10">
           <motion.div
             className="relative w-full max-w-[660px] aspect-square overflow-hidden"
             initial={{ opacity: 0, scale: 0.85 }}
@@ -415,7 +415,7 @@ export default function Baseline30() {
         </div>
 
         {/* Brand text */}
-        <div className="absolute inset-0 flex items-center justify-center px-8 lg:static lg:w-1/2 lg:flex lg:items-center lg:justify-start lg:px-[clamp(32px,5vw,80px)] z-10">
+        <div className="absolute inset-0 flex items-center justify-center px-8 md:static md:w-1/2 md:flex md:items-center md:justify-start md:px-[clamp(32px,5vw,80px)] z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -443,7 +443,7 @@ export default function Baseline30() {
       </section>
 
       {/* ─── INTRODUCING BASESCORE ─── */}
-      <section className="w-full flex flex-col lg:flex-row items-center px-8 lg:px-[clamp(48px,8vw,140px)] py-[86px] gap-20 lg:gap-48">
+      <section className="w-full flex flex-col md:flex-row items-center px-8 md:px-[clamp(48px,6vw,140px)] py-[86px] gap-12 md:gap-20 lg:gap-48">
         <motion.div
           className="flex-1 max-w-lg"
           initial="hidden"
@@ -451,7 +451,7 @@ export default function Baseline30() {
           viewport={{ once: true, margin: "-100px" }}
           variants={fadeUp}
         >
-          <h2 className="text-white text-5xl lg:text-6xl font-light leading-tight mb-8">
+          <h2 className="text-white text-4xl md:text-5xl lg:text-6xl font-light leading-tight mb-8">
             Introducing <span className="font-extrabold">BaseScore™</span>
           </h2>
           <p className="text-white/70 text-lg leading-relaxed">
@@ -473,9 +473,9 @@ export default function Baseline30() {
       <BaseScoreSection onNav={handleNav} />
 
       {/* ─── FOR PARENTS ─── */}
-      <section className="w-full flex flex-col lg:flex-row items-center px-8 lg:px-[clamp(48px,8vw,140px)] py-[86px] gap-20 lg:gap-48">
+      <section className="w-full flex flex-col md:flex-row items-center px-8 md:px-[clamp(48px,6vw,140px)] py-[86px] gap-12 md:gap-20 lg:gap-48">
         <motion.div
-          className="flex justify-center lg:order-first"
+          className="flex justify-center md:order-first"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
@@ -490,7 +490,7 @@ export default function Baseline30() {
           viewport={{ once: true, margin: "-100px" }}
           variants={fadeUp}
         >
-          <h2 className="text-white text-5xl lg:text-7xl font-light leading-tight mb-6">
+          <h2 className="text-white text-4xl md:text-5xl lg:text-7xl font-light leading-tight mb-6">
             For <span className="font-extrabold">Parents</span>
           </h2>
           <p className="text-white font-bold text-lg mb-4">Traceability &amp; Collaboration</p>
@@ -501,7 +501,7 @@ export default function Baseline30() {
       </section>
 
       {/* ─── FOR KIDS ─── */}
-      <section className="w-full flex flex-col lg:flex-row items-center px-8 lg:px-[clamp(48px,8vw,140px)] py-[86px] gap-20 lg:gap-48">
+      <section className="w-full flex flex-col md:flex-row items-center px-8 md:px-[clamp(48px,6vw,140px)] py-[86px] gap-12 md:gap-20 lg:gap-48">
         <motion.div
           className="flex-1 max-w-lg"
           initial="hidden"
@@ -509,7 +509,7 @@ export default function Baseline30() {
           viewport={{ once: true, margin: "-100px" }}
           variants={fadeUp}
         >
-          <h2 className="text-white text-5xl lg:text-7xl font-light leading-tight mb-6">
+          <h2 className="text-white text-4xl md:text-5xl lg:text-7xl font-light leading-tight mb-6">
             For <span className="font-extrabold">Kids</span>
           </h2>
           <p className="text-white font-bold text-lg mb-4">Take Control &amp; Earn Rewards</p>
@@ -538,7 +538,7 @@ export default function Baseline30() {
           variants={fadeUp}
         >
           <p className="text-white/50 text-sm uppercase tracking-[0.25em] font-semibold mb-6">For Everyone</p>
-          <h2 className="text-white text-5xl lg:text-7xl font-light leading-tight mb-8">
+          <h2 className="text-white text-4xl md:text-5xl lg:text-7xl font-light leading-tight mb-8">
             Set a <span className="font-extrabold">Goal</span>
             <br />&amp;<br />
             Start <span className="font-extrabold">Saving</span>
