@@ -254,7 +254,7 @@ export default function BaseScoreQuiz() {
               transition={{ duration: 0.3, ease: "easeOut" }}
             >
               {/* Question */}
-              <h2 className="text-white text-2xl lg:text-3xl font-light leading-snug mb-10 tracking-tight">
+              <h2 className="text-white text-xl lg:text-2xl font-normal leading-snug mb-10 tracking-tight">
                 {step.question}
               </h2>
 
@@ -266,10 +266,10 @@ export default function BaseScoreQuiz() {
                     <button
                       key={i}
                       onClick={() => handleSelect(opt)}
-                      className={`group w-full flex items-center gap-4 px-5 py-4 rounded-xl border text-left text-sm font-light tracking-wide transition-all duration-200 ${
+                      className={`group w-full flex items-center gap-4 px-5 py-4 rounded-xl border text-left text-sm font-normal tracking-wide transition-all duration-200 ${
                         isSelected
                           ? "border-[#2EFD7A]/40 bg-[#2EFD7A]/8 text-white"
-                          : "border-white/8 bg-white/[0.02] text-white/50 hover:border-white/20 hover:text-white/80 hover:bg-white/[0.04]"
+                          : "border-white/8 bg-white/[0.03] text-white/70 hover:border-white/20 hover:text-white/90 hover:bg-white/[0.06]"
                       }`}
                       style={isSelected ? { background: "rgba(46,253,122,0.06)" } : {}}
                     >
