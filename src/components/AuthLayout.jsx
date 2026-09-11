@@ -40,23 +40,9 @@ function Wordmark({ className = "" }) {
   );
 }
 
-export default function AuthLayout({ icon: Icon, title, subtitle, footer, children }) {
+export default function AuthLayout({ title, subtitle, footer, children }) {
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-center bg-black px-4 py-12 overflow-hidden">
-      {/* Ambient glow */}
-      <motion.div
-        className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-[#2EFD7A]/20 blur-[120px] pointer-events-none"
-        animate={{ opacity: [0.4, 0.7, 0.4] }}
-        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <motion.img
-        src={ORB_SRC}
-        alt=""
-        className="absolute top-[-120px] left-1/2 -translate-x-1/2 w-[420px] opacity-30 pointer-events-none select-none"
-        animate={{ filter: ["brightness(1)", "brightness(1.3)", "brightness(1)"] }}
-        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-      />
-
       <div className="relative z-10 w-full max-w-md">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -64,12 +50,28 @@ export default function AuthLayout({ icon: Icon, title, subtitle, footer, childr
           transition={{ duration: 0.7, ease: "easeOut" }}
           className="flex flex-col items-center text-center mb-8"
         >
+          {/* Cropped power symbol only — the source image is a square with the icon on top and the "Baseline" wordmark baked into the bottom, so we clip to the top fraction to isolate just the icon */}
+          <div className="relative mb-4" style={{ width: 108, height: 108 * 0.65 }}>
+            <motion.div
+              className="absolute inset-0 rounded-2xl bg-[#2EFD7A]/25 blur-2xl pointer-events-none"
+              animate={{ opacity: [0.4, 0.7, 0.4] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            />
+            <div className="relative w-full h-full overflow-hidden">
+              <motion.img
+                src={ORB_SRC}
+                alt=""
+                className="absolute top-0 left-0 select-none"
+                style={{ width: 108, height: 108, objectFit: "cover" }}
+                animate={{ filter: ["brightness(1)", "brightness(1.3)", "brightness(1)"] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              />
+            </div>
+          </div>
+
           <Wordmark className="mb-3" />
           <p className="text-white/40 text-[11px] font-light tracking-[0.35em] uppercase mb-8">Mind Over Money</p>
 
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[#2EFD7A]/15 border border-[#2EFD7A]/30 mb-5 shadow-[0_0_30px_rgba(46,253,122,0.15)]">
-            <Icon className="w-7 h-7 text-[#2EFD7A]" aria-hidden="true" />
-          </div>
           <h1 className="text-3xl font-light tracking-tight text-white">{title}</h1>
           {subtitle && <p className="text-white/50 mt-2 text-sm">{subtitle}</p>}
         </motion.div>
