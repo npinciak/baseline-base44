@@ -135,11 +135,11 @@ const WORDMARK_H = 89;
 function BaselineWordmark({ scale = 0.38 }) {
   const w = WORDMARK_W * scale;
   const h = WORDMARK_H * scale;
-  return (
+
+  const renderMark = (opacity) => (
     <div
-      className="relative shrink-0"
-      style={{ width: w, height: h }}
-      aria-label="Baseline"
+      className="absolute inset-0"
+      style={{ opacity }}
     >
       {baselineImages.map((img, i) => (
         <img
@@ -155,6 +155,39 @@ function BaselineWordmark({ scale = 0.38 }) {
           alt=""
         />
       ))}
+    </div>
+  );
+
+  return (
+    <div className="relative shrink-0" style={{ width: w, height: h }} aria-label="Baseline">
+      {/* Faint oversized watermark behind the title */}
+      <div
+        className="absolute pointer-events-none"
+        style={{
+          width: w * 3,
+          height: h * 3,
+          left: "50%",
+          top: "50%",
+          transform: "translate(-50%, -50%)",
+          opacity: 0.1,
+        }}
+      >
+        {baselineImages.map((img, i) => (
+          <img
+            key={i}
+            src={img.src}
+            className="absolute object-contain"
+            style={{
+              left: (img.left / WORDMARK_W) * (w * 3),
+              top: (img.top / WORDMARK_H) * (h * 3),
+              width: (img.width / WORDMARK_W) * (w * 3),
+              height: (img.height / WORDMARK_H) * (h * 3),
+            }}
+            alt=""
+          />
+        ))}
+      </div>
+      {renderMark(1)}
     </div>
   );
 }
