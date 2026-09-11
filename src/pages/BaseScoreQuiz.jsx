@@ -2,6 +2,25 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, ArrowLeft, Check } from "lucide-react";
+import BaseScoreResult from "@/components/BaseScoreResult";
+
+const MAX_SCORE = 500;
+const RESULT_CAP_PCT = 0.6; // preliminary score is capped at 60% of the max
+
+function calculateScore(answers) {
+  let totalFraction = 0;
+  let count = 0;
+  STEPS.forEach((step) => {
+    const answer = answers[step.key];
+    if (!answer) return;
+    const idx = step.options.indexOf(answer);
+    const frac = (step.options.length - 1 - idx) / (step.options.length - 1);
+    totalFraction += frac;
+    count += 1;
+  });
+  const avg = count > 0 ? totalFraction / count : 0;
+  return Math.round(avg * MAX_SCORE * RESULT_CAP_PCT);
+}
 
 const STEPS = [
   {
@@ -145,10 +164,16 @@ export default function BaseScoreQuiz() {
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState({});
   const [direction, setDirection] = useState(1);
+  const [showResult, setShowResult] = useState(false);
+  const [score, setScore] = useState(0);
 
   const step = STEPS[currentStep];
   const selected = answers[step.key];
   const total = STEPS.length;
+
+  if (showResult) {
+    return <BaseScoreResult score={score} onContinue={() => navigate("/register")} />;
+  }
 
   const handleSelect = (option) => {
     setAnswers((prev) => ({ ...prev, [step.key]: option }));
@@ -160,7 +185,8 @@ export default function BaseScoreQuiz() {
       setCurrentStep((s) => s + 1);
     } else {
       sessionStorage.setItem("basescore_quiz", JSON.stringify(answers));
-      navigate("/register");
+      setScore(calculateScore(answers));
+      setShowResult(true);
     }
   };
 
