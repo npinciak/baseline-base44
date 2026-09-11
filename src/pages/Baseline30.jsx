@@ -545,7 +545,7 @@ export default function Baseline30() {
           </h2>
           <button
             onClick={() => handleNav("/register")}
-            className="px-12 py-4 bg-teal-400 text-black font-semibold text-lg rounded-full hover:bg-teal-300 transition-all"
+            className="px-[41px] py-[13.6px] bg-teal-400 text-black font-semibold text-[15px] rounded-full hover:bg-teal-300 transition-all"
           >
             Let's Go
           </button>
