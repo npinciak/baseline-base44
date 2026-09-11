@@ -14,7 +14,7 @@ export default function Login() {
   return (
     <AuthLayout
       icon={LogIn}
-      title="Welcome back"
+      title="Welcome Back"
       footer={
         <>
           Don't have an account?{" "}

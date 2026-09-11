@@ -43,6 +43,25 @@ function Wordmark({ className = "" }) {
 export default function AuthLayout({ icon: Icon, title, subtitle, footer, children }) {
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-center bg-black px-4 py-12 overflow-hidden">
+      {/* Aurora borealis background — slow drifting green/blue glows */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <motion.div
+          className="absolute -top-1/4 -left-1/4 w-[80%] h-[80%] rounded-full bg-[#2EFD7A]/25 blur-[100px]"
+          animate={{ x: [0, 60, -20, 0], y: [0, 40, -30, 0], opacity: [0.5, 0.8, 0.5] }}
+          transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute top-1/3 -right-1/4 w-[70%] h-[70%] rounded-full bg-[#2EA0FD]/20 blur-[100px]"
+          animate={{ x: [0, -50, 30, 0], y: [0, -30, 20, 0], opacity: [0.4, 0.7, 0.4] }}
+          transition={{ duration: 16, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+        />
+        <motion.div
+          className="absolute bottom-[-20%] left-1/4 w-[60%] h-[60%] rounded-full bg-[#2EFDCB]/20 blur-[110px]"
+          animate={{ x: [0, 40, -40, 0], y: [0, -20, 30, 0], opacity: [0.4, 0.65, 0.4] }}
+          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+        />
+      </div>
+
       <div className="relative z-10 w-full max-w-md">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -72,13 +91,14 @@ export default function AuthLayout({ icon: Icon, title, subtitle, footer, childr
           <Wordmark className="mb-3" />
           <p className="text-white/40 text-[11px] font-light tracking-[0.35em] uppercase mb-8">Mind Over Money</p>
 
+          <h1 className="text-3xl font-light tracking-tight text-white">{title}</h1>
+
           {Icon && (
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#2EFD7A]/15 border border-[#2EFD7A]/30 mb-5 shadow-[0_0_30px_rgba(46,253,122,0.15)]">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#2EFD7A]/15 border border-[#2EFD7A]/30 mt-5 mb-2 shadow-[0_0_30px_rgba(46,253,122,0.15)]">
               <Icon className="w-6 h-6 text-[#2EFD7A]" aria-hidden="true" />
             </div>
           )}
 
-          <h1 className="text-3xl font-light tracking-tight text-white">{title}</h1>
           {subtitle && <p className="text-white/50 mt-2 text-sm">{subtitle}</p>}
         </motion.div>
 
