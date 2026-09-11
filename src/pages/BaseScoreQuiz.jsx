@@ -250,7 +250,7 @@ export default function BaseScoreQuiz() {
       style={{ background: "hsl(222,47%,6%)" }}
     >
       {/* Left panel — branding */}
-      <div className="hidden lg:flex flex-col justify-between w-[340px] xl:w-[400px] shrink-0 px-14 py-10 border-r border-white/5">
+      <div className="hidden lg:flex flex-col justify-between w-[340px] xl:w-[400px] shrink-0 px-14 pt-16 pb-10 border-r border-white/5">
         <BaselineWordmark scale={0.38} />
 
         {/* Tenet labels — progress context */}
@@ -293,7 +293,7 @@ export default function BaseScoreQuiz() {
       {/* Right panel — question */}
       <div className="flex-1 h-full overflow-hidden flex flex-col justify-center items-center px-6 md:px-8 py-4 md:py-8">
         {/* Mobile wordmark */}
-        <div className="lg:hidden mb-4 md:mb-6 shrink-0">
+        <div className="lg:hidden mb-8 md:mb-10 shrink-0">
           <BaselineWordmark scale={0.24} />
         </div>
 
