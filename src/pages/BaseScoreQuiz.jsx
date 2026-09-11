@@ -201,15 +201,15 @@ export default function BaseScoreQuiz() {
 
   return (
     <div
-      className="min-h-screen flex font-body"
+      className="h-screen overflow-hidden flex font-body"
       style={{ background: "hsl(222,47%,6%)" }}
     >
       {/* Left panel — branding */}
-      <div className="hidden lg:flex flex-col justify-between w-[340px] xl:w-[400px] shrink-0 px-14 py-16 border-r border-white/5">
+      <div className="hidden lg:flex flex-col justify-between w-[340px] xl:w-[400px] shrink-0 px-14 py-10 border-r border-white/5">
         <BaselineWordmark scale={0.38} />
 
         {/* Tenet labels — progress context */}
-        <div className="space-y-6">
+        <div className="space-y-4">
           {["Preparedness", "Money Mindset", "Credit Health", "Risk Appetite", "Financial Knowledge"].map((label, i) => {
             const stepIndices = {
               "Preparedness": [0, 1],
@@ -246,16 +246,16 @@ export default function BaseScoreQuiz() {
       </div>
 
       {/* Right panel — question */}
-      <div className="flex-1 flex flex-col justify-center items-center px-8 py-16">
+      <div className="flex-1 h-full overflow-hidden flex flex-col justify-center items-center px-6 md:px-8 py-4 md:py-8">
         {/* Mobile wordmark */}
-        <div className="lg:hidden mb-12">
-          <BaselineWordmark scale={0.28} />
+        <div className="lg:hidden mb-4 md:mb-6 shrink-0">
+          <BaselineWordmark scale={0.24} />
         </div>
 
         <div className="w-full max-w-[520px]">
           {/* Step counter + progress bar */}
-          <div className="mb-12">
-            <div className="flex items-center justify-between mb-4">
+          <div className="mb-5 md:mb-8">
+            <div className="flex items-center justify-between mb-3">
               <span className="text-white/30 text-xs font-light tracking-widest uppercase">{step.section}</span>
               <span className="text-white/20 text-xs font-light">{currentStep + 1} / {total}</span>
             </div>
@@ -280,19 +280,19 @@ export default function BaseScoreQuiz() {
               transition={{ duration: 0.3, ease: "easeOut" }}
             >
               {/* Question */}
-              <h2 className="text-white text-xl lg:text-2xl font-normal leading-snug mb-10 tracking-tight">
+              <h2 className="text-white text-lg md:text-xl lg:text-2xl font-normal leading-snug mb-5 md:mb-7 tracking-tight">
                 {step.question}
               </h2>
 
               {/* Options */}
-              <div className="space-y-3 mb-12">
+              <div className="space-y-2 md:space-y-2.5 mb-6 md:mb-8">
                 {step.options.map((opt, i) => {
                   const isSelected = selected === opt;
                   return (
                     <button
                       key={i}
                       onClick={() => handleSelect(opt)}
-                      className={`group w-full flex items-center gap-4 px-5 py-4 rounded-xl border text-left text-sm font-normal tracking-wide transition-all duration-200 ${
+                      className={`group w-full flex items-center gap-4 px-4 md:px-5 py-2.5 md:py-3 rounded-xl border text-left text-sm font-normal tracking-wide transition-all duration-200 ${
                         isSelected
                           ? "border-[#2EFD7A]/60 text-white shadow-[0_0_20px_rgba(46,253,122,0.15)]"
                           : "border-white/8 bg-white/[0.03] text-white/70 hover:border-white/20 hover:text-white/90 hover:bg-white/[0.06]"
