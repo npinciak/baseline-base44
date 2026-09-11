@@ -138,21 +138,21 @@ export default function Register() {
 
       <Button
         variant="outline"
-        className="w-full h-11 text-sm font-medium"
+        className="w-full h-10 text-sm font-medium"
         onClick={handleGoogle}
       >
         <GoogleIcon className="w-5 h-5 mr-2" />
         Continue with Google
       </Button>
 
-      <div className="flex items-center gap-3 my-4">
+      <div className="flex items-center gap-3 my-3">
         <div className="h-px flex-1 bg-border" />
         <span className="text-xs text-muted-foreground">OR</span>
         <div className="h-px flex-1 bg-border" />
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-3">
-        <div className="space-y-1.5">
+      <form onSubmit={handleSubmit} className="space-y-2">
+        <div className="space-y-1">
           <Label htmlFor="email">Email address</Label>
           <div className="relative">
             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
@@ -163,12 +163,12 @@ export default function Register() {
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="pl-10 h-11"
+              className="pl-10 h-10"
               required
             />
           </div>
         </div>
-        <div className="space-y-1.5">
+        <div className="space-y-1">
           <Label htmlFor="password">Password</Label>
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
@@ -179,12 +179,12 @@ export default function Register() {
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="pl-10 h-11"
+              className="pl-10 h-10"
               required
             />
           </div>
         </div>
-        <div className="space-y-1.5">
+        <div className="space-y-1">
           <Label htmlFor="confirm">Confirm password</Label>
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
@@ -195,12 +195,12 @@ export default function Register() {
               placeholder="••••••••"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="pl-10 h-11"
+              className="pl-10 h-10"
               required
             />
           </div>
         </div>
-        <Button type="submit" className="w-full h-11 font-medium" disabled={loading}>
+        <Button type="submit" className="w-full h-10 font-medium" disabled={loading}>
           {loading ? (
             <>
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
