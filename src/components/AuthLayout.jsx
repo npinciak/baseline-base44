@@ -94,8 +94,8 @@ export default function AuthLayout({ icon: Icon, title, subtitle, footer, childr
           <h1 className="text-2xl font-light tracking-tight text-white">{title}</h1>
 
           {Icon && (
-            <div className="inline-flex items-center justify-center w-10 h-10 rounded-2xl bg-[#2EA0FD]/15 border border-[#2EA0FD]/30 mt-3 mb-1 shadow-[0_0_30px_rgba(46,160,253,0.15)]">
-              <Icon className="w-5 h-5 text-[#2EA0FD]" aria-hidden="true" />
+            <div className="inline-flex items-center justify-center w-10 h-10 rounded-2xl bg-primary/15 border border-primary/30 mt-3 mb-1 shadow-[0_0_30px_hsla(175,94%,57%,0.15)]">
+              <Icon className="w-5 h-5 text-primary" aria-hidden="true" />
             </div>
           )}
 
