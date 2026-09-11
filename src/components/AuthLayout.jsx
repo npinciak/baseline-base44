@@ -43,21 +43,21 @@ function Wordmark({ className = "" }) {
 export default function AuthLayout({ icon: Icon, title, subtitle, footer, children }) {
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-center bg-black px-4 py-12 overflow-hidden">
-      {/* Aurora borealis background — slow drifting green/blue glows */}
+      {/* Aurora borealis background — slow drifting green/blue glows, kept dim so black dominates */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
-          className="absolute -top-1/4 -left-1/4 w-[80%] h-[80%] rounded-full bg-[#2EFD7A]/25 blur-[100px]"
-          animate={{ x: [0, 60, -20, 0], y: [0, 40, -30, 0], opacity: [0.5, 0.8, 0.5] }}
+          className="absolute -top-1/4 -left-1/4 w-[70%] h-[70%] rounded-full bg-[#2EFD7A]/10 blur-[130px]"
+          animate={{ x: [0, 60, -20, 0], y: [0, 40, -30, 0], opacity: [0.2, 0.35, 0.2] }}
           transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div
-          className="absolute top-1/3 -right-1/4 w-[70%] h-[70%] rounded-full bg-[#2EA0FD]/20 blur-[100px]"
-          animate={{ x: [0, -50, 30, 0], y: [0, -30, 20, 0], opacity: [0.4, 0.7, 0.4] }}
+          className="absolute top-1/3 -right-1/4 w-[60%] h-[60%] rounded-full bg-[#2EA0FD]/8 blur-[130px]"
+          animate={{ x: [0, -50, 30, 0], y: [0, -30, 20, 0], opacity: [0.15, 0.3, 0.15] }}
           transition={{ duration: 16, repeat: Infinity, ease: "easeInOut", delay: 1 }}
         />
         <motion.div
-          className="absolute bottom-[-20%] left-1/4 w-[60%] h-[60%] rounded-full bg-[#2EFDCB]/20 blur-[110px]"
-          animate={{ x: [0, 40, -40, 0], y: [0, -20, 30, 0], opacity: [0.4, 0.65, 0.4] }}
+          className="absolute bottom-[-20%] left-1/4 w-[50%] h-[50%] rounded-full bg-[#2EFDCB]/8 blur-[140px]"
+          animate={{ x: [0, 40, -40, 0], y: [0, -20, 30, 0], opacity: [0.15, 0.28, 0.15] }}
           transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 2 }}
         />
       </div>
@@ -80,7 +80,7 @@ export default function AuthLayout({ icon: Icon, title, subtitle, footer, childr
               <motion.img
                 src={ORB_SRC}
                 alt=""
-                className="absolute top-0 left-0 select-none"
+                className="absolute top-0 left-0 select-none mix-blend-screen"
                 style={{ width: 108, height: 108, objectFit: "cover" }}
                 animate={{ filter: ["brightness(1)", "brightness(1.3)", "brightness(1)"] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
