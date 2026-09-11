@@ -293,7 +293,7 @@ export default function BaseScoreQuiz() {
       {/* Right panel — question */}
       <div className="flex-1 h-full overflow-hidden flex flex-col justify-center items-center px-6 md:px-8 py-4 md:py-8">
         {/* Mobile wordmark */}
-        <div className="lg:hidden mt-6 md:mt-10 mb-4 md:mb-6 shrink-0">
+        <div className="lg:hidden mb-4 md:mb-6 shrink-0">
           <BaselineWordmark scale={0.24} />
         </div>
 
