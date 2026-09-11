@@ -40,7 +40,7 @@ function Wordmark({ className = "" }) {
   );
 }
 
-export default function AuthLayout({ title, subtitle, footer, children }) {
+export default function AuthLayout({ icon: Icon, title, subtitle, footer, children }) {
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-center bg-black px-4 py-12 overflow-hidden">
       <div className="relative z-10 w-full max-w-md">
@@ -71,6 +71,12 @@ export default function AuthLayout({ title, subtitle, footer, children }) {
 
           <Wordmark className="mb-3" />
           <p className="text-white/40 text-[11px] font-light tracking-[0.35em] uppercase mb-8">Mind Over Money</p>
+
+          {Icon && (
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#2EFD7A]/15 border border-[#2EFD7A]/30 mb-5 shadow-[0_0_30px_rgba(46,253,122,0.15)]">
+              <Icon className="w-6 h-6 text-[#2EFD7A]" aria-hidden="true" />
+            </div>
+          )}
 
           <h1 className="text-3xl font-light tracking-tight text-white">{title}</h1>
           {subtitle && <p className="text-white/50 mt-2 text-sm">{subtitle}</p>}
