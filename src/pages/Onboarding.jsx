@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
-import { Zap, ArrowRight, ArrowLeft, PiggyBank, Unlock, TrendingUp, Award, BookOpen, Sprout, GraduationCap, BarChart2 } from 'lucide-react';
+import { ArrowRight, ArrowLeft, PiggyBank, Unlock, TrendingUp, Award, BookOpen, Sprout, GraduationCap, BarChart2 } from 'lucide-react';
+import BaselineWordmark from '@/components/BaselineWordmark';
 
 const GOALS = [
   { value: 'save_money', label: 'Save More Money', icon: PiggyBank },
@@ -17,8 +19,11 @@ const LEVELS = [
   { value: 'intermediate', label: 'Intermediate', desc: 'I manage money but want to optimize', icon: BarChart2 },
 ];
 
+const STEP_LABELS = ["Your Goal", "Experience Level"];
+
 export default function Onboarding() {
   const [step, setStep] = useState(0);
+  const [direction, setDirection] = useState(1);
   const [goal, setGoal] = useState('');
   const [level, setLevel] = useState('');
   const [saving, setSaving] = useState(false);
@@ -46,102 +51,190 @@ export default function Onboarding() {
         onboarding_completed: true,
       });
     }
-    navigate('/learn');
+    navigate('/dashboard');
+  };
+
+  const goNext = () => {
+    setDirection(1);
+    setStep(1);
+  };
+
+  const goPrev = () => {
+    if (step > 0) {
+      setDirection(-1);
+      setStep(0);
+    } else {
+      navigate('/');
+    }
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-6">
-      <div className="w-full max-w-lg">
-        {/* Header */}
-        <div className="text-center mb-10">
-          <div className="w-14 h-14 rounded-2xl bg-primary/15 flex items-center justify-center mx-auto mb-4">
-            <Zap className="w-8 h-8 text-primary" />
-          </div>
-          <h1 className="text-3xl font-display font-extrabold mb-2">Welcome to FinPath</h1>
-          <p className="text-muted-foreground">Let's personalize your learning journey</p>
-        </div>
+    <div className="h-screen overflow-hidden flex font-body" style={{ background: "hsl(222,47%,6%)" }}>
+      {/* Left panel — branding */}
+      <div className="hidden lg:flex flex-col justify-between w-[340px] xl:w-[400px] shrink-0 px-14 pt-16 pb-10 border-r border-white/5">
+        <BaselineWordmark scale={0.38} />
 
-        {/* Progress */}
-        <div className="flex gap-2 mb-8">
-          {[0, 1].map((i) => (
-            <div
-              key={i}
-              className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${i <= step ? 'bg-primary' : 'bg-secondary'}`}
-            />
-          ))}
-        </div>
-
-        {step === 0 && (
-          <div>
-            <h2 className="text-xl font-heading font-bold mb-2">What's your main financial goal?</h2>
-            <p className="text-muted-foreground text-sm mb-6">We'll customize your learning path based on this.</p>
-            <div className="space-y-3">
-              {GOALS.map((g) => (
-                <button
-                  key={g.value}
-                  onClick={() => setGoal(g.value)}
-                  className={`w-full flex items-center gap-4 p-4 rounded-2xl border text-left transition-all duration-200 ${
-                    goal === g.value
-                      ? 'border-primary bg-primary/10 text-foreground'
-                      : 'border-border bg-card text-foreground hover:border-primary/40'
+        <div className="space-y-4">
+          {STEP_LABELS.map((label, i) => {
+            const isActive = i === step;
+            const isDone = i < step;
+            return (
+              <div key={label} className="flex items-center gap-3">
+                <div
+                  className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                    isDone || isActive ? "bg-[#2EFD7A]" : "bg-white/15"
+                  }`}
+                />
+                <span
+                  className={`text-sm font-light tracking-wide transition-all duration-300 ${
+                    isDone ? "text-[#2EFD7A]/60" : isActive ? "text-white" : "text-white/25"
                   }`}
                 >
-                  <g.icon className="w-5 h-5 text-primary shrink-0" />
-                  <span className="font-medium">{g.label}</span>
-                </button>
-              ))}
-            </div>
-            <button
-              onClick={() => setStep(1)}
-              disabled={!goal}
-              className="w-full mt-6 py-4 bg-primary text-primary-foreground rounded-2xl font-bold text-lg disabled:opacity-40 hover:bg-primary/90 transition-all duration-200 flex items-center justify-center gap-2 group"
-            >
-              Continue <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </button>
-          </div>
-        )}
+                  {label}
+                </span>
+              </div>
+            );
+          })}
+        </div>
 
-        {step === 1 && (
-          <div>
-            <h2 className="text-xl font-heading font-bold mb-2">What's your experience level?</h2>
-            <p className="text-muted-foreground text-sm mb-6">No wrong answer — this helps us start you in the right place.</p>
-            <div className="space-y-3">
-              {LEVELS.map((l) => (
-                <button
-                  key={l.value}
-                  onClick={() => setLevel(l.value)}
-                  className={`w-full flex items-center gap-4 p-4 rounded-2xl border text-left transition-all duration-200 ${
-                    level === l.value
-                      ? 'border-primary bg-primary/10 text-foreground'
-                      : 'border-border bg-card text-foreground hover:border-primary/40'
-                  }`}
-                >
-                  <l.icon className="w-5 h-5 text-primary shrink-0" />
-                  <div>
-                    <p className="font-medium">{l.label}</p>
-                    <p className="text-xs text-muted-foreground">{l.desc}</p>
-                  </div>
-                </button>
-              ))}
+        <p className="text-white/20 text-xs font-light tracking-widest uppercase">
+          Getting Started
+        </p>
+      </div>
+
+      {/* Right panel — steps */}
+      <div className="flex-1 h-full overflow-hidden flex flex-col justify-center items-center px-6 md:px-8 py-4 md:py-8">
+        {/* Mobile wordmark */}
+        <div className="lg:hidden mb-8 md:mb-10 shrink-0">
+          <BaselineWordmark scale={0.24} />
+        </div>
+
+        <div className="w-full max-w-[520px]">
+          {/* Step counter + progress bar */}
+          <div className="mb-5 md:mb-8">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-white/30 text-xs font-light tracking-widest uppercase">{STEP_LABELS[step]}</span>
+              <span className="text-white/20 text-xs font-light">{step + 1} / {STEP_LABELS.length}</span>
             </div>
-            <div className="flex gap-3 mt-6">
-              <button
-                onClick={() => setStep(0)}
-                className="px-6 py-4 bg-secondary text-foreground rounded-2xl font-semibold hover:bg-secondary/80 transition-all duration-200 flex items-center gap-2"
-              >
-                <ArrowLeft className="w-4 h-4" /> Back
-              </button>
-              <button
-                onClick={handleFinish}
-                disabled={!level || saving}
-                className="flex-1 py-4 bg-primary text-primary-foreground rounded-2xl font-bold text-lg disabled:opacity-40 hover:bg-primary/90 transition-all duration-200 flex items-center justify-center gap-2 group"
-              >
-                {saving ? 'Setting up...' : 'Start Learning'}
-                {!saving && <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />}
-              </button>
+            <div className="h-[1px] bg-white/10 rounded-full">
+              <motion.div
+                className="h-full bg-[#2EFD7A] rounded-full"
+                animate={{ width: `${((step + 1) / STEP_LABELS.length) * 100}%` }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+              />
             </div>
           </div>
-        )}
+
+          <AnimatePresence mode="wait" custom={direction}>
+            {step === 0 && (
+              <motion.div
+                key="goal"
+                custom={direction}
+                initial={{ opacity: 0, y: direction > 0 ? 24 : -24 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: direction > 0 ? -24 : 24 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+              >
+                <h2 className="text-white text-lg md:text-xl lg:text-2xl font-normal leading-snug mb-5 md:mb-7 tracking-tight">
+                  What's your main financial goal?
+                </h2>
+
+                <div className="space-y-2 md:space-y-2.5 mb-6 md:mb-8">
+                  {GOALS.map((g) => {
+                    const isSelected = goal === g.value;
+                    return (
+                      <button
+                        key={g.value}
+                        onClick={() => setGoal(g.value)}
+                        className={`group w-full flex items-center gap-4 px-4 md:px-5 py-2.5 md:py-3 rounded-xl border text-left text-sm font-normal tracking-wide transition-all duration-200 ${
+                          isSelected
+                            ? "border-[#2EFD7A]/60 text-white shadow-[0_0_20px_rgba(46,253,122,0.15)]"
+                            : "border-white/8 bg-white/[0.03] text-white/70 hover:border-white/20 hover:text-white/90 hover:bg-white/[0.06]"
+                        }`}
+                        style={isSelected ? { background: "rgba(46,253,122,0.14)" } : {}}
+                      >
+                        <g.icon className={`w-4.5 h-4.5 shrink-0 ${isSelected ? "text-[#2EFD7A]" : "text-white/40"}`} />
+                        <span>{g.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <button
+                    onClick={goPrev}
+                    className="flex items-center gap-2 text-white/30 hover:text-white/60 text-sm font-light tracking-wide transition-all duration-200"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={goNext}
+                    disabled={!goal}
+                    className="flex items-center gap-2.5 px-8 py-3.5 rounded-full bg-[#2EFD7A] text-black text-sm font-semibold tracking-wide hover:bg-[#2EFD7A]/90 transition-all duration-200 disabled:opacity-25 disabled:cursor-not-allowed"
+                  >
+                    Next <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </motion.div>
+            )}
+
+            {step === 1 && (
+              <motion.div
+                key="level"
+                custom={direction}
+                initial={{ opacity: 0, y: direction > 0 ? 24 : -24 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: direction > 0 ? -24 : 24 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+              >
+                <h2 className="text-white text-lg md:text-xl lg:text-2xl font-normal leading-snug mb-5 md:mb-7 tracking-tight">
+                  What's your experience level?
+                </h2>
+
+                <div className="space-y-2 md:space-y-2.5 mb-6 md:mb-8">
+                  {LEVELS.map((l) => {
+                    const isSelected = level === l.value;
+                    return (
+                      <button
+                        key={l.value}
+                        onClick={() => setLevel(l.value)}
+                        className={`group w-full flex items-center gap-4 px-4 md:px-5 py-2.5 md:py-3 rounded-xl border text-left text-sm font-normal tracking-wide transition-all duration-200 ${
+                          isSelected
+                            ? "border-[#2EFD7A]/60 text-white shadow-[0_0_20px_rgba(46,253,122,0.15)]"
+                            : "border-white/8 bg-white/[0.03] text-white/70 hover:border-white/20 hover:text-white/90 hover:bg-white/[0.06]"
+                        }`}
+                        style={isSelected ? { background: "rgba(46,253,122,0.14)" } : {}}
+                      >
+                        <l.icon className={`w-4.5 h-4.5 shrink-0 ${isSelected ? "text-[#2EFD7A]" : "text-white/40"}`} />
+                        <div>
+                          <p>{l.label}</p>
+                          <p className={`text-xs font-light ${isSelected ? "text-white/60" : "text-white/30"}`}>{l.desc}</p>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <button
+                    onClick={goPrev}
+                    className="flex items-center gap-2 text-white/30 hover:text-white/60 text-sm font-light tracking-wide transition-all duration-200"
+                  >
+                    <ArrowLeft className="w-4 h-4" /> Previous
+                  </button>
+                  <button
+                    onClick={handleFinish}
+                    disabled={!level || saving}
+                    className="flex items-center gap-2.5 px-8 py-3.5 rounded-full bg-[#2EFD7A] text-black text-sm font-semibold tracking-wide hover:bg-[#2EFD7A]/90 transition-all duration-200 disabled:opacity-25 disabled:cursor-not-allowed"
+                  >
+                    {saving ? "Setting up..." : "Start Learning"}
+                    {!saving && <ArrowRight className="w-4 h-4" />}
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   );
