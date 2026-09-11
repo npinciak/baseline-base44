@@ -268,10 +268,10 @@ export default function BaseScoreQuiz() {
                       onClick={() => handleSelect(opt)}
                       className={`group w-full flex items-center gap-4 px-5 py-4 rounded-xl border text-left text-sm font-normal tracking-wide transition-all duration-200 ${
                         isSelected
-                          ? "border-[#2EFD7A]/40 bg-[#2EFD7A]/8 text-white"
+                          ? "border-[#2EFD7A]/60 text-white shadow-[0_0_20px_rgba(46,253,122,0.15)]"
                           : "border-white/8 bg-white/[0.03] text-white/70 hover:border-white/20 hover:text-white/90 hover:bg-white/[0.06]"
                       }`}
-                      style={isSelected ? { background: "rgba(46,253,122,0.06)" } : {}}
+                      style={isSelected ? { background: "rgba(46,253,122,0.14)" } : {}}
                     >
                       {/* Radio dot */}
                       <div
