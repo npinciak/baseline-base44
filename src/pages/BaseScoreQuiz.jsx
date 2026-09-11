@@ -14,8 +14,7 @@ function calculateScore(answers) {
     const answer = answers[step.key];
     if (!answer) return;
     const idx = step.options.indexOf(answer);
-    const frac = (step.options.length - 1 - idx) / (step.options.length - 1);
-    totalFraction += frac;
+    totalFraction += step.scores[idx];
     count += 1;
   });
   const avg = count > 0 ? totalFraction / count : 0;
@@ -27,18 +26,21 @@ const STEPS = [
     section: "Preparedness",
     question: "I could handle a major unexpected expense",
     options: ["Completely", "Very Well", "Somewhat", "Very Little", "Not at all"],
+    scores: [1, 0.75, 0.5, 0.25, 0],
     key: "preparedness_1",
   },
   {
     section: "Preparedness",
     question: "I can enjoy life because of the way I'm managing my money",
     options: ["Completely", "Very Well", "Somewhat", "Very Little", "Not at all"],
+    scores: [1, 0.75, 0.5, 0.25, 0],
     key: "preparedness_2",
   },
   {
     section: "Money Mindset",
     question: "My finances control my life",
     options: ["Always", "Often", "Sometimes", "Rarely", "Never"],
+    scores: [0, 0.25, 0.5, 0.75, 1],
     key: "mindset_1",
   },
   {
@@ -51,6 +53,7 @@ const STEPS = [
       "740 – 799 (Very Good)",
       "800 – 850 (Excellent)",
     ],
+    scores: [0, 0.25, 0.5, 0.75, 1],
     key: "credit_1",
   },
   {
@@ -61,6 +64,7 @@ const STEPS = [
       "Growing my wealth steadily, even if there are some ups and downs.",
       "Maximizing returns, even if it means taking on significant risk.",
     ],
+    scores: [1, 0.5, 0],
     key: "risk_1",
   },
   {
@@ -71,6 +75,7 @@ const STEPS = [
       "Invest in a balanced mix of stocks and bonds.",
       "Invest in high-growth stocks, startups, or cryptocurrency.",
     ],
+    scores: [1, 0.5, 0],
     key: "risk_2",
   },
   {
@@ -81,6 +86,7 @@ const STEPS = [
       "I would stay invested but feel uneasy.",
       "I would see it as a buying opportunity and invest more.",
     ],
+    scores: [1, 0.5, 0],
     key: "risk_3",
   },
   {
@@ -92,6 +98,7 @@ const STEPS = [
       "Spending less money than you earn.",
       "Earning more money by investing in high-risk stocks.",
     ],
+    scores: [0, 0, 1, 0],
     key: "knowledge_1",
   },
   {
@@ -102,6 +109,7 @@ const STEPS = [
       "You will pay an extra 5% of the loan amount each year until it is fully repaid.",
       "You will pay a one-time 5% fee when taking out the loan.",
     ],
+    scores: [0, 1, 0],
     key: "knowledge_2",
   },
   {
@@ -113,6 +121,7 @@ const STEPS = [
       "Avoiding investments altogether to prevent potential losses.",
       "Investing only in stocks because they have the highest returns.",
     ],
+    scores: [0, 1, 0, 0],
     key: "knowledge_3",
   },
 ];
