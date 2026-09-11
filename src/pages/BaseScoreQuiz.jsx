@@ -72,10 +72,11 @@ const STEPS = [
     question: "If you received an unexpected windfall of $50,000, how would you allocate it?",
     options: [
       "Put it in a savings account or low-risk bonds.",
+      "Pay off high-interest debt.",
       "Invest in a balanced mix of stocks and bonds.",
       "Invest in high-growth stocks, startups, or cryptocurrency.",
     ],
-    scores: [1, 0.5, 0],
+    scores: [1, 0.75, 0.5, 0],
     key: "risk_2",
   },
   {
