@@ -158,22 +158,40 @@ function BaselineWordmark({ scale = 0.38 }) {
     </div>
   );
 
+  // Crop the source image down to just the icon glyph (excludes the "Baseline" wordmark baked into the image)
+  const logoContainerH = h * 4.8;
+  const cropScale = 1 / 0.411;
+  const logoImgSize = logoContainerH * cropScale;
+  const logoContainerW = logoContainerH * 0.837;
+  const logoOffsetTop = logoImgSize * 0.224;
+  const logoOffsetLeft = logoImgSize * 0.328;
+
   return (
     <div className="relative shrink-0" style={{ width: w, height: h }} aria-label="Baseline">
       {/* Faint logo watermark behind the title, proportional to font size */}
-      <img
-        src="https://media.base44.com/images/public/6a3542676f9044e70b439a84/156742c3c_2c64e420d_b567a13c189ab17b1195db0aba380e0ba8854e8c.png"
-        alt=""
-        className="absolute pointer-events-none object-contain"
+      <div
+        className="absolute pointer-events-none overflow-hidden"
         style={{
-          width: h * 3.2,
-          height: h * 3.2,
+          width: logoContainerW,
+          height: logoContainerH,
           left: "50%",
           top: "50%",
           transform: "translate(-50%, -50%)",
-          opacity: 0.1,
+          opacity: 0.125,
         }}
-      />
+      >
+        <img
+          src="https://media.base44.com/images/public/6a3542676f9044e70b439a84/156742c3c_2c64e420d_b567a13c189ab17b1195db0aba380e0ba8854e8c.png"
+          alt=""
+          className="absolute object-contain"
+          style={{
+            width: logoImgSize,
+            height: logoImgSize,
+            top: -logoOffsetTop,
+            left: -logoOffsetLeft,
+          }}
+        />
+      </div>
       {renderMark(1)}
     </div>
   );
