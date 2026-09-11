@@ -14,8 +14,8 @@ export default function Register() {
   return (
     <AuthLayout
       icon={UserPlus}
-      title="Create your account"
-      subtitle="Sign up to get started"
+      title="Power Up Your Baseline"
+      subtitle="Begin your journey to financial freedom."
       footer={
         <>
           Already have an account?{" "}
