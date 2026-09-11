@@ -158,13 +158,10 @@ function BaselineWordmark({ scale = 0.38 }) {
     </div>
   );
 
-  // Crop the source image down to just the icon glyph (excludes the "Baseline" wordmark baked into the image)
+  // Crop the source image to its top ~65% (the icon glyph), excluding the "Baseline" text baked into the bottom of the image
   const logoContainerH = h * 4.8;
-  const cropScale = 1 / 0.411;
-  const logoImgSize = logoContainerH * cropScale;
-  const logoContainerW = logoContainerH * 0.837;
-  const logoOffsetTop = logoImgSize * 0.224;
-  const logoOffsetLeft = logoImgSize * 0.328;
+  const cropFrac = 0.65;
+  const logoImgSize = logoContainerH / cropFrac;
 
   return (
     <div className="relative shrink-0" style={{ width: w, height: h }} aria-label="Baseline">
@@ -172,7 +169,7 @@ function BaselineWordmark({ scale = 0.38 }) {
       <div
         className="absolute pointer-events-none overflow-hidden"
         style={{
-          width: logoContainerW,
+          width: logoImgSize,
           height: logoContainerH,
           left: "50%",
           top: "50%",
@@ -187,8 +184,8 @@ function BaselineWordmark({ scale = 0.38 }) {
           style={{
             width: logoImgSize,
             height: logoImgSize,
-            top: -logoOffsetTop,
-            left: -logoOffsetLeft,
+            top: 0,
+            left: 0,
           }}
         />
       </div>
