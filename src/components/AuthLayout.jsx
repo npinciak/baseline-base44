@@ -89,7 +89,7 @@ export default function AuthLayout({ icon: Icon, title, subtitle, footer, childr
           </div>
 
           <Wordmark className="mb-3" />
-          <p className="text-white/40 text-[11px] font-light tracking-[0.35em] uppercase mb-8">Mind Over Money</p>
+          <p className="text-white/40 text-[11px] font-light tracking-[0.35em] uppercase mb-10">Mind Over Money</p>
 
           <h1 className="text-3xl font-light tracking-tight text-white">{title}</h1>
 
