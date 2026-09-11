@@ -160,33 +160,20 @@ function BaselineWordmark({ scale = 0.38 }) {
 
   return (
     <div className="relative shrink-0" style={{ width: w, height: h }} aria-label="Baseline">
-      {/* Faint oversized watermark behind the title */}
-      <div
-        className="absolute pointer-events-none"
+      {/* Faint logo watermark behind the title, proportional to font size */}
+      <img
+        src="https://media.base44.com/images/public/6a3542676f9044e70b439a84/156742c3c_2c64e420d_b567a13c189ab17b1195db0aba380e0ba8854e8c.png"
+        alt=""
+        className="absolute pointer-events-none object-contain"
         style={{
-          width: w * 3,
-          height: h * 3,
+          width: h * 3.2,
+          height: h * 3.2,
           left: "50%",
           top: "50%",
           transform: "translate(-50%, -50%)",
           opacity: 0.1,
         }}
-      >
-        {baselineImages.map((img, i) => (
-          <img
-            key={i}
-            src={img.src}
-            className="absolute object-contain"
-            style={{
-              left: (img.left / WORDMARK_W) * (w * 3),
-              top: (img.top / WORDMARK_H) * (h * 3),
-              width: (img.width / WORDMARK_W) * (w * 3),
-              height: (img.height / WORDMARK_H) * (h * 3),
-            }}
-            alt=""
-          />
-        ))}
-      </div>
+      />
       {renderMark(1)}
     </div>
   );
