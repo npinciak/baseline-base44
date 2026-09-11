@@ -173,8 +173,8 @@ function BaselineWordmark({ scale = 0.38 }) {
           height: logoContainerH,
           left: "50%",
           top: "50%",
-          transform: "translate(-50%, -50%)",
-          opacity: 0.125,
+          transform: "translate(-50%, -70%)",
+          opacity: 0.1375,
         }}
       >
         <img
