@@ -364,7 +364,7 @@ export default function Baseline30() {
     >
       {/* Sticky Nav */}
       <header className="fixed top-0 left-0 w-full px-8 lg:px-[clamp(16px,5.7vw,109px)] h-[72px] flex items-center justify-between z-50 bg-black/60 backdrop-blur-md border-b border-white/8">
-        <div className="text-white font-bold text-lg tracking-wide">Baseline</div>
+        <div className="text-white font-bold text-lg tracking-wide">demo</div>
         <div className="flex items-center gap-[clamp(16px,2.8vw,40px)]">
           <button
             onClick={() => handleNav("/login")}
@@ -422,7 +422,7 @@ export default function Baseline30() {
             transition={{ duration: 1.2, delay: 0.4, type: "spring", stiffness: 40 }}
             className="flex flex-col gap-[clamp(10px,2.4vw,47px)] w-full max-w-[min(508px,85vw)]"
           >
-            <ImageWord images={baselineImages} width={508} height={89} ariaLabel="Baseline" />
+            <h1 className="text-white text-6xl md:text-7xl lg:text-8xl font-extrabold tracking-tight">demo</h1>
             <p className="text-white/70 text-sm font-light tracking-[0.35em] uppercase">Mind Over Money</p>
           </motion.div>
         </div>
