@@ -41,7 +41,7 @@ function AccountRow({ account }) {
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-xs text-white truncate leading-tight">{account.name || account.institution_name || 'Account'}</p>
-        <p className="text-xs text-white/30 capitalize">{ACCOUNT_TYPE_LABELS[type] || type}</p>
+        <p className="text-xs text-white/60 capitalize">{ACCOUNT_TYPE_LABELS[type] || type}</p>
       </div>
       <span className={`text-xs font-bold shrink-0 ${isNegative ? 'text-red-400' : 'text-white'}`}>
         {isNegative ? '-' : ''}${animatedBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
@@ -64,7 +64,7 @@ export default function LinkedAccountsWidget() {
   if (loading) {
     return (
       <div className="bg-white/[0.03] border border-white/10 backdrop-blur-sm rounded-2xl p-5">
-        <h3 className="text-white/30 text-xs font-light tracking-widest uppercase mb-4">Linked Accounts</h3>
+        <h3 className="text-white/60 text-xs font-light tracking-widest uppercase mb-4">Linked Accounts</h3>
         <div className="space-y-3">
           {[1, 2].map(i => (
             <div key={i} className="h-10 bg-white/[0.05] rounded-xl animate-pulse" />
@@ -77,10 +77,10 @@ export default function LinkedAccountsWidget() {
   if (accounts.length === 0) {
     return (
       <div className="bg-white/[0.03] border border-white/10 backdrop-blur-sm rounded-2xl p-5">
-        <h3 className="text-white/30 text-xs font-light tracking-widest uppercase mb-3">Linked Accounts</h3>
+        <h3 className="text-white/60 text-xs font-light tracking-widest uppercase mb-3">Linked Accounts</h3>
         <RouterLink
           to="/money"
-          className="flex flex-col items-center gap-2 py-4 text-center text-xs text-white/30 hover:text-[#2EFD7A] transition-colors"
+          className="flex flex-col items-center gap-2 py-4 text-center text-xs text-white/60 hover:text-[#2EA0FD] transition-colors"
         >
           <Link className="w-5 h-5" />
           <span>No accounts linked.<br />Connect a bank account.</span>
@@ -92,7 +92,7 @@ export default function LinkedAccountsWidget() {
   return (
     <div className="bg-white/[0.03] border border-white/10 backdrop-blur-sm rounded-2xl p-5">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-white/30 text-xs font-light tracking-widest uppercase">Linked Accounts</h3>
+        <h3 className="text-white/60 text-xs font-light tracking-widest uppercase">Linked Accounts</h3>
         <RouterLink to="/money" className="text-xs text-[#2EFD7A] font-medium hover:opacity-80 transition-opacity">
           View
         </RouterLink>

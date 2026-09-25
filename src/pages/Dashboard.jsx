@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import { Target, ChevronRight, ChevronLeft, Plus } from 'lucide-react';
 import LinkedAccountsWidget from '@/components/LinkedAccountsWidget';
@@ -9,6 +9,7 @@ import GoalCard from '@/components/dashboard/GoalCard';
 import GoalsSummaryWidget from '@/components/dashboard/GoalsSummaryWidget';
 import CreateGoalModal from '@/components/dashboard/CreateGoalModal';
 import StatsBar from '@/components/dashboard/StatsBar';
+import AmbientBackdrop from '@/components/dashboard/AmbientBackdrop';
 
 const containerVariants = { hidden: {}, show: { transition: { staggerChildren: 0.12 } } };
 const itemVariants = {
@@ -94,19 +95,20 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-black px-6 md:px-10 py-10">
+    <div className="relative min-h-screen bg-black px-6 md:px-10 py-10 overflow-hidden">
+      <AmbientBackdrop />
       <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="show"
-        className="max-w-5xl mx-auto"
+        className="relative z-10 max-w-5xl mx-auto"
       >
         {/* Header */}
         <motion.div variants={itemVariants} className="mb-8">
           <h1 className="text-3xl md:text-4xl font-light tracking-tight text-white mb-2">
             {greeting()}, <span className="font-extrabold">{profile?.first_name || user?.full_name?.split(' ')[0] || 'there'}</span> 👋
           </h1>
-          <p className="text-white/40 text-sm">Here's your financial progress at a glance.</p>
+          <p className="text-white/60 text-sm">Here's your financial progress at a glance.</p>
         </motion.div>
 
         {stats && (
@@ -122,7 +124,7 @@ export default function Dashboard() {
             {/* Goals Carousel */}
             <motion.section variants={itemVariants}>
               <div className="flex items-center justify-between mb-5">
-                <h2 className="text-white/30 text-xs font-light tracking-widest uppercase">My Goals</h2>
+                <h2 className="text-white/60 text-xs font-light tracking-widest uppercase">My Goals</h2>
                 <Link to="/goals" className="text-xs text-[#2EFD7A] font-medium hover:opacity-80 transition-opacity flex items-center gap-1">
                   View all <ChevronRight className="w-3.5 h-3.5" />
                 </Link>
@@ -131,13 +133,13 @@ export default function Dashboard() {
               {activeGoals.length === 0 ? (
                 <button
                   onClick={() => setShowGoalModal(true)}
-                  className="w-full flex flex-col items-center justify-center bg-white/[0.03] border border-dashed border-white/15 rounded-2xl p-10 hover:border-[#2EFD7A]/40 transition-all group"
+                  className="w-full flex flex-col items-center justify-center bg-white/[0.03] border border-dashed border-white/15 rounded-2xl p-10 hover:border-[#2EA0FD]/40 transition-all group"
                 >
-                  <div className="w-12 h-12 bg-white/[0.05] rounded-xl flex items-center justify-center mb-3 group-hover:bg-[#2EFD7A]/15 transition-all">
-                    <Target className="w-6 h-6 text-white/30 group-hover:text-[#2EFD7A] transition-all" />
+                  <div className="w-12 h-12 bg-white/[0.05] rounded-xl flex items-center justify-center mb-3 group-hover:bg-[#2EA0FD]/15 transition-all">
+                    <Target className="w-6 h-6 text-white/50 group-hover:text-[#2EA0FD] transition-all" />
                   </div>
                   <p className="text-sm text-white mb-1">No active goals</p>
-                  <p className="text-xs text-white/30 mb-4">Start saving towards something meaningful</p>
+                  <p className="text-xs text-white/60 mb-4">Start saving towards something meaningful</p>
                   <span className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-[#2EFD7A] text-black rounded-full text-sm font-semibold hover:bg-[#2EFD7A]/90 transition-all">
                     <Plus className="w-4 h-4" /> Create a Goal
                   </span>
@@ -145,38 +147,46 @@ export default function Dashboard() {
               ) : (
                 <div className="relative">
                   <div className="overflow-hidden rounded-2xl">
-                    {activeGoals.map((goal, i) => (
-                      <div key={goal.id} className={`transition-all duration-300 ${i === carouselIndex ? 'block' : 'hidden'}`}>
-                        <GoalCard goal={goal} onClick={() => navigate(`/goals/${goal.id}`)} />
-                      </div>
-                    ))}
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={activeGoals[carouselIndex]?.id || carouselIndex}
+                        initial={{ opacity: 0, x: 40, scale: 0.97 }}
+                        animate={{ opacity: 1, x: 0, scale: 1 }}
+                        exit={{ opacity: 0, x: -40, scale: 0.97 }}
+                        transition={{ type: 'spring', stiffness: 300, damping: 26 }}
+                      >
+                        <GoalCard goal={activeGoals[carouselIndex]} onClick={() => navigate(`/goals/${activeGoals[carouselIndex].id}`)} />
+                      </motion.div>
+                    </AnimatePresence>
                   </div>
 
                   {activeGoals.length > 1 && (
                     <div className="flex items-center justify-between mt-4">
-                      <button
+                      <motion.button
+                        whileTap={{ scale: 0.85 }}
                         onClick={prevGoal}
                         disabled={carouselIndex === 0}
-                        className="p-1.5 rounded-lg bg-white/[0.05] text-white/40 hover:text-white disabled:opacity-30 transition-all"
+                        className="p-1.5 rounded-lg bg-white/[0.05] text-white/60 hover:text-[#2EA0FD] hover:shadow-[0_0_12px_rgba(46,160,253,0.4)] disabled:opacity-30 transition-all"
                       >
                         <ChevronLeft className="w-4 h-4" />
-                      </button>
+                      </motion.button>
                       <div className="flex gap-1.5">
                         {activeGoals.map((_, i) => (
                           <button
                             key={i}
                             onClick={() => setCarouselIndex(i)}
-                            className={`h-2 rounded-full transition-all ${i === carouselIndex ? 'bg-[#2EFD7A] w-4' : 'bg-white/15 w-2'}`}
+                            className={`h-2 rounded-full transition-all ${i === carouselIndex ? 'bg-gradient-to-r from-[#2EFD7A] to-[#2EA0FD] w-4' : 'bg-white/15 w-2'}`}
                           />
                         ))}
                       </div>
-                      <button
+                      <motion.button
+                        whileTap={{ scale: 0.85 }}
                         onClick={nextGoal}
                         disabled={carouselIndex === activeGoals.length - 1}
-                        className="p-1.5 rounded-lg bg-white/[0.05] text-white/40 hover:text-white disabled:opacity-30 transition-all"
+                        className="p-1.5 rounded-lg bg-white/[0.05] text-white/60 hover:text-[#2EA0FD] hover:shadow-[0_0_12px_rgba(46,160,253,0.4)] disabled:opacity-30 transition-all"
                       >
                         <ChevronRight className="w-4 h-4" />
-                      </button>
+                      </motion.button>
                     </div>
                   )}
                 </div>
@@ -186,7 +196,7 @@ export default function Dashboard() {
             {/* Full Learning Path */}
             <motion.section variants={itemVariants}>
               <div className="mb-5">
-                <h2 className="text-white/30 text-xs font-light tracking-widest uppercase mb-1">Learning Path</h2>
+                <h2 className="text-white/60 text-xs font-light tracking-widest uppercase mb-1">Learning Path</h2>
                 <p className="text-white text-lg font-light">Master personal finance <span className="font-extrabold">one lesson at a time</span></p>
               </div>
               <WindingLearningPath modules={modules} progress={progress} />

@@ -102,7 +102,7 @@ function ModuleSection({ module, moduleIndex, isUnlocked, completedLessonIds, on
           </div>
           <div>
             <p className="text-sm text-white leading-tight">{module.title}</p>
-            <p className="text-xs text-white/30 mt-0.5 capitalize">{module.topic_tag?.replace(/_/g, ' ')}</p>
+            <p className="text-xs text-white/60 mt-0.5 capitalize">{module.topic_tag?.replace(/_/g, ' ')}</p>
           </div>
         </div>
         <div className="flex items-center gap-3 shrink-0 ml-4">
@@ -121,14 +121,14 @@ function ModuleSection({ module, moduleIndex, isUnlocked, completedLessonIds, on
           {!isUnlocked ? (
             <div className="flex flex-col items-center justify-center py-8 gap-2 text-white/30">
               <Lock className="w-6 h-6" />
-              <p className="text-xs">Complete the previous module to unlock</p>
+              <p className="text-xs text-white/60">Complete the previous module to unlock</p>
             </div>
           ) : lessons === null ? (
             <div className="flex justify-center py-8">
               <div className="w-6 h-6 border-2 border-white/10 border-t-[#2EFD7A] rounded-full animate-spin" />
             </div>
           ) : nodes.length === 0 ? (
-            <p className="text-center text-xs text-white/30 py-6">No lessons yet.</p>
+            <p className="text-center text-xs text-white/60 py-6">No lessons yet.</p>
           ) : (
             <div className="relative mx-auto" style={{ width: W, height: svgH }}>
 
@@ -157,9 +157,9 @@ function ModuleSection({ module, moduleIndex, isUnlocked, completedLessonIds, on
                   : nodeUnlocked                ? (meta.Icon)
                   :                               Lock;
 
-                // Gradient for unlocked; muted for locked
+                // Gradient for unlocked; muted for locked — with a soft depth shadow for a 3D feel
                 const bgStyle = nodeUnlocked
-                  ? { background: `linear-gradient(135deg, ${meta.from}, ${meta.to})` }
+                  ? { background: `linear-gradient(135deg, ${meta.from}, ${meta.to})`, boxShadow: `0 8px 18px -4px ${meta.from}66, 0 3px 8px rgba(0,0,0,0.5)` }
                   : { background: 'rgba(255,255,255,0.08)' };
 
                 return (
@@ -202,7 +202,7 @@ function ModuleSection({ module, moduleIndex, isUnlocked, completedLessonIds, on
 
                     {/* Label */}
                     <div className="mt-2 text-center" style={{ width: 88, marginLeft: -(44 - NODE_R) }}>
-                      <p className={`font-medium leading-tight ${nodeUnlocked ? 'text-white' : 'text-white/30'}`}
+                      <p className={`font-medium leading-tight ${nodeUnlocked ? 'text-white' : 'text-white/50'}`}
                         style={{ fontSize: 11 }}>
                         {node.label}
                       </p>
@@ -239,8 +239,8 @@ export default function WindingLearningPath({ modules, progress }) {
   if (modules.length === 0) {
     return (
       <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-8 text-center">
-        <BookOpen className="w-10 h-10 text-white/20 mx-auto mb-3" />
-        <p className="text-sm text-white/30">No modules published yet — check back soon!</p>
+        <BookOpen className="w-10 h-10 text-white/30 mx-auto mb-3" />
+        <p className="text-sm text-white/60">No modules published yet — check back soon!</p>
       </div>
     );
   }

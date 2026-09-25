@@ -10,7 +10,7 @@ const rowVariants = {
 export default function GoalsSummaryWidget({ goals }) {
   return (
     <div className="bg-white/[0.03] border border-white/10 backdrop-blur-sm rounded-2xl p-5">
-      <h3 className="text-white/30 text-xs font-light tracking-widest uppercase mb-4">Goals Summary</h3>
+      <h3 className="text-white/60 text-xs font-light tracking-widest uppercase mb-4">Goals Summary</h3>
       <motion.div variants={listVariants} initial="hidden" animate="show" className="space-y-4">
         {goals.slice(0, 4).map(goal => {
           const saved = goal.current_amount || 0;
@@ -20,7 +20,7 @@ export default function GoalsSummaryWidget({ goals }) {
               <RingGauge pct={pct} size={38} strokeWidth={4} color={goal.is_completed ? '#2EFD7A' : '#2EFD7Ab3'}>
                 <span className="text-[9px] font-bold text-white">{pct}%</span>
               </RingGauge>
-              <span className="text-xs text-white/70 truncate flex-1">{goal.name}</span>
+              <span className="text-xs text-white/80 truncate flex-1">{goal.name}</span>
             </motion.div>
           );
         })}

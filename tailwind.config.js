@@ -66,6 +66,7 @@ module.exports = {
   				ring: 'hsl(var(--sidebar-ring))'
   			},
   			teal: 'hsl(var(--teal))',
+  			turquoise: 'hsl(var(--turquoise))',
   			amber: 'hsl(var(--amber))',
   			navy: 'hsl(var(--navy))',
   			'navy-card': 'hsl(var(--navy-card))',
