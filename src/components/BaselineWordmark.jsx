@@ -18,9 +18,10 @@ const WORDMARK_H = 89;
 export default function BaselineWordmark({ scale = 0.38 }) {
   const w = WORDMARK_W * scale;
   const h = WORDMARK_H * scale;
+  const logoSize = h * 1.7;
 
   const renderMark = (opacity) => (
-    <div className="absolute inset-0" style={{ opacity }}>
+    <div className="relative" style={{ width: w, height: h, opacity }}>
       {baselineImages.map((img, i) => (
         <img
           key={i}
@@ -38,32 +39,15 @@ export default function BaselineWordmark({ scale = 0.38 }) {
     </div>
   );
 
-  // Crop the source image to its top ~65% (the icon glyph), excluding the "Baseline" text baked into the bottom of the image
-  const logoContainerH = h * 4.8;
-  const cropFrac = 0.65;
-  const logoImgSize = logoContainerH / cropFrac;
-
   return (
-    <div className="relative shrink-0" style={{ width: w, height: h }} aria-label="Baseline">
-      {/* Faint logo watermark behind the title, proportional to font size */}
-      <div
-        className="absolute pointer-events-none overflow-hidden"
-        style={{
-          width: logoImgSize,
-          height: logoContainerH,
-          left: "50%",
-          top: "50%",
-          transform: "translate(-50%, -70%)",
-          opacity: 0.1375,
-        }}
-      >
-        <img
-          src="https://media.base44.com/images/public/6a3542676f9044e70b439a84/156742c3c_2c64e420d_b567a13c189ab17b1195db0aba380e0ba8854e8c.png"
-          alt=""
-          className="absolute object-contain"
-          style={{ width: logoImgSize, height: logoImgSize, top: 0, left: 0 }}
-        />
-      </div>
+    <div className="flex flex-col items-center shrink-0" style={{ width: Math.max(w, logoSize) }} aria-label="Baseline">
+      {/* Logo mark, full opacity, sitting above the wordmark */}
+      <img
+        src="https://media.base44.com/images/public/6a3542676f9044e70b439a84/156742c3c_2c64e420d_b567a13c189ab17b1195db0aba380e0ba8854e8c.png"
+        alt=""
+        className="object-contain mb-1.5"
+        style={{ width: logoSize, height: logoSize }}
+      />
       {renderMark(1)}
     </div>
   );

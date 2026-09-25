@@ -193,12 +193,12 @@ export default function BaseScoreQuiz() {
             return (
               <div key={label} className="flex items-center gap-3">
                 <div
-                  className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
                     isDone ? "bg-[#2EFD7A]" : isActive ? "bg-[#2EFD7A]" : "bg-white/15"
                   }`}
                 />
                 <span
-                  className={`text-sm font-light tracking-wide transition-all duration-300 ${
+                  className={`text-base font-light tracking-wide transition-all duration-300 ${
                     isDone ? "text-[#2EFD7A]/60" : isActive ? "text-white" : "text-white/25"
                   }`}
                 >
@@ -209,7 +209,7 @@ export default function BaseScoreQuiz() {
           })}
         </div>
 
-        <p className="text-white/20 text-xs font-light tracking-widest uppercase">
+        <p className="text-white/20 text-sm font-light tracking-widest uppercase">
           BaseScore™ Assessment
         </p>
       </div>
