@@ -70,7 +70,7 @@ export default function AuthLayout({ icon: Icon, title, subtitle, footer, childr
           className="flex flex-col items-center text-center mb-3 shrink-0"
         >
           {/* Cropped power symbol only — the source image is a square with the icon on top and the "Baseline" wordmark baked into the bottom, so we clip to the top fraction to isolate just the icon */}
-          <div className="relative mb-2" style={{ width: 72, height: 72 * 0.65 }}>
+          <div className="relative mb-2" style={{ width: 288, height: 288 * 0.65 }}>
             <motion.div
               className="absolute inset-0 rounded-2xl bg-[#2EFD7A]/25 blur-2xl pointer-events-none"
               animate={{ opacity: [0.4, 0.7, 0.4] }}
@@ -81,7 +81,7 @@ export default function AuthLayout({ icon: Icon, title, subtitle, footer, childr
                 src={ORB_SRC}
                 alt=""
                 className="absolute top-0 left-0 select-none mix-blend-screen"
-                style={{ width: 72, height: 72, objectFit: "cover" }}
+                style={{ width: 288, height: 288, objectFit: "cover" }}
                 animate={{ filter: ["brightness(1)", "brightness(1.3)", "brightness(1)"] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
               />

@@ -15,10 +15,15 @@ const baselineImages = [
 const WORDMARK_W = 508;
 const WORDMARK_H = 89;
 
+// The source image is a square with the power-symbol icon on top and the
+// "Baseline" wordmark text baked into the bottom — crop to the top fraction
+// to isolate just the icon.
+const LOGO_CROP_FRAC = 0.65;
+
 export default function BaselineWordmark({ scale = 0.38 }) {
   const w = WORDMARK_W * scale;
   const h = WORDMARK_H * scale;
-  const logoSize = h * 1.7;
+  const logoSize = h * 1.7 * 4;
 
   const renderMark = (opacity) => (
     <div className="relative" style={{ width: w, height: h, opacity }}>
@@ -41,13 +46,15 @@ export default function BaselineWordmark({ scale = 0.38 }) {
 
   return (
     <div className="flex flex-col items-center shrink-0" style={{ width: Math.max(w, logoSize) }} aria-label="Baseline">
-      {/* Logo mark, full opacity, sitting above the wordmark */}
-      <img
-        src="https://media.base44.com/images/public/6a3542676f9044e70b439a84/156742c3c_2c64e420d_b567a13c189ab17b1195db0aba380e0ba8854e8c.png"
-        alt=""
-        className="object-contain mb-1.5"
-        style={{ width: logoSize, height: logoSize }}
-      />
+      {/* Logo mark, full opacity, cropped to just the power symbol, sitting above the wordmark */}
+      <div className="relative overflow-hidden mb-1.5" style={{ width: logoSize, height: logoSize * LOGO_CROP_FRAC }}>
+        <img
+          src="https://media.base44.com/images/public/6a3542676f9044e70b439a84/156742c3c_2c64e420d_b567a13c189ab17b1195db0aba380e0ba8854e8c.png"
+          alt=""
+          className="absolute top-0 left-0 object-contain"
+          style={{ width: logoSize, height: logoSize }}
+        />
+      </div>
       {renderMark(1)}
     </div>
   );
