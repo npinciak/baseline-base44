@@ -174,42 +174,46 @@ export default function BaseScoreQuiz() {
       style={{ background: "hsl(222,47%,6%)" }}
     >
       {/* Left panel — branding */}
-      <div className="hidden lg:flex flex-col justify-between w-[340px] xl:w-[400px] shrink-0 px-14 pt-16 pb-10 border-r border-white/5">
-        <BaselineWordmark scale={0.38} />
-
-        {/* Tenet labels — progress context */}
-        <div className="space-y-4">
-          {["Preparedness", "Money Mindset", "Credit Health", "Risk Appetite", "Financial Knowledge"].map((label, i) => {
-            const stepIndices = {
-              "Preparedness": [0, 1],
-              "Money Mindset": [2],
-              "Credit Health": [3],
-              "Risk Appetite": [4, 5, 6],
-              "Financial Knowledge": [7, 8, 9],
-            };
-            const steps = stepIndices[label];
-            const isActive = steps.includes(currentStep);
-            const isDone = steps.every(s => s < currentStep);
-            return (
-              <div key={label} className="flex items-center gap-3">
-                <div
-                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                    isDone ? "bg-[#2EFD7A]" : isActive ? "bg-[#2EFD7A]" : "bg-white/15"
-                  }`}
-                />
-                <span
-                  className={`text-base font-light tracking-wide transition-all duration-300 ${
-                    isDone ? "text-[#2EFD7A]/60" : isActive ? "text-white" : "text-white/25"
-                  }`}
-                >
-                  {label}
-                </span>
-              </div>
-            );
-          })}
+      <div className="hidden lg:block relative w-[340px] xl:w-[400px] h-full shrink-0 px-14 pt-16 pb-10 border-r border-white/5">
+        <div className="absolute top-16 left-14">
+          <BaselineWordmark scale={0.38} />
         </div>
 
-        <p className="text-white/20 text-sm font-light tracking-widest uppercase">
+        {/* Tenet labels — progress context, vertically centered to match the quiz content on the right */}
+        <div className="absolute inset-0 flex items-center justify-center px-14">
+          <div className="space-y-4 w-full">
+            {["Preparedness", "Money Mindset", "Credit Health", "Risk Appetite", "Financial Knowledge"].map((label, i) => {
+              const stepIndices = {
+                "Preparedness": [0, 1],
+                "Money Mindset": [2],
+                "Credit Health": [3],
+                "Risk Appetite": [4, 5, 6],
+                "Financial Knowledge": [7, 8, 9],
+              };
+              const steps = stepIndices[label];
+              const isActive = steps.includes(currentStep);
+              const isDone = steps.every(s => s < currentStep);
+              return (
+                <div key={label} className="flex items-center gap-3">
+                  <div
+                    className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                      isDone ? "bg-[#2EFD7A]" : isActive ? "bg-[#2EFD7A]" : "bg-white/15"
+                    }`}
+                  />
+                  <span
+                    className={`text-base font-light tracking-wide transition-all duration-300 ${
+                      isDone ? "text-[#2EFD7A]/60" : isActive ? "text-white" : "text-white/25"
+                    }`}
+                  >
+                    {label}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <p className="absolute bottom-10 left-14 text-white/20 text-sm font-light tracking-widest uppercase">
           BaseScore™ Assessment
         </p>
       </div>
