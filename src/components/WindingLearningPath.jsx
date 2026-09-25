@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import {
   BookOpen, Lock, CheckCircle, Trophy,
   ChevronUp, ChevronDown,
-  Wallet, TrendingUp, CreditCard, FileText, Unlock, Umbrella, Shield, PiggyBank, Star
+  Wallet, TrendingUp, CreditCard, FileText, Unlock, Umbrella, Shield, PiggyBank
 } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import RingGauge from '@/components/dashboard/RingGauge';
 
 const TOPIC_META = {
   budgeting:   { Icon: Wallet,      from: '#2EFD7A', to: '#17C964' },
@@ -105,17 +106,14 @@ function ModuleSection({ module, moduleIndex, isUnlocked, completedLessonIds, on
           </div>
         </div>
         <div className="flex items-center gap-3 shrink-0 ml-4">
-          <span className="text-xs font-semibold text-white/30">{completedCount}/{totalCount}</span>
+          <RingGauge pct={pct} size={30} strokeWidth={3} color={meta.from}>
+            <span className="text-[9px] font-bold text-white">{Math.round(pct)}%</span>
+          </RingGauge>
           {open
             ? <ChevronUp className="w-4 h-4 text-white/30" />
             : <ChevronDown className="w-4 h-4 text-white/30" />}
         </div>
       </button>
-
-      {/* Progress bar */}
-      <div className="h-1 bg-white/10">
-        <div className="h-full bg-[#2EFD7A] transition-all duration-500" style={{ width: `${pct}%` }} />
-      </div>
 
       {/* Expanded content */}
       {open && (
@@ -165,15 +163,20 @@ function ModuleSection({ module, moduleIndex, isUnlocked, completedLessonIds, on
                   : { background: 'rgba(255,255,255,0.08)' };
 
                 return (
-                  <div
+                  <motion.div
                     key={node.id}
                     className="absolute flex flex-col items-center"
                     style={{ left: cx - NODE_R, top: cy - NODE_R, width: D }}
+                    initial={{ opacity: 0, scale: 0.3, y: 18 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 16, delay: i * 0.07 }}
                   >
-                    <button
+                    <motion.button
                       onClick={() => node.isLesson && nodeUnlocked && onNavigate(module.id)}
                       disabled={!node.isLesson || !nodeUnlocked}
-                      className={`relative rounded-full flex items-center justify-center shadow-lg transition-all duration-200
+                      animate={isNextUp ? { scale: [1, 1.09, 1] } : { scale: 1 }}
+                      transition={isNextUp ? { duration: 1.3, repeat: Infinity, ease: 'easeInOut' } : { duration: 0.2 }}
+                      className={`relative rounded-full flex items-center justify-center shadow-lg
                         ${nodeUnlocked && node.isLesson ? 'hover:scale-110 active:scale-95 cursor-pointer' : 'cursor-default'}
                         ${isNextUp ? 'ring-4 ring-offset-2 ring-offset-black ring-[#2EFD7A]/40' : ''}
                       `}
@@ -195,7 +198,7 @@ function ModuleSection({ module, moduleIndex, isUnlocked, completedLessonIds, on
                         <span className="absolute inset-0 rounded-full animate-ping opacity-25"
                           style={bgStyle} />
                       )}
-                    </button>
+                    </motion.button>
 
                     {/* Label */}
                     <div className="mt-2 text-center" style={{ width: 88, marginLeft: -(44 - NODE_R) }}>
@@ -207,7 +210,7 @@ function ModuleSection({ module, moduleIndex, isUnlocked, completedLessonIds, on
                         +{node.xp} XP
                       </p>
                     </div>
-                  </div>
+                  </motion.div>
                 );
               })}
             </div>

@@ -8,6 +8,13 @@ import WindingLearningPath from '@/components/WindingLearningPath';
 import GoalCard from '@/components/dashboard/GoalCard';
 import GoalsSummaryWidget from '@/components/dashboard/GoalsSummaryWidget';
 import CreateGoalModal from '@/components/dashboard/CreateGoalModal';
+import StatsBar from '@/components/dashboard/StatsBar';
+
+const containerVariants = { hidden: {}, show: { transition: { staggerChildren: 0.12 } } };
+const itemVariants = {
+  hidden: { opacity: 0, y: 24, scale: 0.98 },
+  show: { opacity: 1, y: 0, scale: 1, transition: { type: 'spring', stiffness: 260, damping: 22 } },
+};
 
 const EMPTY_FORM = { name: '', description: '', target_amount: '', saved_amount: '', target_date: '', image_url: '' };
 
@@ -89,25 +96,31 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-black px-6 md:px-10 py-10">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: 'easeOut' }}
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
         className="max-w-5xl mx-auto"
       >
         {/* Header */}
-        <div className="mb-10">
+        <motion.div variants={itemVariants} className="mb-8">
           <h1 className="text-3xl md:text-4xl font-light tracking-tight text-white mb-2">
             {greeting()}, <span className="font-extrabold">{profile?.first_name || user?.full_name?.split(' ')[0] || 'there'}</span> 👋
           </h1>
           <p className="text-white/40 text-sm">Here's your financial progress at a glance.</p>
-        </div>
+        </motion.div>
+
+        {stats && (
+          <motion.div variants={itemVariants}>
+            <StatsBar stats={stats} />
+          </motion.div>
+        )}
 
         <div className="grid md:grid-cols-5 gap-8">
           {/* Main column */}
           <div className="md:col-span-4 space-y-10">
 
             {/* Goals Carousel */}
-            <section>
+            <motion.section variants={itemVariants}>
               <div className="flex items-center justify-between mb-5">
                 <h2 className="text-white/30 text-xs font-light tracking-widest uppercase">My Goals</h2>
                 <Link to="/goals" className="text-xs text-[#2EFD7A] font-medium hover:opacity-80 transition-opacity flex items-center gap-1">
@@ -168,23 +181,23 @@ export default function Dashboard() {
                   )}
                 </div>
               )}
-            </section>
+            </motion.section>
 
             {/* Full Learning Path */}
-            <section>
+            <motion.section variants={itemVariants}>
               <div className="mb-5">
                 <h2 className="text-white/30 text-xs font-light tracking-widest uppercase mb-1">Learning Path</h2>
                 <p className="text-white text-lg font-light">Master personal finance <span className="font-extrabold">one lesson at a time</span></p>
               </div>
               <WindingLearningPath modules={modules} progress={progress} />
-            </section>
+            </motion.section>
           </div>
 
           {/* Sidebar widgets */}
-          <div className="md:col-span-1 space-y-5">
+          <motion.div variants={itemVariants} className="md:col-span-1 space-y-5">
             {goals.length > 0 && <GoalsSummaryWidget goals={goals} />}
             <LinkedAccountsWidget />
-          </div>
+          </motion.div>
         </div>
       </motion.div>
 
