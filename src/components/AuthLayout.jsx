@@ -43,25 +43,37 @@ function Wordmark({ className = "" }) {
 export default function AuthLayout({ icon: Icon, title, subtitle, footer, children }) {
   return (
     <div className="relative h-screen flex flex-col items-center justify-center bg-black px-4 py-4 overflow-hidden">
-      {/* Aurora borealis background — slow drifting green/blue glows, kept dim so black dominates */}
+      {/* Sun-flare background — a bright abstract core with slowly rotating rays, instead of simple pulsing blobs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Rotating abstract rays, off-center for an asymmetric flare feel */}
         <motion.div
-          className="absolute -top-1/4 -left-1/4 w-[70%] h-[70%] rounded-full"
-          style={{ background: "radial-gradient(circle, rgba(46,253,122,0.16) 0%, rgba(46,253,122,0.05) 45%, transparent 75%)" }}
-          animate={{ x: [0, 60, -20, 0], y: [0, 40, -30, 0], opacity: [0.2, 0.35, 0.2] }}
-          transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute -top-1/3 -left-1/4 w-[140%] h-[140%]"
+          style={{
+            background: "conic-gradient(from 0deg, transparent 0deg, rgba(46,253,122,0.12) 8deg, transparent 22deg, transparent 100deg, rgba(46,160,253,0.09) 112deg, transparent 130deg, transparent 210deg, rgba(46,253,203,0.1) 222deg, transparent 240deg, transparent 360deg)",
+          }}
+          animate={{ rotate: 360 }}
+          transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
         />
+        {/* Bright flare core, drifting subtly like light shifting through a lens */}
         <motion.div
-          className="absolute top-1/3 -right-1/4 w-[60%] h-[60%] rounded-full"
-          style={{ background: "radial-gradient(circle, rgba(46,160,253,0.13) 0%, rgba(46,160,253,0.04) 45%, transparent 75%)" }}
-          animate={{ x: [0, -50, 30, 0], y: [0, -30, 20, 0], opacity: [0.15, 0.3, 0.15] }}
-          transition={{ duration: 16, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+          className="absolute -top-1/4 -left-1/4 w-[65%] h-[65%] rounded-full"
+          style={{ background: "radial-gradient(circle, rgba(46,253,122,0.2) 0%, rgba(46,253,122,0.06) 35%, transparent 70%)" }}
+          animate={{ x: [0, 70, -10, 0], y: [0, 30, -20, 0], scale: [1, 1.15, 0.95, 1] }}
+          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
         />
+        {/* Secondary lens-flare echo, smaller and offset, blue-toned */}
         <motion.div
-          className="absolute bottom-[-20%] left-1/4 w-[50%] h-[50%] rounded-full"
-          style={{ background: "radial-gradient(circle, rgba(46,253,203,0.13) 0%, rgba(46,253,203,0.04) 45%, transparent 75%)" }}
-          animate={{ x: [0, 40, -40, 0], y: [0, -20, 30, 0], opacity: [0.15, 0.28, 0.15] }}
-          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+          className="absolute top-1/2 -right-1/4 w-[40%] h-[40%] rounded-full"
+          style={{ background: "radial-gradient(circle, rgba(46,160,253,0.16) 0%, rgba(46,160,253,0.04) 40%, transparent 75%)" }}
+          animate={{ x: [0, -40, 20, 0], y: [0, -40, 20, 0], scale: [1, 1.2, 0.9, 1] }}
+          transition={{ duration: 24, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+        />
+        {/* Thin streak of abstract light cutting diagonally, mimicking a flare streak */}
+        <motion.div
+          className="absolute top-0 left-1/2 w-[2px] h-full origin-top"
+          style={{ background: "linear-gradient(to bottom, rgba(46,253,203,0.18) 0%, transparent 40%)" }}
+          animate={{ rotate: [-8, 8, -8], opacity: [0.5, 0.9, 0.5] }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
         />
       </div>
 
@@ -75,9 +87,10 @@ export default function AuthLayout({ icon: Icon, title, subtitle, footer, childr
           {/* Cropped power symbol only — the source image is a square with the icon on top and the "Baseline" wordmark baked into the bottom, so we clip to the top fraction to isolate just the icon */}
           <div className="relative mb-2" style={{ width: 288, height: 288 * 0.65 }}>
             <motion.div
-              className="absolute inset-0 rounded-2xl bg-[#2EFD7A]/25 blur-2xl pointer-events-none"
-              animate={{ opacity: [0.4, 0.7, 0.4] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute inset-0 rounded-2xl blur-2xl pointer-events-none"
+              style={{ background: "radial-gradient(circle, rgba(46,253,122,0.35) 0%, rgba(46,253,203,0.15) 45%, transparent 75%)" }}
+              animate={{ scale: [1, 1.25, 1], rotate: [0, 15, 0], opacity: [0.5, 0.8, 0.5] }}
+              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
             />
             <div className="relative w-full h-full overflow-hidden">
               <motion.img
