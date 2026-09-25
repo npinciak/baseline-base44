@@ -8,13 +8,13 @@ import {
 import { base44 } from '@/api/base44Client';
 
 const TOPIC_META = {
-  budgeting:   { Icon: Wallet,      from: '#14b8a6', to: '#10b981' },
-  investing:   { Icon: TrendingUp,  from: '#3b82f6', to: '#6366f1' },
-  credit:      { Icon: CreditCard,  from: '#a855f7', to: '#8b5cf6' },
+  budgeting:   { Icon: Wallet,      from: '#2EFD7A', to: '#17C964' },
+  investing:   { Icon: TrendingUp,  from: '#F5A623', to: '#F7C948' },
+  credit:      { Icon: CreditCard,  from: '#2EC4B6', to: '#17A398' },
   taxes:       { Icon: FileText,    from: '#f97316', to: '#f59e0b' },
   saving:      { Icon: PiggyBank,   from: '#22c55e', to: '#14b8a6' },
   debt:        { Icon: Unlock,      from: '#ef4444', to: '#f43f5e' },
-  insurance:   { Icon: Umbrella,    from: '#0ea5e9', to: '#3b82f6' },
+  insurance:   { Icon: Umbrella,    from: '#2DD4BF', to: '#14B8A6' },
   retirement:  { Icon: Shield,      from: '#f59e0b', to: '#eab308' },
 };
 
@@ -50,7 +50,7 @@ function ModuleSection({ module, moduleIndex, isUnlocked, completedLessonIds, on
   const [open, setOpen]       = useState(moduleIndex === 0);
   const [lessons, setLessons] = useState(null);
 
-  const meta = TOPIC_META[module.topic_tag] || { Icon: BookOpen, from: '#14b8a6', to: '#14b8a6' };
+  const meta = TOPIC_META[module.topic_tag] || { Icon: BookOpen, from: '#2EFD7A', to: '#2EFD7A' };
 
   useEffect(() => {
     if (open && lessons === null) {
@@ -85,11 +85,11 @@ function ModuleSection({ module, moduleIndex, isUnlocked, completedLessonIds, on
   const pathD  = buildPath(nodes.length);
 
   return (
-    <div className="rounded-2xl overflow-hidden border border-border mb-4">
+    <div className="rounded-2xl overflow-hidden border border-white/10 bg-white/[0.03] backdrop-blur-sm mb-4">
       {/* Header */}
       <button
         onClick={() => setOpen(o => !o)}
-        className="w-full flex items-center justify-between px-5 py-4 bg-card hover:bg-secondary/40 transition-colors"
+        className="w-full flex items-center justify-between px-5 py-4 hover:bg-white/[0.04] transition-colors"
       >
         <div className="flex items-center gap-3 text-left">
           {/* Coloured topic badge */}
@@ -97,40 +97,40 @@ function ModuleSection({ module, moduleIndex, isUnlocked, completedLessonIds, on
             className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
             style={{ background: `linear-gradient(135deg, ${meta.from}, ${meta.to})` }}
           >
-            <meta.Icon className="w-4.5 h-4.5 text-white" size={18} />
+            <meta.Icon className="w-4.5 h-4.5 text-black" size={18} />
           </div>
           <div>
-            <p className="text-sm font-heading font-bold leading-tight">{module.title}</p>
-            <p className="text-xs text-muted-foreground mt-0.5 capitalize">{module.topic_tag?.replace(/_/g, ' ')}</p>
+            <p className="text-sm text-white leading-tight">{module.title}</p>
+            <p className="text-xs text-white/30 mt-0.5 capitalize">{module.topic_tag?.replace(/_/g, ' ')}</p>
           </div>
         </div>
         <div className="flex items-center gap-3 shrink-0 ml-4">
-          <span className="text-xs font-semibold text-muted-foreground">{completedCount}/{totalCount}</span>
+          <span className="text-xs font-semibold text-white/30">{completedCount}/{totalCount}</span>
           {open
-            ? <ChevronUp className="w-4 h-4 text-muted-foreground" />
-            : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
+            ? <ChevronUp className="w-4 h-4 text-white/30" />
+            : <ChevronDown className="w-4 h-4 text-white/30" />}
         </div>
       </button>
 
       {/* Progress bar */}
-      <div className="h-1 bg-secondary">
-        <div className="h-full bg-primary transition-all duration-500" style={{ width: `${pct}%` }} />
+      <div className="h-1 bg-white/10">
+        <div className="h-full bg-[#2EFD7A] transition-all duration-500" style={{ width: `${pct}%` }} />
       </div>
 
       {/* Expanded content */}
       {open && (
-        <div className="bg-background py-4">
+        <div className="py-4">
           {!isUnlocked ? (
-            <div className="flex flex-col items-center justify-center py-8 gap-2 text-muted-foreground">
+            <div className="flex flex-col items-center justify-center py-8 gap-2 text-white/30">
               <Lock className="w-6 h-6" />
               <p className="text-xs">Complete the previous module to unlock</p>
             </div>
           ) : lessons === null ? (
             <div className="flex justify-center py-8">
-              <div className="w-6 h-6 border-2 border-border border-t-primary rounded-full animate-spin" />
+              <div className="w-6 h-6 border-2 border-white/10 border-t-[#2EFD7A] rounded-full animate-spin" />
             </div>
           ) : nodes.length === 0 ? (
-            <p className="text-center text-xs text-muted-foreground py-6">No lessons yet.</p>
+            <p className="text-center text-xs text-white/30 py-6">No lessons yet.</p>
           ) : (
             <div className="relative mx-auto" style={{ width: W, height: svgH }}>
 
@@ -141,7 +141,7 @@ function ModuleSection({ module, moduleIndex, isUnlocked, completedLessonIds, on
                 viewBox={`0 0 ${W} ${svgH}`}
               >
                 {/* Shadow / base track */}
-                <path d={pathD} fill="none" stroke="hsl(var(--border))"
+                <path d={pathD} fill="none" stroke="rgba(255,255,255,0.1)"
                   strokeWidth="4" strokeLinecap="round" strokeDasharray="10 8" />
               </svg>
 
@@ -162,7 +162,7 @@ function ModuleSection({ module, moduleIndex, isUnlocked, completedLessonIds, on
                 // Gradient for unlocked; muted for locked
                 const bgStyle = nodeUnlocked
                   ? { background: `linear-gradient(135deg, ${meta.from}, ${meta.to})` }
-                  : { background: '#1e2640' };
+                  : { background: 'rgba(255,255,255,0.08)' };
 
                 return (
                   <div
@@ -175,18 +175,18 @@ function ModuleSection({ module, moduleIndex, isUnlocked, completedLessonIds, on
                       disabled={!node.isLesson || !nodeUnlocked}
                       className={`relative rounded-full flex items-center justify-center shadow-lg transition-all duration-200
                         ${nodeUnlocked && node.isLesson ? 'hover:scale-110 active:scale-95 cursor-pointer' : 'cursor-default'}
-                        ${isNextUp ? 'ring-4 ring-offset-2 ring-offset-background ring-primary/40' : ''}
+                        ${isNextUp ? 'ring-4 ring-offset-2 ring-offset-black ring-[#2EFD7A]/40' : ''}
                       `}
                       style={{ width: D, height: D, ...bgStyle }}
                     >
                       <LessonIcon
-                        className={`${node.isTrophy ? 'w-6 h-6' : 'w-6 h-6'} ${nodeUnlocked ? 'text-white drop-shadow' : 'text-muted-foreground'}`}
+                        className={`${node.isTrophy ? 'w-6 h-6' : 'w-6 h-6'} ${nodeUnlocked ? 'text-black drop-shadow' : 'text-white/30'}`}
                       />
 
                       {/* Completed check badge */}
                       {node.completed && !node.isTrophy && (
-                        <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary rounded-full flex items-center justify-center ring-2 ring-background">
-                          <CheckCircle className="w-3 h-3 text-primary-foreground" />
+                        <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#2EFD7A] rounded-full flex items-center justify-center ring-2 ring-black">
+                          <CheckCircle className="w-3 h-3 text-black" />
                         </span>
                       )}
 
@@ -199,11 +199,11 @@ function ModuleSection({ module, moduleIndex, isUnlocked, completedLessonIds, on
 
                     {/* Label */}
                     <div className="mt-2 text-center" style={{ width: 88, marginLeft: -(44 - NODE_R) }}>
-                      <p className={`font-medium leading-tight ${nodeUnlocked ? 'text-foreground' : 'text-muted-foreground'}`}
+                      <p className={`font-medium leading-tight ${nodeUnlocked ? 'text-white' : 'text-white/30'}`}
                         style={{ fontSize: 11 }}>
                         {node.label}
                       </p>
-                      <p className="font-semibold text-primary" style={{ fontSize: 10 }}>
+                      <p className="font-semibold text-[#2EFD7A]" style={{ fontSize: 10 }}>
                         +{node.xp} XP
                       </p>
                     </div>
@@ -235,9 +235,9 @@ export default function WindingLearningPath({ modules, progress }) {
 
   if (modules.length === 0) {
     return (
-      <div className="bg-card border border-border rounded-2xl p-8 text-center">
-        <BookOpen className="w-10 h-10 text-muted-foreground/40 mx-auto mb-3" />
-        <p className="text-sm text-muted-foreground">No modules published yet — check back soon!</p>
+      <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-8 text-center">
+        <BookOpen className="w-10 h-10 text-white/20 mx-auto mb-3" />
+        <p className="text-sm text-white/30">No modules published yet — check back soon!</p>
       </div>
     );
   }

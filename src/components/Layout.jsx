@@ -42,36 +42,36 @@ export default function Layout() {
   ];
 
   return (
-    <div className="min-h-screen bg-background flex">
-      {/* Sidebar - desktop */}
-      <aside className="hidden md:flex flex-col w-64 border-r border-border bg-card fixed h-full z-40">
-        <div className="p-6 border-b border-border">
+    <div className="min-h-screen bg-black flex">
+      {/* Sidebar - desktop, kept white as a deliberate contrast point against the black app body */}
+      <aside className="hidden md:flex flex-col w-64 border-r border-black/10 bg-white fixed h-full z-40">
+        <div className="p-6 border-b border-black/10">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <Zap className="w-5 h-5 text-primary-foreground" />
+            <div className="w-8 h-8 rounded-lg bg-[#2EFD7A] flex items-center justify-center">
+              <Zap className="w-5 h-5 text-black" />
             </div>
-            <span className="text-xl font-display font-bold text-foreground">Baseline</span>
+            <span className="text-xl font-display font-bold text-black">Baseline</span>
           </div>
         </div>
 
         {/* XP Bar */}
         {stats && (
-          <div className="px-5 py-4 border-b border-border">
+          <div className="px-5 py-4 border-b border-black/10">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-medium text-muted-foreground">Level {stats.current_level}</span>
-              <span className="text-xs font-semibold text-primary flex items-center gap-1"><Coins className="w-3 h-3" />{walletBalance !== null ? walletBalance : '---'} Base Coins</span>
+              <span className="text-xs font-medium text-black/50">Level {stats.current_level}</span>
+              <span className="text-xs font-semibold text-black flex items-center gap-1"><Coins className="w-3 h-3 text-[#1BAE5C]" />{walletBalance !== null ? walletBalance : '---'} Base Coins</span>
             </div>
-            <div className="h-2 bg-secondary rounded-full overflow-hidden">
+            <div className="h-2 bg-black/10 rounded-full overflow-hidden">
               <div
-                className="h-full rounded-full xp-shimmer transition-all duration-500"
+                className="h-full rounded-full bg-[#2EFD7A] transition-all duration-500"
                 style={{ width: `${xpProgress}%` }}
               />
             </div>
             <div className="flex items-center gap-3 mt-3">
               <div className="flex items-center gap-1">
-                <Flame className="w-4 h-4 text-orange-400" />
-                <span className="text-sm font-semibold text-foreground">{stats.current_streak}</span>
-                <span className="text-xs text-muted-foreground">streak</span>
+                <Flame className="w-4 h-4 text-orange-500" />
+                <span className="text-sm font-semibold text-black">{stats.current_streak}</span>
+                <span className="text-xs text-black/50">streak</span>
               </div>
             </div>
           </div>
@@ -86,8 +86,8 @@ export default function Layout() {
               className={({ isActive }) =>
                 `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                   isActive
-                    ? 'bg-primary/15 text-primary border border-primary/20'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
+                    ? 'bg-[#2EFD7A]/15 text-black border border-[#2EFD7A]/40'
+                    : 'text-black/50 hover:text-black hover:bg-black/5'
                 }`
               }
             >
@@ -101,8 +101,8 @@ export default function Layout() {
               className={({ isActive }) =>
                 `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                   isActive
-                    ? 'bg-amber-500/15 text-amber-400 border border-amber-500/20'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
+                    ? 'bg-amber-500/15 text-amber-600 border border-amber-500/30'
+                    : 'text-black/50 hover:text-black hover:bg-black/5'
                 }`
               }
             >
@@ -113,21 +113,21 @@ export default function Layout() {
         </nav>
 
         {/* User */}
-        <div className="p-4 border-t border-border">
+        <div className="p-4 border-t border-black/10">
           {user && (
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm">
+              <div className="w-9 h-9 rounded-full bg-[#2EFD7A]/20 flex items-center justify-center text-black font-bold text-sm">
                 {profile?.first_name?.[0] || user.full_name?.[0] || 'U'}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-foreground truncate">
+                <p className="text-sm font-medium text-black truncate">
                   {profile ? `${profile.first_name || ''} ${profile.last_name || ''}`.trim() : user.full_name}
                 </p>
-                <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                <p className="text-xs text-black/40 truncate">{user.email}</p>
               </div>
               <button
                 onClick={() => base44.auth.logout('/')}
-                className="text-muted-foreground hover:text-foreground transition-colors"
+                className="text-black/40 hover:text-black transition-colors"
               >
                 <LogOut className="w-4 h-4" />
               </button>
@@ -142,14 +142,14 @@ export default function Layout() {
       </main>
 
       {/* Mobile bottom nav */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-border flex z-50">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-black/10 flex z-50">
         {navItems.map(({ to, icon: Icon, label }) => (
           <NavLink
             key={to}
             to={to}
             className={({ isActive }) =>
               `flex-1 flex flex-col items-center gap-1 py-3 text-xs font-medium transition-all duration-200 ${
-                isActive ? 'text-primary' : 'text-muted-foreground'
+                isActive ? 'text-[#1BAE5C]' : 'text-black/40'
               }`
             }
           >
@@ -162,7 +162,7 @@ export default function Layout() {
             to="/admin"
             className={({ isActive }) =>
               `flex-1 flex flex-col items-center gap-1 py-3 text-xs font-medium transition-all duration-200 ${
-                isActive ? 'text-amber-400' : 'text-muted-foreground'
+                isActive ? 'text-amber-600' : 'text-black/40'
               }`
             }
           >
@@ -172,7 +172,7 @@ export default function Layout() {
         )}
         <button
           onClick={() => base44.auth.logout('/')}
-          className="flex-1 flex flex-col items-center gap-1 py-3 text-xs font-medium text-muted-foreground transition-all duration-200"
+          className="flex-1 flex flex-col items-center gap-1 py-3 text-xs font-medium text-black/40 transition-all duration-200"
         >
           <LogOut className="w-5 h-5" />
           Log Out
