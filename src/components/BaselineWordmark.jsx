@@ -51,7 +51,7 @@ export default function BaselineWordmark({ scale = 0.38 }) {
         <img
           src="https://media.base44.com/images/public/6a3542676f9044e70b439a84/156742c3c_2c64e420d_b567a13c189ab17b1195db0aba380e0ba8854e8c.png"
           alt=""
-          className="absolute top-0 left-0 object-contain"
+          className="absolute top-0 left-0 object-contain mix-blend-screen"
           style={{ width: logoSize, height: logoSize }}
         />
       </div>
