@@ -174,8 +174,8 @@ function ModuleSection({ module, moduleIndex, isUnlocked, completedLessonIds, on
                     <motion.button
                       onClick={() => node.isLesson && nodeUnlocked && onNavigate(module.id)}
                       disabled={!node.isLesson || !nodeUnlocked}
-                      animate={isNextUp ? { scale: [1, 1.09, 1] } : { scale: 1 }}
-                      transition={isNextUp ? { duration: 1.3, repeat: Infinity, ease: 'easeInOut' } : { duration: 0.2 }}
+                      animate={isNextUp ? { scale: [1, 1.06, 1] } : { scale: 1 }}
+                      transition={isNextUp ? { duration: 3.2, repeat: Infinity, ease: 'easeInOut' } : { duration: 0.2 }}
                       className={`relative rounded-full flex items-center justify-center shadow-lg
                         ${nodeUnlocked && node.isLesson ? 'hover:scale-110 active:scale-95 cursor-pointer' : 'cursor-default'}
                         ${isNextUp ? 'ring-4 ring-offset-2 ring-offset-black ring-[#2EFD7A]/40' : ''}
@@ -193,10 +193,15 @@ function ModuleSection({ module, moduleIndex, isUnlocked, completedLessonIds, on
                         </span>
                       )}
 
-                      {/* Pulse for next unlocked */}
+                      {/* Slow, calm breathing pulse for next unlocked */}
                       {isNextUp && (
-                        <span className="absolute inset-0 rounded-full animate-ping opacity-25"
-                          style={bgStyle} />
+                        <motion.span
+                          className="absolute inset-0 rounded-full"
+                          style={bgStyle}
+                          initial={{ opacity: 0.35, scale: 1 }}
+                          animate={{ opacity: [0.35, 0, 0.35], scale: [1, 1.35, 1] }}
+                          transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
+                        />
                       )}
                     </motion.button>
 

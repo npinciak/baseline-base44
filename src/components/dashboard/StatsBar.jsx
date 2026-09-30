@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import RingGauge from './RingGauge';
 import StreakFlame from './StreakFlame';
+import BaseScoreGlance from './BaseScoreGlance';
 import useCountUp from '@/hooks/useCountUp';
 
 export default function StatsBar({ stats }) {
@@ -12,7 +13,7 @@ export default function StatsBar({ stats }) {
   return (
     <motion.div
       whileHover={{ y: -2 }}
-      className="flex items-center gap-6 bg-white/[0.03] border border-white/10 backdrop-blur-sm rounded-2xl px-6 py-4 mb-8 shadow-[0_0_40px_-10px_rgba(46,160,253,0.12)]"
+      className="flex items-center flex-wrap gap-6 bg-white/[0.03] border border-white/10 backdrop-blur-sm rounded-2xl px-6 py-4 mb-8 shadow-[0_0_40px_-10px_rgba(46,160,253,0.12)]"
     >
       <RingGauge pct={xpProgress} size={56} strokeWidth={5} color="#2EFD7A" accentColor="#2EA0FD">
         <span className="text-sm font-bold text-white">{stats.current_level}</span>
@@ -29,6 +30,8 @@ export default function StatsBar({ stats }) {
           <p className="text-white/60 text-[10px] tracking-widest uppercase">Day Streak</p>
         </div>
       </div>
+      <div className="w-px h-8 bg-white/10" />
+      <BaseScoreGlance score={stats.base_score} />
     </motion.div>
   );
 }

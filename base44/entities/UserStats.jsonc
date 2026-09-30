@@ -50,6 +50,30 @@
     "first_goal_workflow_completed": {
       "type": "boolean",
       "default": false
+    },
+    "base_score": {
+      "type": "number",
+      "description": "Overall BaseScore out of 500"
+    },
+    "score_financial_knowledge": {
+      "type": "number",
+      "description": "Financial Knowledge category score out of 100"
+    },
+    "score_income_debt": {
+      "type": "number",
+      "description": "Income to Debt Ratio category score out of 100"
+    },
+    "score_preparedness": {
+      "type": "number",
+      "description": "Preparedness category score out of 100"
+    },
+    "score_risk_appetite": {
+      "type": "number",
+      "description": "Risk Appetite category score out of 100"
+    },
+    "score_credit_health": {
+      "type": "number",
+      "description": "Credit Health category score out of 100"
     }
   },
   "required": [
