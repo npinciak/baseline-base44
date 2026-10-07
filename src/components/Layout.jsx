@@ -34,11 +34,11 @@ export default function Layout() {
   const xpProgress = stats ? ((stats.total_xp % xpForLevel(stats.current_level)) / xpForLevel(stats.current_level)) * 100 : 0;
 
   const navItems = [
-    { to: '/dashboard', icon: LayoutDashboard, label: 'Home' },
-    { to: '/money', icon: Wallet, label: 'Money' },
-    { to: '/basecamp', icon: ShoppingBag, label: 'Basecamp' },
-    { to: '/goals', icon: Target, label: 'Goals' },
-    { to: '/profile', icon: User, label: 'Profile' },
+    { to: '/dashboard', icon: LayoutDashboard, label: 'Home', iconColor: 'text-[#2EFD7A]' },
+    { to: '/money', icon: Wallet, label: 'Money', iconColor: 'text-amber-400' },
+    { to: '/basecamp', icon: ShoppingBag, label: 'Basecamp', iconColor: 'text-pink-400' },
+    { to: '/goals', icon: Target, label: 'Goals', iconColor: 'text-[#2BF9E9]' },
+    { to: '/profile', icon: User, label: 'Profile', iconColor: 'text-purple-400' },
   ];
 
   return (
@@ -58,7 +58,7 @@ export default function Layout() {
         {stats && (
           <div className="px-5 py-4 border-b border-white/10">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-medium text-white/50">Level {stats.current_level}</span>
+              <span className="text-xs font-semibold text-[#2BF9E9]">Level {stats.current_level}</span>
               <span className="text-xs font-semibold text-white flex items-center gap-1"><Coins className="w-3 h-3 text-[#2EFD7A]" />{walletBalance !== null ? walletBalance : '---'} Base Coins</span>
             </div>
             <div className="h-2 bg-white/10 rounded-full overflow-hidden">
@@ -71,7 +71,7 @@ export default function Layout() {
               <div className="flex items-center gap-1">
                 <Flame className="w-4 h-4 text-orange-400" />
                 <span className="text-sm font-semibold text-white">{stats.current_streak}</span>
-                <span className="text-xs text-white/50">streak</span>
+                <span className="text-xs text-orange-300">day streak</span>
               </div>
             </div>
           </div>
@@ -79,19 +79,19 @@ export default function Layout() {
 
         {/* Nav */}
         <nav className="flex-1 p-4 space-y-1">
-          {navItems.map(({ to, icon: Icon, label }) => (
+          {navItems.map(({ to, icon: Icon, label, iconColor }) => (
             <NavLink
               key={to}
               to={to}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
+                `group flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 border ${
                   isActive
-                    ? 'bg-[#2EFD7A]/15 text-[#2EFD7A] border border-[#2EFD7A]/40 shadow-[0_0_16px_rgba(46,253,122,0.15)]'
-                    : 'text-white/50 hover:text-white hover:bg-white/5'
+                    ? 'bg-white/10 text-white border-white/50 shadow-[0_0_16px_rgba(255,255,255,0.15)]'
+                    : 'text-white/70 border-transparent hover:text-white hover:bg-white/5 hover:translate-x-1'
                 }`
               }
             >
-              <Icon className="w-5 h-5" />
+              <Icon className={`w-5 h-5 transition-transform duration-200 group-hover:scale-125 group-hover:-rotate-6 ${iconColor}`} />
               {label}
             </NavLink>
           ))}
@@ -143,17 +143,17 @@ export default function Layout() {
 
       {/* Mobile bottom nav */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-black/70 backdrop-blur-xl border-t border-white/10 flex z-50">
-        {navItems.map(({ to, icon: Icon, label }) => (
+        {navItems.map(({ to, icon: Icon, label, iconColor }) => (
           <NavLink
             key={to}
             to={to}
             className={({ isActive }) =>
               `flex-1 flex flex-col items-center gap-1 py-3 text-xs font-medium transition-all duration-200 ${
-                isActive ? 'text-[#2EFD7A]' : 'text-white/40'
+                isActive ? 'text-white' : 'text-white/60'
               }`
             }
           >
-            <Icon className="w-5 h-5" />
+            <Icon className={`w-5 h-5 ${iconColor}`} />
             {label}
           </NavLink>
         ))}

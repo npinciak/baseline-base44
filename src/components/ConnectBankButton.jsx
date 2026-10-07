@@ -32,20 +32,20 @@ export default function ConnectBankButton({ onConnected }) {
       <button
         onClick={handleConnect}
         disabled={loading}
-        className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-xl font-semibold text-sm hover:bg-primary/90 transition-all disabled:opacity-50 w-fit"
+        className="flex items-center justify-center gap-2 px-4 py-2 bg-[#2EFD7A] text-black rounded-xl font-semibold text-sm hover:bg-[#2EFD7A]/90 hover:scale-[1.03] active:scale-95 transition-all disabled:opacity-50 w-fit"
       >
         {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Link2 className="w-4 h-4" />}
         {loading ? 'Connecting...' : 'Connect Bank Account'}
       </button>
-      {error && <p className="text-xs text-destructive mt-1">{error}</p>}
+      {error && <p className="text-xs text-red-400 mt-1">{error}</p>}
 
       {/* Widget modal */}
       {widgetUrl && (
-        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="relative bg-card border border-border rounded-2xl overflow-hidden w-full max-w-lg h-[700px] flex flex-col">
-            <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-              <span className="text-sm font-semibold">Connect Your Bank</span>
-              <button onClick={handleClose} className="text-muted-foreground hover:text-foreground transition-colors">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="relative bg-neutral-950 border border-white/10 rounded-2xl overflow-hidden w-full max-w-lg h-[700px] max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
+              <span className="text-sm font-semibold text-white">Connect Your Bank</span>
+              <button onClick={handleClose} className="text-white/50 hover:text-white transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>

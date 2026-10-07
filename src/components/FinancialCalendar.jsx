@@ -136,23 +136,23 @@ export default function FinancialCalendar() {
 
   if (loading) {
     return (
-      <div className="bg-card border border-border rounded-2xl p-6">
-        <div className="w-6 h-6 border-2 border-border border-t-primary rounded-full animate-spin mx-auto" />
+      <div className="bg-white/[0.03] border border-white/10 backdrop-blur-sm rounded-2xl p-6">
+        <div className="w-6 h-6 border-2 border-white/10 border-t-[#2EFD7A] rounded-full animate-spin mx-auto" />
       </div>
     );
   }
 
   return (
-    <div className="bg-card border border-border rounded-2xl overflow-hidden">
+    <div className="bg-white/[0.03] border border-white/10 backdrop-blur-sm rounded-2xl overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between px-5 pt-5 pb-3">
         <div>
-          <h2 className="text-lg font-heading font-bold">Financial Calendar</h2>
-          <p className="text-xs text-muted-foreground">{format(today, 'MMMM yyyy')}</p>
+          <h2 className="text-lg font-heading font-bold text-white">Financial Calendar</h2>
+          <p className="text-xs text-white/60">{format(today, 'MMMM yyyy')}</p>
         </div>
         <button
           onClick={() => { setForm({ ...EMPTY_FORM, day_of_month: selectedDay }); setEditingId(null); setShowForm(true); }}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-primary-foreground rounded-xl text-xs font-semibold hover:bg-primary/90 transition-all"
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#2EFD7A] text-black rounded-xl text-xs font-semibold hover:bg-[#2EFD7A]/90 transition-all"
         >
           <Plus className="w-3.5 h-3.5" /> Add Event
         </button>
@@ -164,7 +164,7 @@ export default function FinancialCalendar() {
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`flex-1 py-2 rounded-xl text-sm font-semibold capitalize transition-all ${tab === t ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground hover:text-foreground'}`}
+            className={`flex-1 py-2 rounded-xl text-sm font-semibold capitalize transition-all ${tab === t ? 'bg-[#2EFD7A] text-black' : 'bg-white/[0.05] text-white/60 hover:text-white'}`}
           >
             {t}
           </button>
@@ -176,7 +176,7 @@ export default function FinancialCalendar() {
         {/* Day-of-week headers */}
         <div className="grid grid-cols-7 mb-1">
           {DAYS.map((d, i) => (
-            <div key={i} className="text-center text-xs font-semibold text-muted-foreground py-1">{d}</div>
+            <div key={i} className="text-center text-xs font-semibold text-white/60 py-1">{d}</div>
           ))}
         </div>
         {/* Weeks */}
@@ -201,12 +201,12 @@ export default function FinancialCalendar() {
                   onClick={() => inMonth && setSelectedDay(d)}
                   disabled={!inMonth}
                   className={`relative flex flex-col items-center justify-center py-2 rounded-xl transition-all
-                    ${!inMonth ? 'opacity-20 cursor-default' : 'hover:bg-secondary/60 cursor-pointer'}
-                    ${isSelected ? 'bg-primary text-primary-foreground hover:bg-primary' : ''}
-                    ${isToday && !isSelected ? 'ring-1 ring-primary/40' : ''}
+                    ${!inMonth ? 'opacity-20 cursor-default' : 'hover:bg-white/10 cursor-pointer'}
+                    ${isSelected ? 'bg-[#2EFD7A] text-black hover:bg-[#2EFD7A]' : ''}
+                    ${isToday && !isSelected ? 'ring-1 ring-[#2EFD7A]/60' : ''}
                   `}
                 >
-                  <span className={`text-sm font-semibold leading-none ${isSelected ? 'text-primary-foreground' : isToday ? 'text-primary' : ''}`}>
+                  <span className={`text-sm font-semibold leading-none ${isSelected ? 'text-black' : isToday ? 'text-[#2EFD7A]' : ''}`}>
                     {d}
                   </span>
                   {dotColor && !isSelected && (
@@ -219,43 +219,43 @@ export default function FinancialCalendar() {
         ))}
       </div>
 
-      <div className="mx-5 border-t border-border" />
+      <div className="mx-5 border-t border-white/10" />
 
       {/* Day header */}
       <div className="px-5 pt-4 pb-3">
-        <p className="text-sm font-heading font-bold">{ordinal(selectedDay)} {format(today, 'MMM, yyyy')}</p>
+        <p className="text-sm font-heading font-bold text-white">{ordinal(selectedDay)} {format(today, 'MMM, yyyy')}</p>
       </div>
 
       {/* Summary cards */}
       <div className="grid grid-cols-2 gap-3 px-5 pb-4">
-        <div className="bg-secondary rounded-xl p-4">
-          <p className="text-xs text-muted-foreground mb-1">Monthly Surplus</p>
-          <p className={`text-xl font-display font-extrabold ${disposable >= 0 ? 'text-primary' : 'text-destructive'}`}>
+        <div className="bg-white/[0.05] rounded-xl p-4">
+          <p className="text-xs text-white/60 mb-1">Monthly Surplus</p>
+          <p className={`text-xl font-display font-extrabold ${disposable >= 0 ? 'text-[#2EFD7A]' : 'text-red-400'}`}>
             {disposable >= 0 ? '+' : '-'}${Math.abs(disposable).toLocaleString()}
           </p>
         </div>
-        <div className="bg-secondary rounded-xl p-4">
-          <p className="text-xs text-muted-foreground mb-1">Day's Net Change</p>
-          <p className={`text-xl font-display font-extrabold ${dayNet >= 0 ? 'text-primary' : 'text-destructive'}`}>
+        <div className="bg-white/[0.05] rounded-xl p-4">
+          <p className="text-xs text-white/60 mb-1">Day's Net Change</p>
+          <p className={`text-xl font-display font-extrabold ${dayNet >= 0 ? 'text-[#2EFD7A]' : 'text-red-400'}`}>
             {dayNet === 0 ? '$0' : `${dayNet > 0 ? '+' : '-'}$${Math.abs(dayNet).toLocaleString()}`}
           </p>
         </div>
       </div>
 
       {/* Events list for selected day */}
-      <div className="mx-5 mb-5 bg-secondary/50 rounded-2xl overflow-hidden">
-        <div className="px-4 py-3 border-b border-border">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+      <div className="mx-5 mb-5 bg-white/[0.03] rounded-2xl overflow-hidden">
+        <div className="px-4 py-3 border-b border-white/10">
+          <p className="text-xs font-semibold text-white/60 uppercase tracking-wider">
             Financial Events · {ordinal(selectedDay)} {format(today, 'MMM yyyy')}
           </p>
         </div>
         {visibleDayEvents.length === 0 ? (
-          <div className="flex flex-col items-center py-8 text-muted-foreground gap-2">
+          <div className="flex flex-col items-center py-8 text-white/60 gap-2">
             <Calendar className="w-5 h-5" />
             <p className="text-xs">No {tab} on this day</p>
           </div>
         ) : (
-          <div className="divide-y divide-border">
+          <div className="divide-y divide-white/10">
             {visibleDayEvents.map(ev => {
               const meta = CATEGORY_META[ev.category] || CATEGORY_META.other;
               const { Icon } = meta;
@@ -266,16 +266,16 @@ export default function FinancialCalendar() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold truncate">{ev.name}</p>
-                    <p className="text-xs text-muted-foreground">{meta.label}{ev.is_recurring ? ' · Recurring' : ''}</p>
+                    <p className="text-xs text-white/60">{meta.label}{ev.is_recurring ? ' · Recurring' : ''}</p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className={`text-sm font-bold ${ev.type === 'income' ? 'text-primary' : 'text-foreground'}`}>
+                    <span className={`text-sm font-bold ${ev.type === 'income' ? 'text-[#2EFD7A]' : 'text-white'}`}>
                       {ev.type === 'income' ? '+' : ''} ${ev.amount.toLocaleString()}
                     </span>
-                    <button onClick={() => openEdit(ev)} className="text-muted-foreground hover:text-foreground transition-colors">
+                    <button onClick={() => openEdit(ev)} className="text-white/60 hover:text-white transition-colors">
                       <Pencil className="w-3.5 h-3.5" />
                     </button>
-                    <button onClick={() => handleDelete(ev.id)} className="text-muted-foreground hover:text-destructive transition-colors">
+                    <button onClick={() => handleDelete(ev.id)} className="text-white/60 hover:text-red-400 transition-colors">
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>
@@ -288,11 +288,11 @@ export default function FinancialCalendar() {
 
       {/* Add/Edit Form Modal */}
       {showForm && (
-        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-end md:items-center justify-center z-50 p-4">
-          <div className="bg-card border border-border rounded-3xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-end md:items-center justify-center z-50 p-4">
+          <div className="bg-neutral-950 border border-white/10 rounded-3xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-5">
               <h3 className="text-lg font-heading font-bold">{editingId ? 'Edit Event' : 'New Financial Event'}</h3>
-              <button onClick={() => { setShowForm(false); setEditingId(null); }} className="text-muted-foreground hover:text-foreground">
+              <button onClick={() => { setShowForm(false); setEditingId(null); }} className="text-white/60 hover:text-white">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -302,37 +302,37 @@ export default function FinancialCalendar() {
               <div className="flex gap-2">
                 {['expense', 'income'].map(t => (
                   <button key={t} onClick={() => setForm(p => ({ ...p, type: t }))}
-                    className={`flex-1 py-2 rounded-xl text-sm font-semibold capitalize transition-all ${form.type === t ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'}`}>
+                    className={`flex-1 py-2 rounded-xl text-sm font-semibold capitalize transition-all ${form.type === t ? 'bg-[#2EFD7A] text-black' : 'bg-white/[0.05] text-white/60'}`}>
                     {t}
                   </button>
                 ))}
               </div>
 
               <div>
-                <label className="text-xs text-muted-foreground font-medium mb-1 block">Name</label>
+                <label className="text-xs text-white/60 font-medium mb-1 block">Name</label>
                 <input value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
                   placeholder="e.g. Rent, Netflix, Salary"
-                  className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors" />
+                  className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#2EFD7A] transition-colors" />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-muted-foreground font-medium mb-1 block">Amount ($)</label>
+                  <label className="text-xs text-white/60 font-medium mb-1 block">Amount ($)</label>
                   <input type="number" value={form.amount} onChange={e => setForm(p => ({ ...p, amount: e.target.value }))}
                     placeholder="0.00"
-                    className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors" />
+                    className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#2EFD7A] transition-colors" />
                 </div>
                 <div>
-                  <label className="text-xs text-muted-foreground font-medium mb-1 block">Day of Month</label>
+                  <label className="text-xs text-white/60 font-medium mb-1 block">Day of Month</label>
                   <input type="number" min="1" max="31" value={form.day_of_month} onChange={e => setForm(p => ({ ...p, day_of_month: e.target.value }))}
-                    className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors" />
+                    className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#2EFD7A] transition-colors" />
                 </div>
               </div>
 
               <div>
-                <label className="text-xs text-muted-foreground font-medium mb-1 block">Category</label>
+                <label className="text-xs text-white/60 font-medium mb-1 block">Category</label>
                 <select value={form.category} onChange={e => setForm(p => ({ ...p, category: e.target.value }))}
-                  className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors">
+                  className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#2EFD7A] transition-colors">
                   {Object.entries(CATEGORY_META).map(([val, { label }]) => (
                     <option key={val} value={val}>{label}</option>
                   ))}
@@ -341,13 +341,13 @@ export default function FinancialCalendar() {
 
               <div className="flex items-center gap-3">
                 <button onClick={() => setForm(p => ({ ...p, is_recurring: !p.is_recurring }))}
-                  className={`relative w-10 h-5 rounded-full transition-all ${form.is_recurring ? 'bg-primary' : 'bg-secondary border border-border'}`}>
+                  className={`relative w-10 h-5 rounded-full transition-all ${form.is_recurring ? 'bg-[#2EFD7A]' : 'bg-white/[0.05] border border-white/10'}`}>
                   <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all ${form.is_recurring ? 'left-5' : 'left-0.5'}`} />
                 </button>
-                <span className="text-sm text-muted-foreground">Recurring</span>
+                <span className="text-sm text-white/60">Recurring</span>
                 {form.is_recurring && (
                   <select value={form.frequency} onChange={e => setForm(p => ({ ...p, frequency: e.target.value }))}
-                    className="ml-auto bg-secondary border border-border rounded-lg px-3 py-1 text-xs focus:outline-none focus:border-primary transition-colors">
+                    className="ml-auto bg-white/[0.05] border border-white/10 rounded-lg px-3 py-1 text-xs focus:outline-none focus:border-[#2EFD7A] transition-colors">
                     {['monthly', 'weekly', 'biweekly', 'yearly'].map(f => (
                       <option key={f} value={f}>{f}</option>
                     ))}
@@ -358,11 +358,11 @@ export default function FinancialCalendar() {
 
             <div className="flex gap-3 mt-6">
               <button onClick={() => { setShowForm(false); setEditingId(null); }}
-                className="flex-1 py-3 bg-secondary text-foreground rounded-xl font-semibold hover:bg-secondary/80 transition-all">
+                className="flex-1 py-3 bg-white/[0.05] text-white rounded-xl font-semibold hover:bg-white/[0.05]/80 transition-all">
                 Cancel
               </button>
               <button onClick={handleSave} disabled={saving || !form.name || !form.amount}
-                className="flex-1 py-3 bg-primary text-primary-foreground rounded-xl font-semibold hover:bg-primary/90 transition-all disabled:opacity-50">
+                className="flex-1 py-3 bg-[#2EFD7A] text-black rounded-xl font-semibold hover:bg-[#2EFD7A]/90 transition-all disabled:opacity-50">
                 {saving ? 'Saving...' : editingId ? 'Save Changes' : 'Add Event'}
               </button>
             </div>
