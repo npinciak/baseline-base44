@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
-import { Coins, CheckCircle, X, ShoppingBag, Lock } from 'lucide-react';
+import { Coins, CheckCircle, X } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import AmbientBackdrop from '@/components/dashboard/AmbientBackdrop';
-import useCountUp from '@/hooks/useCountUp';
+import MountainHero from '@/components/basecamp/MountainHero';
+import CampSection from '@/components/basecamp/CampSection';
 
 const GIFT_CARDS = [
   { id: 'amazon-10', brand: 'Amazon', amount: 10, coinsCost: 500, bg: 'bg-orange-500/10', border: 'border-orange-500/25', logo: 'https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg' },
@@ -32,7 +33,7 @@ export default function Basecamp() {
   const [redeeming, setRedeeming] = useState(false);
   const [redeemSuccess, setRedeemSuccess] = useState(null);
   const { toast } = useToast();
-  const animatedBalance = useCountUp(balance, 1200);
+  const camps = [...new Set(GIFT_CARDS.map(c => c.coinsCost))].sort((a, b) => a - b);
 
   useEffect(() => {
     base44.functions.invoke('getWallet', {})
@@ -80,70 +81,22 @@ export default function Basecamp() {
   return (
     <div className="relative min-h-screen bg-black px-4 py-8 overflow-hidden">
       <AmbientBackdrop />
-      <motion.div variants={containerVariants} initial="hidden" animate="show" className="relative z-10 max-w-3xl mx-auto">
-        {/* Header */}
-        <motion.div variants={itemVariants} className="mb-6">
-          <div className="flex items-center gap-3 mb-1">
-            <div className="w-9 h-9 rounded-xl bg-[#2EFD7A]/15 flex items-center justify-center">
-              <ShoppingBag className="w-5 h-5 text-[#2EFD7A]" />
-            </div>
-            <h1 className="text-3xl font-display font-extrabold text-white">Basecamp Store</h1>
-          </div>
-          <p className="text-white/60 text-sm ml-12">Redeem your Base Coins for real-world rewards</p>
+      <motion.div variants={containerVariants} initial="hidden" animate="show" className="relative z-10 max-w-5xl mx-auto">
+        <motion.div variants={itemVariants} className="mb-10">
+          <MountainHero balance={balance} camps={camps} />
         </motion.div>
 
-        {/* Balance */}
-        <motion.div
-          variants={itemVariants}
-          whileHover={{ y: -2 }}
-          className="flex items-center gap-3 bg-white/[0.03] border border-white/10 backdrop-blur-sm rounded-2xl px-5 py-4 mb-8 shadow-[0_0_40px_-10px_rgba(46,253,122,0.15)]"
-        >
-          <div className="w-10 h-10 rounded-xl bg-[#2EA0FD]/15 flex items-center justify-center">
-            <Coins className="w-5 h-5 text-[#2EA0FD]" />
-          </div>
-          <div>
-            <p className="text-xs text-white/50 font-medium">Your Balance</p>
-            <p className="text-2xl font-display font-extrabold text-[#2EA0FD]">{animatedBalance.toLocaleString()} <span className="text-sm font-normal text-white/50">Base Coins</span></p>
-          </div>
-        </motion.div>
-
-        {/* Gift Cards Grid */}
-        <div className="grid sm:grid-cols-2 gap-4">
-          {GIFT_CARDS.map(card => {
-            const affordable = canAfford(card);
-            return (
-              <motion.button
-                key={card.id}
-                variants={itemVariants}
-                whileHover={affordable ? { y: -4, scale: 1.02 } : {}}
-                whileTap={affordable ? { scale: 0.98 } : {}}
-                onClick={() => affordable && setSelectedCard(card)}
-                disabled={!affordable}
-                className={`text-left bg-white/[0.03] border rounded-2xl p-5 transition-colors duration-200 backdrop-blur-sm ${
-                  affordable
-                    ? `${card.border} hover:shadow-[0_10px_30px_-8px_rgba(46,253,122,0.2)] cursor-pointer`
-                    : 'border-white/10 opacity-50 cursor-not-allowed'
-                }`}
-              >
-                <div className="flex items-center justify-between mb-4">
-                  <div className={`${card.bg} rounded-xl px-3 py-2 flex items-center justify-center h-10 w-28`}>
-                    <img src={card.logo} alt={card.brand} className="h-5 object-contain" />
-                  </div>
-                  {!affordable && <Lock className="w-4 h-4 text-white/40" />}
-                </div>
-                <div className="flex items-end justify-between">
-                  <div>
-                    <p className="text-2xl font-display font-extrabold text-white">${card.amount}</p>
-                    <p className="text-xs text-white/50">{card.brand} Gift Card</p>
-                  </div>
-                  <div className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-[#2EFD7A] text-black">
-                    <Coins className="w-3 h-3" />
-                    {card.coinsCost.toLocaleString()} BC
-                  </div>
-                </div>
-              </motion.button>
-            );
-          })}
+        <div className="space-y-12">
+          {camps.map((cost, i) => (
+            <CampSection
+              key={cost}
+              index={i}
+              cost={cost}
+              cards={GIFT_CARDS.filter(c => c.coinsCost === cost)}
+              balance={balance}
+              onSelect={setSelectedCard}
+            />
+          ))}
         </div>
 
         {/* Success Modal */}

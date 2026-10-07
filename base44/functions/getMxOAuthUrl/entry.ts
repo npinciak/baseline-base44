@@ -42,39 +42,20 @@ Deno.serve(async (req) => {
 
     // Step 1: Create or retrieve MX user
     let userGuid = null;
-    const existingConn = await base44.asServiceRole.entities.BankConnection.filter({ user_id: user.id, provider: 'mx' });
-    if (existingConn.length > 0 && existingConn[0].access_token_ref) {
-      userGuid = existingConn[0].access_token_ref;
+    const createUserRes = await base44.asServiceRole.integrations.custom.call('mx', 'post:/users', {
+      payload: { user: { id: mxUserId } },
+      headers,
+    });
+    if (createUserRes.success) {
+      userGuid = createUserRes.data?.user?.guid;
     } else {
-      // Create a new MX user using the canonical UUID
-      const createUserRes = await base44.asServiceRole.integrations.custom.call('mx', 'post:/users', {
-        payload: { user: { id: mxUserId } },
+      const readRes = await base44.asServiceRole.integrations.custom.call('mx', 'get:/users/{user_identifier}', {
+        pathParams: { user_identifier: mxUserId },
         headers,
       });
-      if (!createUserRes.success && createUserRes.status_code !== 409) {
+      userGuid = readRes.data?.user?.guid;
+      if (!userGuid) {
         return Response.json({ error: 'Failed to create MX user', details: createUserRes.data }, { status: 500 });
-      }
-      if (createUserRes.status_code === 409) {
-        const readRes = await base44.asServiceRole.integrations.custom.call('mx', 'get:/users/{user_identifier}', {
-          pathParams: { user_identifier: mxUserId },
-          headers,
-        });
-        userGuid = readRes.data?.user?.guid;
-      } else {
-        userGuid = createUserRes.data?.user?.guid;
-      }
-
-      // Save BankConnection with MX user GUID
-      if (existingConn.length > 0) {
-        await base44.asServiceRole.entities.BankConnection.update(existingConn[0].id, { access_token_ref: userGuid });
-      } else {
-        await base44.asServiceRole.entities.BankConnection.create({
-          user_id: user.id,
-          provider: 'mx',
-          institution_name: 'MX',
-          access_token_ref: userGuid,
-          is_active: false,
-        });
       }
     }
 
