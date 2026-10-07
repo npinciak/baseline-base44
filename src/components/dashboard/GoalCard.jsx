@@ -58,7 +58,7 @@ export default function GoalCard({ goal, onClick }) {
           </div>
           <div className="flex items-end justify-between mb-3">
             <div>
-              <p className="text-2xl font-light text-[#2EFD7A]">${saved.toLocaleString()}</p>
+              <p className="text-2xl font-light text-[#2EA0FD]">${saved.toLocaleString()}</p>
               <p className="text-xs text-white/60">of ${goal.target_amount.toLocaleString()}</p>
             </div>
             <span className="text-sm font-semibold text-white/80">{pct}%</span>

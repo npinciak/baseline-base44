@@ -172,8 +172,8 @@ export default function Admin() {
             { label: 'Users', value: users.length, icon: Users },
           ].map(({ label, value, icon: Icon }) => (
             <motion.div key={label} whileHover={{ y: -2 }} className="bg-white/[0.03] border border-white/10 backdrop-blur-sm rounded-xl p-5 flex items-center gap-4">
-              <div className="w-10 h-10 bg-[#2EFD7A]/15 rounded-lg flex items-center justify-center">
-                <Icon className="w-5 h-5 text-[#2EFD7A]" />
+              <div className="w-10 h-10 bg-[#2EA0FD]/15 rounded-lg flex items-center justify-center">
+                <Icon className="w-5 h-5 text-[#2EA0FD]" />
               </div>
               <div>
                 <p className="text-2xl font-display font-bold text-white">{value}</p>
@@ -190,7 +190,7 @@ export default function Admin() {
               key={t}
               onClick={() => setTab(t)}
               className={`px-5 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                tab === t ? 'bg-[#2EFD7A] text-black' : 'text-white/50 hover:text-white'
+                tab === t ? 'bg-[#2EA0FD] text-black' : 'text-white/50 hover:text-white'
               }`}
             >
               {t}

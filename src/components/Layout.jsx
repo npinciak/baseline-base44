@@ -34,7 +34,7 @@ export default function Layout() {
   const xpProgress = stats ? ((stats.total_xp % xpForLevel(stats.current_level)) / xpForLevel(stats.current_level)) * 100 : 0;
 
   const navItems = [
-    { to: '/dashboard', icon: LayoutDashboard, label: 'Home', iconColor: 'text-[#2EFD7A]' },
+    { to: '/dashboard', icon: LayoutDashboard, label: 'Home', iconColor: 'text-[#2EA0FD]' },
     { to: '/money', icon: Wallet, label: 'Money', iconColor: 'text-amber-400' },
     { to: '/basecamp', icon: ShoppingBag, label: 'Basecamp', iconColor: 'text-pink-400' },
     { to: '/goals', icon: Target, label: 'Goals', iconColor: 'text-[#2BF9E9]' },
@@ -47,7 +47,7 @@ export default function Layout() {
       <aside className="hidden md:flex flex-col w-64 border-r border-white/10 bg-black/60 backdrop-blur-xl fixed h-full z-40">
         <div className="p-6 border-b border-white/10">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-[#2EFD7A] flex items-center justify-center shadow-[0_0_16px_rgba(46,253,122,0.4)]">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#2EFD7A] to-[#2EA0FD] flex items-center justify-center shadow-[0_0_16px_rgba(46,160,253,0.45)]">
               <Zap className="w-5 h-5 text-black" />
             </div>
             <span className="text-xl font-display font-bold text-white">Baseline</span>
@@ -59,11 +59,11 @@ export default function Layout() {
           <div className="px-5 py-4 border-b border-white/10">
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-semibold text-[#2BF9E9]">Level {stats.current_level}</span>
-              <span className="text-xs font-semibold text-white flex items-center gap-1"><Coins className="w-3 h-3 text-[#2EFD7A]" />{walletBalance !== null ? walletBalance : '---'} Base Coins</span>
+              <span className="text-xs font-semibold text-white flex items-center gap-1"><Coins className="w-3 h-3 text-[#2EA0FD]" />{walletBalance !== null ? walletBalance : '---'} Base Coins</span>
             </div>
             <div className="h-2 bg-white/10 rounded-full overflow-hidden">
               <div
-                className="h-full rounded-full bg-[#2EFD7A] shadow-[0_0_8px_rgba(46,253,122,0.6)] transition-all duration-500"
+                className="h-full rounded-full bg-gradient-to-r from-[#2EFD7A] to-[#2EA0FD] shadow-[0_0_8px_rgba(46,160,253,0.6)] transition-all duration-500"
                 style={{ width: `${xpProgress}%` }}
               />
             </div>
@@ -116,7 +116,7 @@ export default function Layout() {
         <div className="p-4 border-t border-white/10">
           {user && (
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-[#2EFD7A]/15 border border-[#2EFD7A]/30 flex items-center justify-center text-[#2EFD7A] font-bold text-sm">
+              <div className="w-9 h-9 rounded-full bg-[#2EA0FD]/15 border border-[#2EA0FD]/40 flex items-center justify-center text-[#2EA0FD] font-bold text-sm">
                 {profile?.first_name?.[0] || user.full_name?.[0] || 'U'}
               </div>
               <div className="flex-1 min-w-0">

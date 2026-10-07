@@ -161,7 +161,7 @@ export default function Money() {
         {/* Categories */}
         <motion.section variants={itemVariants}>
           <h2 className="text-lg font-heading font-bold mb-4 flex items-center gap-2 text-white">
-            <Tag className="w-5 h-5 text-[#2EFD7A]" /> Categories
+            <Tag className="w-5 h-5 text-[#2EA0FD]" /> Categories
           </h2>
           {categoryList.length === 0 ? (
             <div className="bg-white/[0.03] border border-dashed border-white/10 rounded-2xl p-8 text-center text-white/50 text-sm">
@@ -226,7 +226,7 @@ export default function Money() {
         {/* Recurring Expenses */}
         <motion.section variants={itemVariants}>
           <h2 className="text-lg font-heading font-bold mb-4 flex items-center gap-2 text-white">
-            <Repeat className="w-5 h-5 text-[#2EFD7A]" /> Recurring Expenses
+            <Repeat className="w-5 h-5 text-[#2EA0FD]" /> Recurring Expenses
           </h2>
           {recurring.length === 0 ? (
             <div className="bg-white/[0.03] border border-dashed border-white/10 rounded-2xl p-8 text-center text-white/50 text-sm">
@@ -254,14 +254,14 @@ export default function Money() {
         <motion.section variants={itemVariants}>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-heading font-bold flex items-center gap-2 text-white">
-              <Wallet className="w-5 h-5 text-[#2EFD7A]" /> All Transactions
+              <Wallet className="w-5 h-5 text-[#2EA0FD]" /> All Transactions
             </h2>
             <div className="flex gap-1 bg-white/[0.05] rounded-xl p-1">
               {['all', 'expenses', 'income'].map(f => (
                 <button
                   key={f}
                   onClick={() => setTxFilter(f)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition-all ${txFilter === f ? 'bg-[#2EFD7A] text-black' : 'text-white/50 hover:text-white'}`}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition-all ${txFilter === f ? 'bg-[#2EA0FD] text-black' : 'text-white/50 hover:text-white'}`}
                 >
                   {f}
                 </button>

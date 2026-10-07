@@ -98,12 +98,12 @@ export default function Basecamp() {
           whileHover={{ y: -2 }}
           className="flex items-center gap-3 bg-white/[0.03] border border-white/10 backdrop-blur-sm rounded-2xl px-5 py-4 mb-8 shadow-[0_0_40px_-10px_rgba(46,253,122,0.15)]"
         >
-          <div className="w-10 h-10 rounded-xl bg-[#2EFD7A]/15 flex items-center justify-center">
-            <Coins className="w-5 h-5 text-[#2EFD7A]" />
+          <div className="w-10 h-10 rounded-xl bg-[#2EA0FD]/15 flex items-center justify-center">
+            <Coins className="w-5 h-5 text-[#2EA0FD]" />
           </div>
           <div>
             <p className="text-xs text-white/50 font-medium">Your Balance</p>
-            <p className="text-2xl font-display font-extrabold text-[#2EFD7A]">{animatedBalance.toLocaleString()} <span className="text-sm font-normal text-white/50">Base Coins</span></p>
+            <p className="text-2xl font-display font-extrabold text-[#2EA0FD]">{animatedBalance.toLocaleString()} <span className="text-sm font-normal text-white/50">Base Coins</span></p>
           </div>
         </motion.div>
 

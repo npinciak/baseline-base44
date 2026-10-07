@@ -221,7 +221,7 @@ export default function Goals() {
             <div className="mt-auto">
               <div className="flex items-end justify-between mb-2">
                 <div>
-                  <p className="text-2xl font-display font-extrabold text-[#2EFD7A]">${saved.toLocaleString()}</p>
+                  <p className="text-2xl font-display font-extrabold text-[#2EA0FD]">${saved.toLocaleString()}</p>
                   <p className="text-xs text-white/50">of ${goal.target_amount.toLocaleString()} goal</p>
                 </div>
                 <span className="text-sm font-bold text-white">{pct}%</span>

@@ -53,7 +53,7 @@ function AccountRow({ account }) {
         <p className="text-xs text-white truncate leading-tight">{account.name || account.institution_name || 'Account'}</p>
         <p className="text-xs text-white/70 capitalize">{ACCOUNT_TYPE_LABELS[type] || type}</p>
       </div>
-      <span className={`text-xs font-bold shrink-0 ${isNegative ? 'text-red-400' : 'text-[#2EFD7A]'}`}>
+      <span className={`text-xs font-bold shrink-0 ${isNegative ? 'text-red-400' : 'text-[#2EA0FD]'}`}>
         {isNegative ? '-' : ''}${animatedBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
       </span>
     </motion.div>
@@ -95,9 +95,9 @@ export default function LinkedAccountsWidget() {
           <motion.div
             animate={{ y: [0, -4, 0], rotate: [0, -6, 6, 0] }}
             transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
-            className="w-12 h-12 rounded-2xl bg-[#2EFD7A]/15 flex items-center justify-center shadow-[0_0_20px_rgba(46,253,122,0.2)]"
+            className="w-12 h-12 rounded-2xl bg-[#2EA0FD]/15 flex items-center justify-center shadow-[0_0_20px_rgba(46,160,253,0.3)]"
           >
-            <Link className="w-6 h-6 text-[#2EFD7A]" />
+            <Link className="w-6 h-6 text-[#2EA0FD]" />
           </motion.div>
           <p className="text-xs text-white/80">No accounts linked yet.<br />Connect a bank to see your balances!</p>
           <ConnectBankButton onConnected={loadAccounts} />
@@ -110,7 +110,7 @@ export default function LinkedAccountsWidget() {
     <div className={cardClass}>
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-white/80 text-xs font-light tracking-widest uppercase">Linked Accounts</h3>
-        <RouterLink to="/money" className="text-xs text-[#2EFD7A] font-medium hover:opacity-80 transition-opacity">
+        <RouterLink to="/money" className="text-xs text-[#2EA0FD] font-medium hover:opacity-80 transition-opacity">
           View
         </RouterLink>
       </div>
