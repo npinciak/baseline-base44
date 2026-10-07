@@ -216,14 +216,14 @@ const KidsMockup = () => (
       <div className="flex items-center justify-between mb-3">
         <p className="text-white font-bold text-sm">My Journey 🚀</p>
         <div className="flex items-center gap-1 bg-yellow-400/20 rounded-full px-2 py-1">
-          <span className="text-yellow-400 text-[9px] font-bold">🪙 480 XP</span>
+          <span className="text-yellow-400 text-[9px] font-bold">🪙 480 BC</span>
         </div>
       </div>
       {/* Level bar */}
       <div className="bg-white/5 border border-white/10 rounded-xl p-3 mb-3">
         <div className="flex justify-between text-[9px] mb-1">
           <span className="text-white/60">Level 4 — Finance Rookie</span>
-          <span className="text-yellow-400 font-bold">80/100 XP</span>
+          <span className="text-yellow-400 font-bold">80/100 BC</span>
         </div>
         <div className="h-1.5 bg-white/10 rounded-full">
           <div className="h-full bg-yellow-400 rounded-full w-4/5" />
@@ -262,8 +262,8 @@ const KidsMockup = () => (
       <div className="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-2.5 flex items-center gap-2 mt-auto">
         <span className="text-base">🎁</span>
         <div>
-          <p className="text-yellow-400 text-[9px] font-bold">Next Reward at 500 XP!</p>
-          <p className="text-white/40 text-[8px]">20 XP to go — keep learning</p>
+          <p className="text-yellow-400 text-[9px] font-bold">Next Reward at 500 BC!</p>
+          <p className="text-white/40 text-[8px]">20 BC to go — keep learning</p>
         </div>
       </div>
     </div>

@@ -21,7 +21,7 @@ export default function JourneySection({ stats, goal, earnedBadges }) {
     <div className="bg-white/[0.03] border border-white/10 backdrop-blur-sm rounded-3xl p-6 md:p-8">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-white/60 text-xs font-light tracking-widest uppercase">For Kids · My Journey 🚀</h3>
-        <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-amber-400/15 text-amber-400 border border-amber-400/30">🪙 {stats?.total_xp || 0} XP</span>
+        <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-amber-400/15 text-amber-400 border border-amber-400/30">🪙 {stats?.total_xp || 0} BC</span>
       </div>
 
       {/* Level tracker */}
@@ -72,8 +72,8 @@ export default function JourneySection({ stats, goal, earnedBadges }) {
       <div className="bg-amber-400/10 border border-amber-400/30 rounded-2xl p-3 flex items-center gap-3 mb-5">
         <Gift className="w-5 h-5 text-amber-400 shrink-0" />
         <div>
-          <p className="text-amber-400 text-xs font-bold">Next Reward at {nextMilestone} XP!</p>
-          <p className="text-white/40 text-xs">{xpToGo} XP to go — keep learning</p>
+          <p className="text-amber-400 text-xs font-bold">Next Reward at {nextMilestone} BC!</p>
+          <p className="text-white/40 text-xs">{xpToGo} BC to go — keep learning</p>
         </div>
       </div>
 

@@ -77,8 +77,8 @@ export default function Landing() {
               icon: Award,
               color: 'text-amber-400',
               bg: 'bg-amber-400/10',
-              title: 'Earn XP & Badges',
-              desc: 'Stay motivated with daily streaks, experience points, and collectible badges for every milestone.',
+              title: 'Earn Base Coins & Badges',
+              desc: 'Stay motivated with daily streaks, Base Coins, and collectible badges for every milestone.',
             },
             {
               icon: TrendingUp,

@@ -260,7 +260,7 @@ export default function Admin() {
                               <span className="text-xs text-white/40 w-5">{i + 1}.</span>
                               <div className="flex-1">
                                 <p className="text-sm font-medium text-white">{lesson.title}</p>
-                                <p className="text-xs text-white/50 capitalize">{lesson.lesson_type} · {lesson.xp_reward} XP</p>
+                                <p className="text-xs text-white/50 capitalize">{lesson.lesson_type} · {lesson.xp_reward} BC</p>
                               </div>
                               <button onClick={() => handleDeleteLesson(lesson.id, mod.id)} className="p-1 text-white/40 hover:text-red-400 transition-colors">
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -280,7 +280,7 @@ export default function Admin() {
                           </select>
                           <textarea value={lessonForm.content} onChange={e => setLessonForm(p => ({ ...p, content: e.target.value }))} placeholder="Lesson content (markdown supported)" rows={4} className="w-full bg-white/[0.05] border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[#2EFD7A] resize-none" />
                           <div className="grid grid-cols-2 gap-2">
-                            <input type="number" value={lessonForm.xp_reward} onChange={e => setLessonForm(p => ({ ...p, xp_reward: parseInt(e.target.value) }))} placeholder="XP reward" className="bg-white/[0.05] border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[#2EFD7A]" />
+                            <input type="number" value={lessonForm.xp_reward} onChange={e => setLessonForm(p => ({ ...p, xp_reward: parseInt(e.target.value) }))} placeholder="BC reward" className="bg-white/[0.05] border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[#2EFD7A]" />
                             <input type="number" value={lessonForm.order_index} onChange={e => setLessonForm(p => ({ ...p, order_index: parseInt(e.target.value) }))} placeholder="Order" className="bg-white/[0.05] border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[#2EFD7A]" />
                           </div>
                           <div className="flex gap-2">
@@ -393,7 +393,7 @@ export default function Admin() {
                 </select>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <input type="number" value={moduleForm.xp_reward} onChange={e => setModuleForm(p => ({ ...p, xp_reward: parseInt(e.target.value) }))} placeholder="XP reward" className="bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[#2EFD7A]" />
+                <input type="number" value={moduleForm.xp_reward} onChange={e => setModuleForm(p => ({ ...p, xp_reward: parseInt(e.target.value) }))} placeholder="BC reward" className="bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[#2EFD7A]" />
                 <input type="number" value={moduleForm.order_index} onChange={e => setModuleForm(p => ({ ...p, order_index: parseInt(e.target.value) }))} placeholder="Order index" className="bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[#2EFD7A]" />
               </div>
               <label className="flex items-center gap-3 cursor-pointer">

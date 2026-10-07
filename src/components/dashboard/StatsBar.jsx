@@ -20,7 +20,7 @@ export default function StatsBar({ stats }) {
       </RingGauge>
       <div>
         <p className="text-white/60 text-[10px] tracking-widest uppercase mb-0.5">Level Progress</p>
-        <p className="text-white text-lg font-light">{animatedXp.toLocaleString()} <span className="text-white/60 text-xs">XP</span></p>
+        <p className="text-white text-lg font-light">{animatedXp.toLocaleString()} <span className="text-white/60 text-xs">BC</span></p>
       </div>
       <div className="w-px h-8 bg-white/10" />
       <div className="flex items-center gap-2.5">

@@ -212,7 +212,7 @@ function ModuleSection({ module, moduleIndex, isUnlocked, completedLessonIds, on
                         {node.label}
                       </p>
                       <p className="font-semibold text-[#2EFD7A]" style={{ fontSize: 10 }}>
-                        +{node.xp} XP
+                        +{node.xp} BC
                       </p>
                     </div>
                   </motion.div>
