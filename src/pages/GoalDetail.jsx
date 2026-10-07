@@ -38,7 +38,7 @@ const TOPIC_COLORS = {
   budgeting: 'bg-orange-500/20 text-orange-400',
   investing: 'bg-blue-500/20 text-blue-400',
   credit: 'bg-purple-500/20 text-purple-400',
-  saving: 'bg-teal-500/20 text-primary',
+  saving: 'bg-[#2EFD7A]/15 text-[#2EFD7A]',
   taxes: 'bg-amber-500/20 text-amber-400',
   debt: 'bg-red-500/20 text-red-400',
   insurance: 'bg-sky-500/20 text-sky-400',
@@ -74,7 +74,7 @@ function DonutChart({ saved, target }) {
       </ResponsiveContainer>
       {/* Center label */}
       <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-        <p className="text-xs text-muted-foreground font-medium">Goal</p>
+        <p className="text-xs text-white/60 font-medium">Goal</p>
         <p className="text-lg font-display font-extrabold">${target.toLocaleString()}</p>
       </div>
     </div>
@@ -192,7 +192,7 @@ export default function GoalDetail() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="w-8 h-8 border-4 border-border border-t-primary rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-white/10 border-t-[#2EFD7A] rounded-full animate-spin" />
       </div>
     );
   }
@@ -200,8 +200,8 @@ export default function GoalDetail() {
   if (!goal) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen gap-4">
-        <p className="text-muted-foreground">Goal not found.</p>
-        <button onClick={() => navigate('/goals')} className="text-primary text-sm font-semibold hover:underline">Back to Goals</button>
+        <p className="text-white/60">Goal not found.</p>
+        <button onClick={() => navigate('/goals')} className="text-[#2EFD7A] text-sm font-semibold hover:underline">Back to Goals</button>
       </div>
     );
   }
@@ -217,7 +217,7 @@ export default function GoalDetail() {
       {/* Back */}
       <button
         onClick={() => navigate('/goals')}
-        className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground text-sm font-medium mb-5 transition-colors"
+        className="flex items-center gap-1.5 text-white/60 hover:text-white text-sm font-medium mb-5 transition-colors"
       >
         <ArrowLeft className="w-4 h-4" /> Back to Goals
       </button>
@@ -229,14 +229,14 @@ export default function GoalDetail() {
         <div className="md:col-span-3 space-y-4">
 
           {/* Hero card */}
-          <div className="bg-card border border-border rounded-3xl overflow-hidden">
+          <div className="bg-white/[0.03] border border-white/10 backdrop-blur-sm text-white rounded-3xl overflow-hidden">
             {/* Image */}
-            <div className="relative h-56 bg-secondary">
+            <div className="relative h-56 bg-white/[0.05]">
               {goal.image ? (
                 <img src={goal.image} alt={goal.name} className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
-                  <Target className="w-14 h-14 text-muted-foreground/30" />
+                  <Target className="w-14 h-14 text-white/30" />
                 </div>
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
@@ -262,7 +262,7 @@ export default function GoalDetail() {
 
               {isComplete && (
                 <div className="absolute top-4 right-4">
-                  <div className="flex items-center gap-1.5 px-3 py-1.5 bg-primary/90 text-primary-foreground rounded-full text-xs font-bold">
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#2EFD7A]/90 text-black rounded-full text-xs font-bold">
                     <CheckCircle className="w-3.5 h-3.5" /> Complete
                   </div>
                 </div>
@@ -270,12 +270,12 @@ export default function GoalDetail() {
             </div>
 
             {/* Action strip under image */}
-            <div className="flex items-center justify-between px-5 py-3 border-t border-border">
+            <div className="flex items-center justify-between px-5 py-3 border-t border-white/10">
               <div className="flex items-center gap-2">
                 {!isComplete && (
                   <button
                     onClick={handleMarkComplete}
-                    className="text-xs text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 font-medium"
+                    className="text-xs text-white/60 hover:text-[#2EFD7A] transition-colors flex items-center gap-1 font-medium"
                   >
                     <CheckCircle className="w-3.5 h-3.5" /> Mark complete
                   </button>
@@ -283,7 +283,7 @@ export default function GoalDetail() {
               </div>
               <button
                 onClick={handleDelete}
-                className="text-xs text-muted-foreground hover:text-destructive transition-colors flex items-center gap-1 font-medium"
+                className="text-xs text-white/60 hover:text-red-400 transition-colors flex items-center gap-1 font-medium"
               >
                 <Trash2 className="w-3.5 h-3.5" /> Delete
               </button>
@@ -291,20 +291,20 @@ export default function GoalDetail() {
           </div>
 
           {/* Link Account card */}
-          <div className="bg-card border border-border rounded-2xl p-5">
+          <div className="bg-white/[0.03] border border-white/10 backdrop-blur-sm text-white rounded-2xl p-5">
             <div className="flex items-center gap-2 mb-3">
-              <div className="w-8 h-8 rounded-lg bg-primary/15 flex items-center justify-center">
-                <Link2 className="w-4 h-4 text-primary" />
+              <div className="w-8 h-8 rounded-lg bg-[#2EFD7A]/15 flex items-center justify-center">
+                <Link2 className="w-4 h-4 text-[#2EFD7A]" />
               </div>
               <h3 className="text-sm font-heading font-semibold">Linked Account</h3>
             </div>
 
             {goal.linked_accounts_balance && goal.linked_accounts_balance > 0 ? (
               <div>
-                <p className="text-3xl font-display font-extrabold text-primary mb-1">
+                <p className="text-3xl font-display font-extrabold text-[#2EFD7A] mb-1">
                   ${parseFloat(goal.linked_accounts_balance).toLocaleString()}
                 </p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-white/60">
                   {goal.last_balance_sync_at
                     ? `Last synced ${formatDistanceToNow(new Date(goal.last_balance_sync_at), { addSuffix: true })}`
                     : 'Balance from linked bank account'}
@@ -312,10 +312,10 @@ export default function GoalDetail() {
               </div>
             ) : (
               <div className="text-center py-4">
-                <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center mx-auto mb-3">
-                  <Wallet className="w-5 h-5 text-muted-foreground" />
+                <div className="w-10 h-10 rounded-xl bg-white/[0.05] flex items-center justify-center mx-auto mb-3">
+                  <Wallet className="w-5 h-5 text-white/60" />
                 </div>
-                <p className="text-sm text-muted-foreground mb-4">
+                <p className="text-sm text-white/60 mb-4">
                   Connect a bank account to track this goal automatically
                 </p>
                 <ConnectBankButton />
@@ -328,7 +328,7 @@ export default function GoalDetail() {
         <div className="md:col-span-2 space-y-4">
 
           {/* Overview / Donut chart card */}
-          <div className="bg-card border border-border rounded-2xl p-5">
+          <div className="bg-white/[0.03] border border-white/10 backdrop-blur-sm text-white rounded-2xl p-5">
             <h3 className="text-sm font-heading font-semibold mb-4">Overview</h3>
 
             <DonutChart saved={saved} target={target} />
@@ -337,47 +337,47 @@ export default function GoalDetail() {
             <div className="space-y-2 mt-5">
               <div className="flex items-center justify-between text-sm">
                 <div className="flex items-center gap-2">
-                  <span className="w-3 h-3 rounded-full bg-primary shrink-0" />
-                  <span className="text-muted-foreground text-xs">Total Saved</span>
+                  <span className="w-3 h-3 rounded-full bg-[#2EFD7A] shrink-0" />
+                  <span className="text-white/60 text-xs">Total Saved</span>
                 </div>
                 <span className="font-semibold text-xs">${saved.toLocaleString()}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <div className="flex items-center gap-2">
-                  <span className="w-3 h-3 rounded-full bg-secondary border border-border shrink-0" />
-                  <span className="text-muted-foreground text-xs">Need to save</span>
+                  <span className="w-3 h-3 rounded-full bg-white/[0.05] border border-white/10 shrink-0" />
+                  <span className="text-white/60 text-xs">Need to save</span>
                 </div>
                 <span className="font-semibold text-xs">${remaining.toLocaleString()}</span>
               </div>
               {goal.target_date && (
-                <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border">
-                  <CalendarDays className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-                  <span className="text-xs text-muted-foreground">Target: <span className="text-foreground font-medium">{goal.target_date}</span></span>
+                <div className="flex items-center gap-2 mt-3 pt-3 border-t border-white/10">
+                  <CalendarDays className="w-3.5 h-3.5 text-white/60 shrink-0" />
+                  <span className="text-xs text-white/60">Target: <span className="text-white font-medium">{goal.target_date}</span></span>
                 </div>
               )}
             </div>
           </div>
 
           {/* My Base Plan card */}
-          <div className="bg-card border border-border rounded-2xl p-5">
+          <div className="bg-white/[0.03] border border-white/10 backdrop-blur-sm text-white rounded-2xl p-5">
             <h3 className="text-sm font-heading font-semibold mb-4">My Base Plan</h3>
 
             {relevantModules.length === 0 ? (
               <div className="text-center py-4">
-                <BookOpen className="w-8 h-8 text-muted-foreground/40 mx-auto mb-2" />
-                <p className="text-xs text-muted-foreground">No relevant lessons found.</p>
+                <BookOpen className="w-8 h-8 text-white/40 mx-auto mb-2" />
+                <p className="text-xs text-white/60">No relevant lessons found.</p>
               </div>
             ) : (
               <div className="space-y-2">
                 {relevantModules.map(mod => {
                   const completed = isModuleCompleted(mod.id);
                   const IconComp = TOPIC_ICONS[mod.topic_tag] || BookOpen;
-                  const colorClass = TOPIC_COLORS[mod.topic_tag] || 'bg-primary/15 text-primary';
+                  const colorClass = TOPIC_COLORS[mod.topic_tag] || 'bg-[#2EFD7A]/15 text-[#2EFD7A]';
                   return (
                     <button
                       key={mod.id}
                       onClick={() => navigate(`/lesson/${mod.id}`)}
-                      className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-secondary transition-all group text-left"
+                      className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-white/[0.05] transition-all group text-left"
                     >
                       <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${colorClass}`}>
                         <IconComp className="w-4 h-4" />
@@ -385,7 +385,7 @@ export default function GoalDetail() {
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold leading-tight truncate">{mod.title}</p>
                         {mod.description && (
-                          <p className="text-xs text-muted-foreground truncate mt-0.5">{mod.description}</p>
+                          <p className="text-xs text-white/60 truncate mt-0.5">{mod.description}</p>
                         )}
                       </div>
                       {completed && (
@@ -404,13 +404,13 @@ export default function GoalDetail() {
 
       {/* Edit modal */}
       {showEdit && (
-        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-end md:items-center justify-center z-50 p-4">
-          <div className="bg-card border border-border rounded-3xl w-full max-w-md max-h-[90vh] overflow-y-auto flex flex-col">
-            <div className="relative h-44 bg-secondary rounded-t-3xl overflow-hidden shrink-0">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-end md:items-center justify-center z-50 p-4">
+          <div className="bg-white/[0.03] border border-white/10 backdrop-blur-sm text-white rounded-3xl w-full max-w-md max-h-[90vh] overflow-y-auto flex flex-col">
+            <div className="relative h-44 bg-white/[0.05] rounded-t-3xl overflow-hidden shrink-0">
               {form.image_url ? (
                 <img src={form.image_url} alt="Goal" className="w-full h-full object-cover" />
               ) : (
-                <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-muted-foreground/40">
+                <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-white/40">
                   <Target className="w-10 h-10" />
                   <span className="text-xs font-medium">No image selected</span>
                 </div>
@@ -420,7 +420,7 @@ export default function GoalDetail() {
                 <button
                   type="button"
                   onClick={() => { setImagePickerTarget('edit'); setShowImagePicker(true); }}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-background/80 backdrop-blur-sm text-foreground rounded-lg text-xs font-semibold hover:bg-background transition-all"
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-black/80 backdrop-blur-sm text-white rounded-lg text-xs font-semibold hover:bg-black transition-all"
                 >
                   <ImageIcon className="w-3.5 h-3.5" />
                   {form.image_url ? 'Change' : 'Add Image'}
@@ -429,7 +429,7 @@ export default function GoalDetail() {
                   <button
                     type="button"
                     onClick={() => setForm(p => ({ ...p, image_url: '' }))}
-                    className="px-3 py-1.5 bg-background/80 backdrop-blur-sm text-muted-foreground rounded-lg text-xs font-semibold hover:bg-background hover:text-foreground transition-all"
+                    className="px-3 py-1.5 bg-black/80 backdrop-blur-sm text-white/60 rounded-lg text-xs font-semibold hover:bg-black hover:text-white transition-all"
                   >
                     Remove
                   </button>
@@ -437,7 +437,7 @@ export default function GoalDetail() {
               </div>
               <button
                 onClick={() => setShowEdit(false)}
-                className="absolute top-3 right-3 w-7 h-7 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+                className="absolute top-3 right-3 w-7 h-7 rounded-full bg-black/80 backdrop-blur-sm flex items-center justify-center text-white/60 hover:text-white transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -445,19 +445,19 @@ export default function GoalDetail() {
             <div className="p-6 space-y-4">
               <h3 className="text-lg font-heading font-bold">Edit Goal</h3>
               <div>
-                <label className="text-xs text-muted-foreground font-medium mb-1 block">Goal Name</label>
+                <label className="text-xs text-white/60 font-medium mb-1 block">Goal Name</label>
                 <input
                   value={form.name}
                   onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
-                  className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
+                  className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#2EFD7A] transition-colors"
                 />
               </div>
               <div>
-                <label className="text-xs text-muted-foreground font-medium mb-1 block">Category</label>
+                <label className="text-xs text-white/60 font-medium mb-1 block">Category</label>
                 <select
                   value={form.goal_type}
                   onChange={e => setForm(p => ({ ...p, goal_type: e.target.value }))}
-                  className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
+                  className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#2EFD7A] transition-colors"
                 >
                   <option value="">Select a category...</option>
                   {GOAL_TYPES.map(({ value, label }) => <option key={value} value={value}>{label}</option>)}
@@ -465,43 +465,43 @@ export default function GoalDetail() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-muted-foreground font-medium mb-1 block">Target Amount ($)</label>
+                  <label className="text-xs text-white/60 font-medium mb-1 block">Target Amount ($)</label>
                   <input
                     type="number"
                     value={form.target_amount}
                     onChange={e => setForm(p => ({ ...p, target_amount: e.target.value }))}
                     placeholder="0.00"
-                    className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
+                    className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#2EFD7A] transition-colors"
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-muted-foreground font-medium mb-1 block">Already Saved ($)</label>
+                  <label className="text-xs text-white/60 font-medium mb-1 block">Already Saved ($)</label>
                   <input
                     type="number"
                     value={form.saved_amount}
                     onChange={e => setForm(p => ({ ...p, saved_amount: e.target.value }))}
                     placeholder="0.00"
-                    className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
+                    className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#2EFD7A] transition-colors"
                   />
                 </div>
               </div>
               <div>
-                <label className="text-xs text-muted-foreground font-medium mb-1 block">Target Date (optional)</label>
+                <label className="text-xs text-white/60 font-medium mb-1 block">Target Date (optional)</label>
                 <input
                   type="date"
                   value={form.target_date}
                   onChange={e => setForm(p => ({ ...p, target_date: e.target.value }))}
-                  className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
+                  className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#2EFD7A] transition-colors"
                 />
               </div>
               <div className="flex gap-3 pt-2">
-                <button onClick={() => setShowEdit(false)} className="flex-1 py-3 bg-secondary text-foreground rounded-xl font-semibold hover:bg-secondary/80 transition-all">
+                <button onClick={() => setShowEdit(false)} className="flex-1 py-3 bg-white/[0.05] text-white rounded-xl font-semibold hover:bg-white/[0.05]/80 transition-all">
                   Cancel
                 </button>
                 <button
                   onClick={handleSave}
                   disabled={saving || !form.name || !form.target_amount}
-                  className="flex-1 py-3 bg-primary text-primary-foreground rounded-xl font-semibold hover:bg-primary/90 transition-all disabled:opacity-50"
+                  className="flex-1 py-3 bg-[#2EFD7A] text-black rounded-xl font-semibold hover:bg-[#2EFD7A]/90 transition-all disabled:opacity-50"
                 >
                   {saving ? 'Saving...' : 'Save Changes'}
                 </button>
