@@ -279,7 +279,7 @@ function BaseScoreSection({ onNav }) {
   const { text, selected } = useTypingAnimation();
 
   return (
-    <section className="w-full flex flex-col items-center justify-center px-8 pt-[160px] pb-[86px] gap-8">
+    <section className="w-full flex flex-col items-center justify-center px-5 sm:px-8 pt-20 md:pt-[160px] pb-14 md:pb-[86px] gap-8">
       <motion.div
         className="text-center w-full"
         initial="hidden"
@@ -294,7 +294,7 @@ function BaseScoreSection({ onNav }) {
           className="relative max-w-xl mx-auto mb-7 cursor-pointer"
           onClick={() => onNav("/basescore-quiz")}
         >
-          <div className="w-full bg-transparent border-2 border-white text-white text-lg px-6 py-4 pr-14 rounded-full h-[60px] flex items-center overflow-hidden">
+          <div className="w-full bg-transparent border-2 border-white text-white text-sm sm:text-lg px-4 sm:px-6 py-4 pr-12 sm:pr-14 rounded-full h-[60px] flex items-center overflow-hidden">
             <span className="flex-1 overflow-hidden whitespace-nowrap relative text-left">
               <span className={`${selected ? "bg-white/25 rounded px-0.5" : ""}`}>{text}</span>
               {!selected && (
@@ -363,7 +363,7 @@ export default function Baseline30() {
       transition={{ duration: 0.45, ease: "easeInOut" }}
     >
       {/* Sticky Nav */}
-      <header className="fixed top-0 left-0 w-full px-8 lg:px-[clamp(16px,5.7vw,109px)] h-[72px] flex items-center justify-between z-50 bg-black/60 backdrop-blur-md border-b border-white/8">
+      <header className="fixed top-0 left-0 w-full px-5 sm:px-8 lg:px-[clamp(16px,5.7vw,109px)] h-[72px] flex items-center justify-between z-50 bg-black/60 backdrop-blur-md border-b border-white/8">
         <div className="text-white font-bold text-lg tracking-wide">Baseline</div>
         <div className="flex items-center gap-[clamp(16px,2.8vw,40px)]">
           <button
@@ -415,7 +415,7 @@ export default function Baseline30() {
         </div>
 
         {/* Brand text */}
-        <div className="absolute inset-0 flex items-center justify-center px-8 md:static md:w-1/2 md:flex md:items-center md:justify-start md:px-[clamp(32px,5vw,80px)] z-10">
+        <div className="absolute inset-0 flex items-center justify-center px-5 sm:px-8 md:static md:w-1/2 md:flex md:items-center md:justify-start md:px-[clamp(32px,5vw,80px)] z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -445,9 +445,9 @@ export default function Baseline30() {
       </section>
 
       {/* ─── INTRODUCING BASESCORE ─── */}
-      <section className="w-full flex flex-col md:flex-row items-center px-8 md:px-[clamp(48px,6vw,140px)] py-[86px] gap-12 md:gap-20 lg:gap-48">
+      <section className="w-full max-w-[1600px] mx-auto flex flex-col md:flex-row items-center justify-center px-5 sm:px-8 md:px-[clamp(32px,6vw,140px)] py-14 md:py-[86px] gap-10 md:gap-[clamp(40px,6vw,192px)]">
         <motion.div
-          className="flex-1 max-w-lg"
+          className="w-full md:flex-1 max-w-lg"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
@@ -475,7 +475,7 @@ export default function Baseline30() {
       <BaseScoreSection onNav={handleNav} />
 
       {/* ─── FOR PARENTS ─── */}
-      <section className="w-full flex flex-col md:flex-row items-center px-8 md:px-[clamp(48px,6vw,140px)] py-[86px] gap-12 md:gap-20 lg:gap-48">
+      <section className="w-full max-w-[1600px] mx-auto flex flex-col md:flex-row items-center justify-center px-5 sm:px-8 md:px-[clamp(32px,6vw,140px)] py-14 md:py-[86px] gap-10 md:gap-[clamp(40px,6vw,192px)]">
         <motion.div
           className="flex justify-center md:order-first"
           initial="hidden"
@@ -486,7 +486,7 @@ export default function Baseline30() {
           <ParentsMockup />
         </motion.div>
         <motion.div
-          className="flex-1 max-w-lg"
+          className="w-full md:flex-1 max-w-lg"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
@@ -503,9 +503,9 @@ export default function Baseline30() {
       </section>
 
       {/* ─── FOR KIDS ─── */}
-      <section className="w-full flex flex-col md:flex-row items-center px-8 md:px-[clamp(48px,6vw,140px)] py-[86px] gap-12 md:gap-20 lg:gap-48">
+      <section className="w-full max-w-[1600px] mx-auto flex flex-col md:flex-row items-center justify-center px-5 sm:px-8 md:px-[clamp(32px,6vw,140px)] py-14 md:py-[86px] gap-10 md:gap-[clamp(40px,6vw,192px)]">
         <motion.div
-          className="flex-1 max-w-lg"
+          className="w-full md:flex-1 max-w-lg"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
@@ -531,7 +531,7 @@ export default function Baseline30() {
       </section>
 
       {/* ─── CTA: SET A GOAL & START SAVING ─── */}
-      <section className="w-full flex flex-col items-center justify-center px-8 py-[86px] gap-8 min-h-[60vh]">
+      <section className="w-full flex flex-col items-center justify-center px-5 sm:px-8 py-14 md:py-[86px] gap-8 md:min-h-[60vh]">
         <motion.div
           className="text-center"
           initial="hidden"
@@ -554,9 +554,9 @@ export default function Baseline30() {
         </motion.div>
       </section>
       {/* ─── FOOTER ─── */}
-      <footer className="w-full border-t border-white/8 px-8 lg:px-[clamp(48px,8vw,140px)] py-12 flex flex-col md:flex-row items-center justify-between gap-6">
-        <div className="text-white/20 text-sm font-light tracking-wide">© 2026 Baseline. All rights reserved.</div>
-        <div className="flex items-center gap-8">
+      <footer className="w-full border-t border-white/8 px-5 sm:px-8 lg:px-[clamp(48px,8vw,140px)] py-12 flex flex-col md:flex-row items-center justify-between gap-6 max-w-[1600px] mx-auto">
+        <div className="text-white/20 text-sm font-light tracking-wide text-center">© 2026 Baseline. All rights reserved.</div>
+        <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
           <button onClick={() => handleNav("/basescore-quiz")} className="text-white/30 text-sm font-light hover:text-white/60 transition-colors">Get Your BaseScore™</button>
           <button onClick={() => handleNav("/login")} className="text-white/30 text-sm font-light hover:text-white/60 transition-colors">Log In</button>
           <button onClick={() => handleNav("/register")} className="text-white/30 text-sm font-light hover:text-white/60 transition-colors">Sign Up</button>
