@@ -189,6 +189,14 @@ export default function Goals() {
                 <Target className="w-10 h-10 text-white/20" />
               </div>
             )}
+            {!isComplete && (
+              <button
+                onClick={e => { e.stopPropagation(); openEdit(goal); }}
+                className="absolute top-2 right-2 flex items-center gap-1.5 px-2.5 py-1.5 bg-black/70 backdrop-blur-sm text-white rounded-lg text-xs font-semibold hover:bg-black transition-all"
+              >
+                <ImageIcon className="w-3.5 h-3.5" /> Change image
+              </button>
+            )}
             {isComplete && (
               <div className="absolute inset-0 bg-[#2EFD7A]/20 flex items-center justify-center">
                 <div className="bg-[#2EFD7A] rounded-full p-2">
