@@ -110,8 +110,8 @@ export default function LinkedAccountsWidget() {
 
   return (
     <div className={cardClass}>
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-white/80 text-xs font-light tracking-widest uppercase whitespace-nowrap">Linked Accounts</h3>
+      <div className="flex items-center justify-between gap-3 mb-4">
+        <h3 className="text-white/80 text-xs font-light tracking-widest uppercase whitespace-nowrap truncate min-w-0">Linked Accounts</h3>
         <RouterLink to="/money" className="text-xs text-[#2EA0FD] font-medium hover:opacity-80 transition-opacity">
           View
         </RouterLink>
@@ -122,7 +122,7 @@ export default function LinkedAccountsWidget() {
         ))}
       </motion.div>
       <div className="mt-4">
-        <ConnectBankButton onConnected={loadAccounts} />
+        <ConnectBankButton onConnected={loadAccounts} className="w-full max-w-full px-3 text-xs" />
       </div>
     </div>
   );

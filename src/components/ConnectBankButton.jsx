@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Link2, Loader2, X } from 'lucide-react';
 
-export default function ConnectBankButton({ onConnected }) {
+export default function ConnectBankButton({ onConnected, className = 'w-fit whitespace-nowrap' }) {
   const [loading, setLoading] = useState(false);
   const [widgetUrl, setWidgetUrl] = useState(null);
   const [error, setError] = useState(null);
@@ -32,7 +32,7 @@ export default function ConnectBankButton({ onConnected }) {
       <button
         onClick={handleConnect}
         disabled={loading}
-        className="flex items-center justify-center gap-2 px-4 py-2 bg-[#2EFD7A] text-black rounded-xl font-semibold text-sm hover:bg-[#2EFD7A]/90 hover:scale-[1.03] active:scale-95 transition-all disabled:opacity-50 w-fit whitespace-nowrap"
+        className={`flex items-center justify-center gap-2 px-4 py-2 bg-[#2EFD7A] text-black rounded-xl font-semibold text-sm hover:bg-[#2EFD7A]/90 hover:scale-[1.03] active:scale-95 transition-all disabled:opacity-50 ${className}`}
       >
         {loading ? <Loader2 className="w-4 h-4 shrink-0 animate-spin" /> : <Link2 className="w-4 h-4 shrink-0" />}
         {loading ? 'Connecting...' : 'Connect Bank Account'}
