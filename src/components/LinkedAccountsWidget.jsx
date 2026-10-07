@@ -51,11 +51,13 @@ function AccountRow({ account }) {
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-xs text-white truncate leading-tight">{account.name || account.institution_name || 'Account'}</p>
-        <p className="text-xs text-white/70 capitalize">{ACCOUNT_TYPE_LABELS[type] || type}</p>
+        <div className="flex items-center justify-between gap-2 mt-0.5">
+          <p className="text-xs text-white/70 capitalize truncate">{ACCOUNT_TYPE_LABELS[type] || type}</p>
+          <span className={`text-xs font-bold shrink-0 whitespace-nowrap ${isNegative ? 'text-red-400' : 'text-[#2EA0FD]'}`}>
+            {isNegative ? '-' : ''}${animatedBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </span>
+        </div>
       </div>
-      <span className={`text-xs font-bold shrink-0 ${isNegative ? 'text-red-400' : 'text-[#2EA0FD]'}`}>
-        {isNegative ? '-' : ''}${animatedBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-      </span>
     </motion.div>
   );
 }
@@ -109,7 +111,7 @@ export default function LinkedAccountsWidget() {
   return (
     <div className={cardClass}>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-white/80 text-xs font-light tracking-widest uppercase">Linked Accounts</h3>
+        <h3 className="text-white/80 text-xs font-light tracking-widest uppercase whitespace-nowrap">Linked Accounts</h3>
         <RouterLink to="/money" className="text-xs text-[#2EA0FD] font-medium hover:opacity-80 transition-opacity">
           View
         </RouterLink>

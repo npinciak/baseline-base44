@@ -1,6 +1,6 @@
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { User, Flame, Coins, Zap, LogOut, Shield, Target, LayoutDashboard, Wallet, ShoppingBag } from 'lucide-react';
+import { User, Flame, Coins, LogOut, Shield, Target, LayoutDashboard, Wallet, ShoppingBag } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export default function Layout() {
@@ -47,9 +47,11 @@ export default function Layout() {
       <aside className="hidden md:flex flex-col w-64 border-r border-white/10 bg-black/60 backdrop-blur-xl fixed h-full z-40">
         <div className="p-6 border-b border-white/10">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#2EFD7A] to-[#2EA0FD] flex items-center justify-center shadow-[0_0_16px_rgba(46,160,253,0.45)]">
-              <Zap className="w-5 h-5 text-black" />
-            </div>
+            <img
+              src="https://media.base44.com/images/public/6a3542676f9044e70b439a84/156742c3c_2c64e420d_b567a13c189ab17b1195db0aba380e0ba8854e8c.png"
+              alt="Baseline"
+              className="w-9 h-9 object-contain"
+            />
             <span className="text-xl font-display font-bold text-white">Baseline</span>
           </div>
         </div>

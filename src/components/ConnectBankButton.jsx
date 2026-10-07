@@ -32,9 +32,9 @@ export default function ConnectBankButton({ onConnected }) {
       <button
         onClick={handleConnect}
         disabled={loading}
-        className="flex items-center justify-center gap-2 px-4 py-2 bg-[#2EFD7A] text-black rounded-xl font-semibold text-sm hover:bg-[#2EFD7A]/90 hover:scale-[1.03] active:scale-95 transition-all disabled:opacity-50 w-fit"
+        className="flex items-center justify-center gap-2 px-4 py-2 bg-[#2EFD7A] text-black rounded-xl font-semibold text-sm hover:bg-[#2EFD7A]/90 hover:scale-[1.03] active:scale-95 transition-all disabled:opacity-50 w-fit whitespace-nowrap"
       >
-        {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Link2 className="w-4 h-4" />}
+        {loading ? <Loader2 className="w-4 h-4 shrink-0 animate-spin" /> : <Link2 className="w-4 h-4 shrink-0" />}
         {loading ? 'Connecting...' : 'Connect Bank Account'}
       </button>
       {error && <p className="text-xs text-red-400 mt-1">{error}</p>}
