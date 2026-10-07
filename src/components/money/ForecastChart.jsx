@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceDot, CartesianGrid } from 'recharts';
-import { Slider } from '@/components/ui/slider';
+import ScenarioSlider from '@/components/money/ScenarioSlider';
 import { Telescope, TrendingUp, TrendingDown } from 'lucide-react';
 
 const HORIZONS = [{ d: 30, l: '1M' }, { d: 90, l: '3M' }, { d: 180, l: '6M' }, { d: 365, l: '1Y' }];
@@ -99,11 +99,8 @@ export default function ForecastChart({ startBalance, dailyIncome, dailySpend })
           <span className="text-white font-semibold">What if I spend {change === 0 ? 'the same' : `${Math.abs(change)}% ${change < 0 ? 'less' : 'more'}`}?</span>
           {change !== 0 && <button onClick={() => setChange(0)} className="text-xs text-[#2EA0FD] hover:underline">Reset</button>}
         </div>
-        <Slider value={[change]} onValueChange={(v) => setChange(v[0])} min={-40} max={40} step={5} />
-        <div className="flex justify-between text-[11px] text-white/50 mt-2">
-          <span>Spend less</span><span>Spend more</span>
-        </div>
-        <p className="text-[11px] text-white/40 mt-2">A sandbox projection from your recent income and spending. Nothing here changes your real transactions.</p>
+        <ScenarioSlider change={change} setChange={setChange} />
+        <p className="text-[11px] text-white/60 mt-3">A sandbox projection from your recent income and spending. Nothing here changes your real transactions.</p>
       </div>
     </div>
   );
