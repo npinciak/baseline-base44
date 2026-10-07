@@ -9,6 +9,8 @@ import ForecastChart from '@/components/money/ForecastChart';
 import SpendingDonut from '@/components/money/SpendingDonut';
 import CashflowBars from '@/components/money/CashflowBars';
 import MoneyKpis from '@/components/money/MoneyKpis';
+import SankeyCashflow from '@/components/money/SankeyCashflow';
+import AssetsBreakdown, { SAMPLE_ACCOUNTS } from '@/components/money/AssetsBreakdown';
 import CategoryList from '@/components/money/CategoryList';
 import RecurringList from '@/components/money/RecurringList';
 import TransactionList from '@/components/money/TransactionList';
@@ -104,6 +106,14 @@ export default function Money() {
 
         <motion.div variants={itemVariants}>
           <ForecastChart startBalance={balance} dailyIncome={summary.dailyIncome} dailySpend={summary.dailySpend} />
+        </motion.div>
+
+        <motion.div variants={itemVariants}>
+          <SankeyCashflow txs={txs} />
+        </motion.div>
+
+        <motion.div variants={itemVariants}>
+          <AssetsBreakdown accounts={isSample ? SAMPLE_ACCOUNTS : accounts} />
         </motion.div>
 
         <motion.div variants={itemVariants} className="grid lg:grid-cols-2 gap-6">
