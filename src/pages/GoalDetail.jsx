@@ -415,7 +415,7 @@ export default function GoalDetail() {
                   <span className="text-xs font-medium">No image selected</span>
                 </div>
               )}
-              <div className="absolute inset-0 bg-gradient-to-t from-background/60 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
               <div className="absolute bottom-3 left-3 flex gap-2">
                 <button
                   type="button"
@@ -449,7 +449,7 @@ export default function GoalDetail() {
                 <input
                   value={form.name}
                   onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
-                  className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#2EFD7A] transition-colors"
+                  className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[#2EFD7A] transition-colors"
                 />
               </div>
               <div>
@@ -457,10 +457,10 @@ export default function GoalDetail() {
                 <select
                   value={form.goal_type}
                   onChange={e => setForm(p => ({ ...p, goal_type: e.target.value }))}
-                  className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#2EFD7A] transition-colors"
+                  className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[#2EFD7A] transition-colors"
                 >
-                  <option value="">Select a category...</option>
-                  {GOAL_TYPES.map(({ value, label }) => <option key={value} value={value}>{label}</option>)}
+                  <option value="" className="bg-black">Select a category...</option>
+                  {GOAL_TYPES.map(({ value, label }) => <option key={value} value={value} className="bg-black">{label}</option>)}
                 </select>
               </div>
               <div className="grid grid-cols-2 gap-3">
@@ -471,7 +471,7 @@ export default function GoalDetail() {
                     value={form.target_amount}
                     onChange={e => setForm(p => ({ ...p, target_amount: e.target.value }))}
                     placeholder="0.00"
-                    className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#2EFD7A] transition-colors"
+                    className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[#2EFD7A] transition-colors"
                   />
                 </div>
                 <div>
@@ -481,7 +481,7 @@ export default function GoalDetail() {
                     value={form.saved_amount}
                     onChange={e => setForm(p => ({ ...p, saved_amount: e.target.value }))}
                     placeholder="0.00"
-                    className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#2EFD7A] transition-colors"
+                    className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[#2EFD7A] transition-colors"
                   />
                 </div>
               </div>
@@ -491,11 +491,11 @@ export default function GoalDetail() {
                   type="date"
                   value={form.target_date}
                   onChange={e => setForm(p => ({ ...p, target_date: e.target.value }))}
-                  className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#2EFD7A] transition-colors"
+                  className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[#2EFD7A] transition-colors"
                 />
               </div>
               <div className="flex gap-3 pt-2">
-                <button onClick={() => setShowEdit(false)} className="flex-1 py-3 bg-white/[0.05] text-white rounded-xl font-semibold hover:bg-white/[0.05]/80 transition-all">
+                <button onClick={() => setShowEdit(false)} className="flex-1 py-3 bg-white/[0.05] text-white rounded-xl font-semibold hover:bg-white/15 transition-all">
                   Cancel
                 </button>
                 <button
