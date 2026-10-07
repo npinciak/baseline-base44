@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
+import { motion } from 'framer-motion';
 import { ArrowRight, CheckCircle, Coins, X } from 'lucide-react';
+import AmbientBackdrop from '@/components/dashboard/AmbientBackdrop';
 
 export default function LessonView() {
   const { moduleId } = useParams();
@@ -112,73 +114,75 @@ export default function LessonView() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="w-8 h-8 border-4 border-border border-t-primary rounded-full animate-spin" />
+      <div className="flex items-center justify-center min-h-screen bg-black">
+        <div className="w-8 h-8 border-4 border-white/10 border-t-[#2EA0FD] rounded-full animate-spin" />
       </div>
     );
   }
 
   if (showCompletion) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-6">
-        <div className="max-w-sm w-full text-center">
-          <div className="w-24 h-24 rounded-full bg-primary/20 border-4 border-primary flex items-center justify-center mx-auto mb-6 glow-teal">
-            <CheckCircle className="w-12 h-12 text-primary" />
+      <div className="relative min-h-screen bg-black flex items-center justify-center p-6 overflow-hidden">
+        <AmbientBackdrop />
+        <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ type: 'spring', stiffness: 260, damping: 22 }} className="relative z-10 max-w-sm w-full text-center">
+          <div className="w-24 h-24 rounded-full bg-[#2EFD7A]/15 border-4 border-[#2EFD7A] flex items-center justify-center mx-auto mb-6 shadow-[0_0_40px_rgba(46,253,122,0.35)]">
+            <CheckCircle className="w-12 h-12 text-[#2EFD7A]" />
           </div>
-          <h2 className="text-3xl font-display font-extrabold mb-2">Module Complete!</h2>
-          <p className="text-muted-foreground mb-6">You've finished <strong className="text-foreground">{module?.title}</strong></p>
-          <div className="bg-card border border-primary/20 rounded-2xl p-6 mb-6 glow-teal">
-            <div className="flex items-center justify-center gap-2 text-3xl font-display font-extrabold text-primary">
+          <h2 className="text-3xl font-display font-extrabold mb-2 text-white">Module Complete!</h2>
+          <p className="text-white/60 mb-6">You've finished <strong className="text-white">{module?.title}</strong></p>
+          <div className="bg-white/[0.03] border border-white/10 backdrop-blur-sm rounded-2xl p-6 mb-6 shadow-[0_0_40px_-10px_rgba(46,160,253,0.3)]">
+            <div className="flex items-center justify-center gap-2 text-3xl font-display font-extrabold text-[#2EA0FD]">
               <Coins className="w-8 h-8" />
               +{xpEarned} Base Coins
             </div>
-            <p className="text-sm text-muted-foreground mt-1">added to your profile</p>
+            <p className="text-sm text-white/60 mt-1">added to your profile</p>
           </div>
           <button
             onClick={() => navigate('/dashboard')}
-            className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-bold text-lg hover:bg-primary/90 transition-all duration-200"
+            className="w-full py-4 bg-[#2EFD7A] text-black rounded-2xl font-bold text-lg hover:bg-[#2EFD7A]/90 hover:scale-[1.02] active:scale-95 transition-all duration-200"
           >
             Back to Learning Path
           </button>
-        </div>
+        </motion.div>
       </div>
     );
   }
 
   if (!currentLesson) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-muted-foreground">No lessons found in this module.</p>
+      <div className="flex items-center justify-center min-h-screen bg-black">
+        <p className="text-white/60">No lessons found in this module.</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="relative min-h-screen bg-black flex flex-col overflow-hidden">
+      <AmbientBackdrop />
       {/* Header */}
-      <div className="sticky top-0 bg-background/90 backdrop-blur-md border-b border-border px-4 py-3 flex items-center gap-4 z-10">
-        <button onClick={() => navigate('/dashboard')} className="text-muted-foreground hover:text-foreground transition-colors">
+      <div className="sticky top-0 bg-black/60 backdrop-blur-xl border-b border-white/10 px-4 py-3 flex items-center gap-4 z-10">
+        <button onClick={() => navigate('/dashboard')} className="text-white/50 hover:text-white transition-colors">
           <X className="w-5 h-5" />
         </button>
         <div className="flex-1">
-          <div className="h-2 bg-secondary rounded-full overflow-hidden">
+          <div className="h-2 bg-white/10 rounded-full overflow-hidden">
             <div
-              className="h-full bg-primary rounded-full transition-all duration-500"
+              className="h-full bg-gradient-to-r from-[#2EFD7A] to-[#2EA0FD] shadow-[0_0_8px_rgba(46,160,253,0.6)] rounded-full transition-all duration-500"
               style={{ width: `${((currentIndex + 1) / lessons.length) * 100}%` }}
             />
           </div>
         </div>
-        <span className="text-sm text-muted-foreground font-medium">{currentIndex + 1}/{lessons.length}</span>
+        <span className="text-sm text-white/60 font-medium">{currentIndex + 1}/{lessons.length}</span>
       </div>
 
       {/* Content */}
-      <div className="flex-1 max-w-2xl mx-auto w-full px-4 py-8">
+      <motion.div key={currentIndex} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 260, damping: 24 }} className="relative z-10 flex-1 max-w-2xl mx-auto w-full px-4 py-8 text-white">
         <div className="mb-6">
-          <span className="text-xs font-semibold uppercase tracking-wider text-primary">{module?.title}</span>
+          <span className="text-xs font-semibold uppercase tracking-wider text-[#2EA0FD]">{module?.title}</span>
           <div className="flex items-center gap-3 mt-1">
-            <h2 className="text-2xl font-display font-bold">{currentLesson.title}</h2>
+            <h2 className="text-2xl font-display font-bold text-white">{currentLesson.title}</h2>
             {isCompleted(currentLesson.id) && (
-              <span className="flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-primary/15 text-primary border border-primary/20 shrink-0">
+              <span className="flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-[#2EFD7A]/15 text-[#2EFD7A] border border-[#2EFD7A]/30 shrink-0">
                 <CheckCircle className="w-3 h-3" /> Completed
               </span>
             )}
@@ -187,7 +191,7 @@ export default function LessonView() {
 
         {/* text_card */}
         {currentLesson.content_type === 'text_card' && (
-          <div className="bg-card border border-border rounded-2xl p-6 mb-6">
+          <div className="bg-white/[0.03] border border-white/10 backdrop-blur-sm text-white rounded-2xl p-6 mb-6">
             <div
               className="prose prose-invert max-w-none text-base leading-relaxed"
               dangerouslySetInnerHTML={{ __html: currentLesson.text_content || '<p>No content yet.</p>' }}
@@ -197,7 +201,7 @@ export default function LessonView() {
 
         {/* key_takeaway */}
         {currentLesson.content_type === 'key_takeaway' && (
-          <div className="bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20 rounded-3xl p-8 mb-6 min-h-48 flex items-center justify-center text-center">
+          <div className="bg-gradient-to-br from-[#2EA0FD]/20 to-[#2EFD7A]/5 border border-[#2EA0FD]/30 shadow-[0_0_40px_-10px_rgba(46,160,253,0.35)] rounded-3xl p-8 mb-6 min-h-48 flex items-center justify-center text-center">
             <div>
               <p className="text-4xl mb-4">
                 {currentLesson.takeaway_icon === 'lightbulb' ? '💡'
@@ -217,7 +221,7 @@ export default function LessonView() {
         {/* question */}
         {currentLesson.content_type === 'question' && (
           <div className="mb-6">
-            <div className="bg-card border border-border rounded-2xl p-6 mb-4">
+            <div className="bg-white/[0.03] border border-white/10 backdrop-blur-sm text-white rounded-2xl p-6 mb-4">
               <div
                 className="prose prose-invert max-w-none text-lg font-heading font-semibold"
                 dangerouslySetInnerHTML={{ __html: currentLesson.question_prompt || '' }}
@@ -226,13 +230,13 @@ export default function LessonView() {
             {currentLesson.question_type === 'true_false' ? (
               <div className="grid grid-cols-2 gap-3">
                 {['True', 'False'].map((opt) => {
-                  let buttonClass = 'border-border bg-card hover:border-primary/40';
+                  let buttonClass = 'border-white/10 bg-white/[0.03] text-white hover:border-[#2EA0FD]/60 hover:bg-white/[0.06]';
                   if (answered) {
-                    if (opt === currentLesson.correct_answer) buttonClass = 'border-primary bg-primary/15 text-primary';
-                    else if (opt === selectedAnswer) buttonClass = 'border-destructive bg-destructive/15 text-destructive';
-                    else buttonClass = 'border-border bg-card opacity-50';
+                    if (opt === currentLesson.correct_answer) buttonClass = 'border-[#2EFD7A] bg-[#2EFD7A]/15 text-[#2EFD7A]';
+                    else if (opt === selectedAnswer) buttonClass = 'border-red-400 bg-red-400/15 text-red-400';
+                    else buttonClass = 'border-white/10 bg-white/[0.03] text-white opacity-40';
                   } else if (selectedAnswer === opt) {
-                    buttonClass = 'border-primary bg-primary/15';
+                    buttonClass = 'border-[#2EA0FD] bg-[#2EA0FD]/15 text-white';
                   }
                   return (
                     <button key={opt} onClick={() => handleAnswer(opt)}
@@ -250,13 +254,13 @@ export default function LessonView() {
                   // Build options: correct answer + "False" / "I don't know" as distractors for single-answer questions
                   const opts = correct ? [correct, 'I\'m not sure', 'None of the above'] : [];
                   return opts.map((opt) => {
-                    let buttonClass = 'border-border bg-card hover:border-primary/40';
+                    let buttonClass = 'border-white/10 bg-white/[0.03] text-white hover:border-[#2EA0FD]/60 hover:bg-white/[0.06]';
                     if (answered) {
-                      if (opt === correct) buttonClass = 'border-primary bg-primary/15 text-primary';
-                      else if (opt === selectedAnswer) buttonClass = 'border-destructive bg-destructive/15 text-destructive';
-                      else buttonClass = 'border-border bg-card opacity-50';
+                      if (opt === correct) buttonClass = 'border-[#2EFD7A] bg-[#2EFD7A]/15 text-[#2EFD7A]';
+                      else if (opt === selectedAnswer) buttonClass = 'border-red-400 bg-red-400/15 text-red-400';
+                      else buttonClass = 'border-white/10 bg-white/[0.03] text-white opacity-40';
                     } else if (selectedAnswer === opt) {
-                      buttonClass = 'border-primary bg-primary/15';
+                      buttonClass = 'border-[#2EA0FD] bg-[#2EA0FD]/15 text-white';
                     }
                     return (
                       <button key={opt} onClick={() => handleAnswer(opt)}
@@ -269,7 +273,7 @@ export default function LessonView() {
               </div>
             )}
             {answered && (
-              <div className={`mt-4 p-4 rounded-xl border text-sm ${selectedAnswer === currentLesson.correct_answer ? 'border-primary/30 bg-primary/10 text-primary' : 'border-destructive/30 bg-destructive/10 text-destructive'}`}>
+              <div className={`mt-4 p-4 rounded-xl border text-sm ${selectedAnswer === currentLesson.correct_answer ? 'border-[#2EFD7A]/30 bg-[#2EFD7A]/10 text-[#2EFD7A]' : 'border-red-400/30 bg-red-400/10 text-red-400'}`}>
                 <strong>{selectedAnswer === currentLesson.correct_answer ? '✓ Correct! ' : '✗ Not quite. '}</strong>
                 {selectedAnswer !== currentLesson.correct_answer && (
                   <span>The correct answer is: <strong>{currentLesson.correct_answer}</strong>. </span>
@@ -282,7 +286,7 @@ export default function LessonView() {
 
         {/* Fallback for unmapped content types */}
         {!['text_card', 'key_takeaway', 'question'].includes(currentLesson.content_type) && (
-          <div className="bg-card border border-border rounded-2xl p-6 mb-6">
+          <div className="bg-white/[0.03] border border-white/10 backdrop-blur-sm text-white rounded-2xl p-6 mb-6">
             <div
               className="prose prose-invert max-w-none text-base leading-relaxed"
               dangerouslySetInnerHTML={{ __html: currentLesson.text_content || currentLesson.takeaway_text || 'No content yet.' }}
@@ -294,14 +298,14 @@ export default function LessonView() {
         <button
           onClick={handleComplete}
           disabled={currentLesson.content_type === 'question' && !answered}
-          className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-bold text-lg hover:bg-primary/90 transition-all duration-200 disabled:opacity-40 flex items-center justify-center gap-2 group glow-teal"
+          className="w-full py-4 bg-[#2EFD7A] text-black rounded-2xl font-bold text-lg hover:bg-[#2EFD7A]/90 hover:scale-[1.01] active:scale-[0.98] shadow-[0_0_24px_rgba(46,253,122,0.3)] transition-all duration-200 disabled:opacity-40 disabled:shadow-none flex items-center justify-center gap-2 group"
         >
           {isCompleted(currentLesson.id)
             ? (currentIndex < lessons.length - 1 ? 'Next' : 'Finish Review')
             : (currentIndex < lessons.length - 1 ? currentLesson.text_cta || 'Continue' : 'Complete Module')}
           <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
         </button>
-      </div>
+      </motion.div>
     </div>
   );
 }
