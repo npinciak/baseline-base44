@@ -1,13 +1,24 @@
 import { useMemo, useState } from 'react';
-import { CATEGORY_COLORS, CATEGORY_LABELS } from '@/lib/moneyData';
 
 const W = 900;
-const H = 380;
+const H = 440;
+const PAD = 30;
 const NW = 12;
-const GAP = 12;
+const GAP = 10;
+const MINH = 18;
 const DAY = 86400000;
 const INCOME_COLORS = ['#2EFD7A', '#2BF9E9', '#2EA0FD', '#A78BFA'];
+const SPEND_COLORS = ['#2EA0FD', '#F5A623', '#c084fc', '#f87171', '#38BDF8', '#34D399', '#fb7185', '#facc15'];
 const fmt = (n) => `$${Math.round(n).toLocaleString()}`;
+const short = (s) => (s.length > 24 ? `${s.slice(0, 22)}…` : s);
+
+function groupTop(map, max, colors, restLabel, restColor) {
+  const sorted = Object.entries(map).sort((a, b) => b[1] - a[1]);
+  const items = sorted.slice(0, max).map(([name, value], i) => ({ name, value, color: colors[i % colors.length] }));
+  const rest = sorted.slice(max).reduce((s, [, v]) => s + v, 0);
+  if (rest > 0) items.push({ name: restLabel, value: rest, color: restColor });
+  return items;
+}
 
 function buildFlows(txs, days) {
   const dated = txs.filter(t => t.date);
@@ -16,65 +27,64 @@ function buildFlows(txs, days) {
   const recent = dated.filter(t => new Date(`${t.date}T12:00:00`).getTime() > latest - days * DAY);
 
   const inc = {};
-  recent.filter(t => t.is_income).forEach(t => {
-    const k = t.merchant_name || t.description || 'Income';
-    inc[k] = (inc[k] || 0) + t.amount;
+  const out = {};
+  recent.forEach(t => {
+    const k = (t.merchant_name || t.description || (t.is_income ? 'Income' : 'Other')).trim();
+    const map = t.is_income ? inc : out;
+    map[k] = (map[k] || 0) + t.amount;
   });
-  const incSorted = Object.entries(inc).sort((a, b) => b[1] - a[1]);
-  const left = incSorted.slice(0, 3).map(([name, value], i) => ({ name, value, color: INCOME_COLORS[i] }));
-  const restInc = incSorted.slice(3).reduce((s, [, v]) => s + v, 0);
-  if (restInc > 0) left.push({ name: 'Other income', value: restInc, color: INCOME_COLORS[3] });
 
-  const cats = {};
-  recent.filter(t => !t.is_income).forEach(t => { cats[t.category] = (cats[t.category] || 0) + t.amount; });
-  const spent = Object.values(cats).reduce((s, v) => s + v, 0);
+  const left = groupTop(inc, 3, INCOME_COLORS, 'Other income', INCOME_COLORS[3]);
+  const right = groupTop(out, 7, SPEND_COLORS, 'Everything else', '#6B7280');
   const income = left.reduce((s, n) => s + n.value, 0);
-  const total = Math.max(income, spent);
-  let right = [];
-  let other = 0;
-  Object.entries(cats).sort((a, b) => b[1] - a[1]).forEach(([cat, value]) => {
-    if (value / total < 0.025) other += value;
-    else right.push({ name: CATEGORY_LABELS[cat] || cat, value, color: CATEGORY_COLORS[cat] || '#6B7280' });
-  });
-  if (other > 0) right.push({ name: 'Other', value: other, color: '#6B7280' });
+  const spent = right.reduce((s, n) => s + n.value, 0);
   if (spent > income) left.push({ name: 'From savings', value: spent - income, color: '#f87171' });
   if (income > spent) right.push({ name: 'Surplus', value: income - spent, color: '#2EFD7A' });
-  return { left, right, total };
+  return { left, right, total: Math.max(income, spent) };
+}
+
+/** One shared scale so every node fits in the chart height, even tiny ones. */
+function fitScale(total, ...cols) {
+  const avail = H - PAD * 2;
+  let best = Infinity;
+  cols.forEach(items => {
+    const gaps = (items.length - 1) * GAP;
+    let s = (avail - gaps) / total;
+    for (let i = 0; i < 6; i++) {
+      const small = items.filter(n => n.value * s < MINH).length;
+      const bigSum = items.filter(n => n.value * s >= MINH).reduce((a, n) => a + n.value, 0);
+      if (!bigSum) break;
+      s = (avail - gaps - small * MINH) / bigSum;
+    }
+    best = Math.min(best, s);
+  });
+  return best;
 }
 
 function place(items, scale, x) {
-  const flows = items.reduce((s, n) => s + n.value * scale, 0);
-  const colH = flows + (items.length - 1) * GAP;
+  const hs = items.map(n => Math.max(n.value * scale, MINH));
+  const colH = hs.reduce((a, b) => a + b, 0) + (items.length - 1) * GAP;
   let y = (H - colH) / 2;
-  return items.map(n => {
-    const f = n.value * scale;
-    const node = { ...n, x, y, f, h: Math.max(f, 3) };
-    y += Math.max(f, 3) + GAP;
+  return items.map((n, i) => {
+    const node = { ...n, x, y, f: Math.min(n.value * scale, hs[i]), h: hs[i] };
+    y += hs[i] + GAP;
     return node;
   });
 }
 
-function Link({ x1, y0, x2, y1, f, color, id }) {
+function Link({ x1, y0, x2, y1, f, color }) {
   const xm = (x1 + x2) / 2;
   const d = `M${x1},${y0} C${xm},${y0} ${xm},${y1} ${x2},${y1} L${x2},${y1 + f} C${xm},${y1 + f} ${xm},${y0 + f} ${x1},${y0 + f} Z`;
-  return <path d={d} fill={color} fillOpacity="0.22" className="hover:fill-opacity-40 transition-all" id={id} />;
+  return <path d={d} fill={color} fillOpacity="0.25" />;
 }
 
 function Label({ n, side }) {
   const x = side === 'left' ? NW + 8 : W - NW - 8;
   const anchor = side === 'left' ? 'start' : 'end';
   const cy = n.y + n.h / 2;
-  if (n.h < 26) {
-    return (
-      <text x={x} y={cy + 4} textAnchor={anchor} fontSize="11" fill="#fff">
-        {n.name} <tspan fill="rgba(255,255,255,0.55)">{fmt(n.value)}</tspan>
-      </text>
-    );
-  }
   return (
-    <text x={x} textAnchor={anchor} fontSize="12" fill="#fff">
-      <tspan x={x} y={cy - 2}>{n.name}</tspan>
-      <tspan x={x} y={cy + 13} fontSize="11" fill="rgba(255,255,255,0.55)">{fmt(n.value)}</tspan>
+    <text x={x} y={cy + 4} textAnchor={anchor} fontSize="12" fill="#fff">
+      {short(n.name)} <tspan fill="rgba(255,255,255,0.6)">{fmt(n.value)}</tspan>
     </text>
   );
 }
@@ -85,12 +95,10 @@ export default function SankeyCashflow({ txs }) {
 
   const nodes = useMemo(() => {
     if (!total) return null;
-    const maxGaps = Math.max(left.length, right.length) - 1;
-    const scale = (H - maxGaps * GAP) / total;
-    const cx = (W - NW) / 2;
+    const scale = fitScale(total, left, right);
     const cH = total * scale;
     return {
-      cx, cY: (H - cH) / 2, cH, scale,
+      cx: (W - NW) / 2, cY: (H - cH) / 2, cH,
       L: place(left, scale, 0),
       R: place(right, scale, W - NW),
     };
@@ -98,7 +106,7 @@ export default function SankeyCashflow({ txs }) {
 
   return (
     <div className="bg-white/[0.03] border border-white/10 backdrop-blur-sm rounded-2xl p-5">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-2">
         <h3 className="text-white font-semibold">Cashflow</h3>
         <div className="flex gap-1 bg-white/[0.05] rounded-lg p-1">
           {[30, 90].map(d => (
@@ -115,7 +123,7 @@ export default function SankeyCashflow({ txs }) {
       {!nodes ? (
         <p className="text-white/50 text-sm py-10 text-center">No activity in this period.</p>
       ) : (
-        <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto">
+        <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto overflow-visible">
           {(() => {
             let inY = nodes.cY;
             return nodes.L.map((n, i) => {
@@ -135,8 +143,8 @@ export default function SankeyCashflow({ txs }) {
           {nodes.L.map((n, i) => <rect key={`ln${i}`} x={0} y={n.y} width={NW} height={n.h} rx="3" fill={n.color} />)}
           {nodes.R.map((n, i) => <rect key={`rn${i}`} x={W - NW} y={n.y} width={NW} height={n.h} rx="3" fill={n.color} />)}
           <rect x={nodes.cx} y={nodes.cY} width={NW} height={nodes.cH} rx="3" fill="#2EFD7A" />
-          <text x={nodes.cx + NW / 2} y={nodes.cY - 8} textAnchor="middle" fontSize="12" fill="#fff">
-            Cash Flow <tspan fill="rgba(255,255,255,0.55)">{fmt(total)}</tspan>
+          <text x={nodes.cx + NW / 2} y={nodes.cY - 10} textAnchor="middle" fontSize="12" fill="#fff">
+            Cash Flow <tspan fill="rgba(255,255,255,0.6)">{fmt(total)}</tspan>
           </text>
           {nodes.L.map((n, i) => <Label key={`ll${i}`} n={n} side="left" />)}
           {nodes.R.map((n, i) => <Label key={`rl${i}`} n={n} side="right" />)}
