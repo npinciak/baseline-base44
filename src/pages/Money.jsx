@@ -122,7 +122,7 @@ export default function Money() {
         </motion.div>
 
         <motion.div variants={itemVariants}>
-          <FinancialCalendar />
+          <FinancialCalendar balance={isSample || accounts.length ? balance : null} txs={txs} isSample={isSample} />
         </motion.div>
 
         <motion.div variants={itemVariants} className="grid lg:grid-cols-2 gap-6 items-start">
