@@ -17,7 +17,7 @@ export default function FamilySection({ profile, user, lessonsThisWeek, topicTag
       {/* Family card */}
       <div className="flex items-center gap-3 mb-5">
         <div className="flex -space-x-2">
-          <div className="w-9 h-9 rounded-full bg-purple-400 border-2 border-black flex items-center justify-center text-xs font-bold text-black">{parentInitial}</div>
+          <div className="w-9 h-9 rounded-full bg-[#2EA0FD] border-2 border-black flex items-center justify-center text-xs font-bold text-black">{parentInitial}</div>
           <div className="w-9 h-9 rounded-full bg-[#2BF9E9] border-2 border-black flex items-center justify-center text-xs font-bold text-black">K</div>
         </div>
         <div>

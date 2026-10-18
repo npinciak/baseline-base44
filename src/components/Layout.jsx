@@ -35,10 +35,10 @@ export default function Layout() {
 
   const navItems = [
     { to: '/dashboard', icon: LayoutDashboard, label: 'Home', iconColor: 'text-[#2EA0FD]' },
-    { to: '/money', icon: Wallet, label: 'Money', iconColor: 'text-amber-400' },
-    { to: '/basecamp', icon: ShoppingBag, label: 'Basecamp', iconColor: 'text-pink-400' },
-    { to: '/goals', icon: Target, label: 'Goals', iconColor: 'text-[#2BF9E9]' },
-    { to: '/profile', icon: User, label: 'Profile', iconColor: 'text-purple-400' },
+    { to: '/money', icon: Wallet, label: 'Money', iconColor: 'text-[#2EFD7A]' },
+    { to: '/basecamp', icon: ShoppingBag, label: 'Basecamp', iconColor: 'text-[#2EA0FD]' },
+    { to: '/goals', icon: Target, label: 'Goals', iconColor: 'text-[#2EFD7A]' },
+    { to: '/profile', icon: User, label: 'Profile', iconColor: 'text-[#2EA0FD]' },
   ];
 
   return (
@@ -71,9 +71,9 @@ export default function Layout() {
             </div>
             <div className="flex items-center gap-3 mt-3">
               <div className="flex items-center gap-1">
-                <Flame className="w-4 h-4 text-orange-400" />
+                <Flame className="w-4 h-4 text-white/70" />
                 <span className="text-sm font-semibold text-white">{stats.current_streak}</span>
-                <span className="text-xs text-orange-300">day streak</span>
+                <span className="text-xs text-white/60">day streak</span>
               </div>
             </div>
           </div>

@@ -5,7 +5,7 @@ import { ArrowRight, ShieldCheck } from 'lucide-react';
 const MAX_SCORE = 500;
 
 const CATEGORIES = [
-  { key: 'score_financial_knowledge', label: 'Financial Knowledge', color: '#c084fc' },
+  { key: 'score_financial_knowledge', label: 'Financial Knowledge', color: '#2EA0FD' },
   { key: 'score_income_debt', label: 'Income to Debt Ratio', color: '#2BF9E9' },
   { key: 'score_preparedness', label: 'Preparedness', color: '#facc15' },
   { key: 'score_risk_appetite', label: 'Risk Appetite', color: '#fb923c' },

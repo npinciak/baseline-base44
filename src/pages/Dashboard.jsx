@@ -9,6 +9,7 @@ import GoalCard from '@/components/dashboard/GoalCard';
 import GoalsSummaryWidget from '@/components/dashboard/GoalsSummaryWidget';
 import CreateGoalModal from '@/components/dashboard/CreateGoalModal';
 import StatsBar from '@/components/dashboard/StatsBar';
+import HabitPanel from '@/components/dashboard/HabitPanel';
 import AmbientBackdrop from '@/components/dashboard/AmbientBackdrop';
 
 const containerVariants = { hidden: {}, show: { transition: { staggerChildren: 0.12 } } };
@@ -106,9 +107,13 @@ export default function Dashboard() {
         {/* Header */}
         <motion.div variants={itemVariants} className="mb-8">
           <h1 className="text-3xl md:text-4xl font-light tracking-tight text-white mb-2">
-            {greeting()}, <span className="font-extrabold">{profile?.first_name || user?.full_name?.split(' ')[0] || 'there'}</span> 👋
+            {greeting()}, <span className="font-extrabold">{profile?.first_name || user?.full_name?.split(' ')[0] || 'there'}</span>
           </h1>
-          <p className="text-white/60 text-sm">Here's your financial progress at a glance.</p>
+          <p className="text-white/60 text-sm">Two small habits, done consistently, change your financial future.</p>
+        </motion.div>
+
+        <motion.div variants={itemVariants} className="mb-10">
+          <HabitPanel modules={modules} progress={progress} goals={goals} />
         </motion.div>
 
         {stats && (

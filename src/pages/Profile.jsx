@@ -123,10 +123,10 @@ export default function Profile() {
         {/* Stats grid */}
         <motion.div variants={itemVariants} className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
           {[
-            { icon: Flame, label: 'Day Streak', value: stats?.current_streak || 0, color: 'text-orange-400', bg: 'bg-orange-400/10' },
+            { icon: Flame, label: 'Day Streak', value: stats?.current_streak || 0, color: 'text-[#2EA0FD]', bg: 'bg-[#2EA0FD]/10' },
             { icon: Coins, label: 'Base Coins', value: stats?.total_xp || 0, color: 'text-[#2EFD7A]', bg: 'bg-[#2EFD7A]/10' },
             { icon: BookOpen, label: 'Lessons Done', value: totalLessonsCompleted, color: 'text-[#2BF9E9]', bg: 'bg-[#2BF9E9]/10' },
-            { icon: Trophy, label: 'Best Streak', value: stats?.longest_streak || 0, color: 'text-amber-400', bg: 'bg-amber-400/10' },
+            { icon: Trophy, label: 'Best Streak', value: stats?.longest_streak || 0, color: 'text-[#2EFD7A]', bg: 'bg-[#2EFD7A]/10' },
           ].map(({ icon: Icon, label, value, color, bg }) => (
             <div key={label} className="bg-white/[0.03] border border-white/10 rounded-2xl p-4 text-center">
               <div className={`w-10 h-10 rounded-xl ${bg} flex items-center justify-center mx-auto mb-2`}>
@@ -156,7 +156,7 @@ export default function Profile() {
         {/* Badges */}
         <motion.div variants={itemVariants} className="bg-white/[0.03] border border-white/10 backdrop-blur-sm rounded-3xl p-6 mb-6">
           <h3 className="text-lg font-heading font-bold mb-4 flex items-center gap-2 text-white">
-            <Award className="w-5 h-5 text-amber-400" /> Badges
+            <Award className="w-5 h-5 text-[#2EFD7A]" /> Badges
           </h3>
           {badges.length === 0 ? (
             <p className="text-white/50 text-sm">No badges defined yet. Complete lessons to start earning!</p>
@@ -168,12 +168,12 @@ export default function Profile() {
                   <div
                     key={badge.id}
                     className={`flex flex-col items-center gap-2 p-3 rounded-2xl border text-center transition-all duration-200 ${
-                      earned ? 'border-amber-400/30 bg-amber-400/10' : 'border-white/10 bg-white/[0.02] opacity-50 grayscale'
+                      earned ? 'border-[#2EFD7A]/30 bg-[#2EFD7A]/10' : 'border-white/10 bg-white/[0.02] opacity-50 grayscale'
                     }`}
                   >
                     <span className="text-3xl">{badge.icon || '🏅'}</span>
                     <span className="text-xs font-semibold leading-tight text-white">{badge.name}</span>
-                    {earned && <span className="text-xs text-amber-400">Earned</span>}
+                    {earned && <span className="text-xs text-[#2EFD7A]">Earned</span>}
                   </div>
                 );
               })}

@@ -261,12 +261,12 @@ export default function Goals() {
       <AmbientBackdrop />
       <div className="relative z-10 max-w-3xl mx-auto">
         {supabaseError && (
-          <div className="flex items-center justify-between gap-3 mb-6 px-4 py-3 bg-amber-500/10 border border-amber-500/25 rounded-xl text-sm text-amber-400">
+          <div className="flex items-center justify-between gap-3 mb-6 px-4 py-3 bg-[#2EA0FD]/10 border border-[#2EA0FD]/25 rounded-xl text-sm text-[#2EA0FD]">
             <div className="flex items-center gap-2">
               <AlertTriangle className="w-4 h-4 shrink-0" />
               <span>Could not load goals from the server. Please try again.</span>
             </div>
-            <button onClick={() => setSupabaseError(false)} className="text-amber-400/60 hover:text-amber-400 transition-colors">
+            <button onClick={() => setSupabaseError(false)} className="text-[#2EA0FD]/60 hover:text-[#2EA0FD] transition-colors">
               <X className="w-4 h-4" />
             </button>
           </div>

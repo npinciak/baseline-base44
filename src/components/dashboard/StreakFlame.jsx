@@ -25,7 +25,7 @@ export default function StreakFlame({ streak = 0, size = 'w-5 h-5' }) {
       transition={bump ? { duration: 0.6 } : { type: 'spring', stiffness: 300, damping: 15 }}
     >
       <Flame
-        className={`${size} text-amber-500`}
+        className={`${size} text-[#2BF9E9]`}
         style={{ filter: bump ? 'drop-shadow(0 0 6px rgba(245,158,11,0.8))' : 'none' }}
       />
     </motion.div>

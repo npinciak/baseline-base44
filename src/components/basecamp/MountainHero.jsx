@@ -74,7 +74,7 @@ export default function MountainHero({ balance, camps }) {
         )}
         <g transform="translate(560,56)">
           <line x1="0" y1="0" x2="0" y2="-26" stroke="#fff" strokeWidth="2" />
-          <polygon points="0,-26 18,-20 0,-14" fill="#F5A623" />
+          <polygon points="0,-26 18,-20 0,-14" fill="#2EFD7A" />
         </g>
       </svg>
     </div>

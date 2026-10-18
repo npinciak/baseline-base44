@@ -10,13 +10,13 @@ import RingGauge from '@/components/dashboard/RingGauge';
 
 const TOPIC_META = {
   budgeting:   { Icon: Wallet,      from: '#2EFD7A', to: '#17C964' },
-  investing:   { Icon: TrendingUp,  from: '#F5A623', to: '#F7C948' },
-  credit:      { Icon: CreditCard,  from: '#2EC4B6', to: '#17A398' },
-  taxes:       { Icon: FileText,    from: '#f97316', to: '#f59e0b' },
-  saving:      { Icon: PiggyBank,   from: '#22c55e', to: '#14b8a6' },
-  debt:        { Icon: Unlock,      from: '#ef4444', to: '#f43f5e' },
-  insurance:   { Icon: Umbrella,    from: '#2DD4BF', to: '#14B8A6' },
-  retirement:  { Icon: Shield,      from: '#f59e0b', to: '#eab308' },
+  investing:   { Icon: TrendingUp,  from: '#2EA0FD', to: '#2BF9E9' },
+  credit:      { Icon: CreditCard,  from: '#2EA0FD', to: '#1B7FD1' },
+  taxes:       { Icon: FileText,    from: '#2BF9E9', to: '#2EA0FD' },
+  saving:      { Icon: PiggyBank,   from: '#2EFD7A', to: '#2BF9E9' },
+  debt:        { Icon: Unlock,      from: '#2EA0FD', to: '#2EFD7A' },
+  insurance:   { Icon: Umbrella,    from: '#2BF9E9', to: '#17C964' },
+  retirement:  { Icon: Shield,      from: '#2EA0FD', to: '#2BF9E9' },
 };
 
 // Canvas layout
