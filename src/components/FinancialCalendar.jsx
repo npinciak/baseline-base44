@@ -123,7 +123,7 @@ export default function FinancialCalendar({ balance = null, txs = [], isSample =
         </div>
         <div className="bg-white/[0.05] rounded-xl p-3">
           <p className="text-xs text-white/60 mb-1">Projected {format(endOfMonth(month), 'MMM d')}</p>
-          <p className="text-lg font-display font-extrabold text-[#2EA0FD]">{known && monthEnd ? money(monthEnd.end) : 'Unavailable'}</p>
+          <p className="text-lg font-display font-extrabold text-[#D4D4D8]">{known && monthEnd ? money(monthEnd.end) : 'Unavailable'}</p>
         </div>
       </div>
 
@@ -136,7 +136,7 @@ export default function FinancialCalendar({ balance = null, txs = [], isSample =
 
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 px-5 pb-3 text-[11px] text-white/60">
         <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-white/60" /> Actual balance</span>
-        <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-[#2EA0FD]" /> Projected balance</span>
+        <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-[#D4D4D8]" /> Projected balance</span>
         <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-[#2EFD7A]" /> Income</span>
         <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-red-400" /> Expense</span>
       </div>

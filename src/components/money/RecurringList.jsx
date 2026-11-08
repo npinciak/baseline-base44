@@ -5,7 +5,7 @@ export default function RecurringList({ recurring }) {
   return (
     <section>
       <h2 className="text-lg font-heading font-bold mb-4 flex items-center gap-2 text-white">
-        <Repeat className="w-5 h-5 text-[#2EA0FD]" /> Recurring Expenses
+        <Repeat className="w-5 h-5 text-[#2EFD7A]" /> Recurring Expenses
       </h2>
       {recurring.length === 0 ? (
         <div className="bg-white/[0.03] border border-dashed border-white/10 rounded-2xl p-8 text-center text-white/50 text-sm">No recurring expenses detected yet</div>

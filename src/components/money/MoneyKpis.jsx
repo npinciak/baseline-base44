@@ -6,10 +6,10 @@ const money = (n) => `${n < 0 ? '-' : ''}$${Math.abs(Math.round(n)).toLocaleStri
 export default function MoneyKpis({ balance, income, spent, days }) {
   const rate = income > 0 ? Math.round(((income - spent) / income) * 100) : 0;
   const tiles = [
-    { label: 'Total balance', value: money(balance), icon: Landmark, color: '#2EA0FD' },
+    { label: 'Total balance', value: money(balance), icon: Landmark, color: '#D4D4D8' },
     { label: `Money in · ${days}d`, value: money(income), icon: ArrowDownLeft, color: '#2EFD7A' },
     { label: `Money out · ${days}d`, value: money(spent), icon: ArrowUpRight, color: '#F5A623' },
-    { label: 'Savings rate', value: `${rate}%`, icon: PiggyBank, color: '#2BF9E9' },
+    { label: 'Savings rate', value: `${rate}%`, icon: PiggyBank, color: '#2EFD7A' },
   ];
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">

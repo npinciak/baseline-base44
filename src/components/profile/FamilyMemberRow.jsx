@@ -8,7 +8,7 @@ export default function FamilyMemberRow({ member, isParent, busy, onRemove }) {
   return (
     <div className="bg-white/[0.03] border border-white/10 rounded-2xl px-4 py-3">
       <div className="flex items-center gap-3">
-        <div className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-black ${member.role === 'parent' ? 'bg-[#2EA0FD]' : 'bg-[#2EFD7A]'}`}>
+        <div className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-black ${member.role === 'parent' ? 'bg-[#2EFD7A]' : 'bg-[#2EFD7A]'}`}>
           {member.display_name?.[0]?.toUpperCase() || '?'}
         </div>
         <div className="flex-1 min-w-0">
@@ -16,7 +16,7 @@ export default function FamilyMemberRow({ member, isParent, busy, onRemove }) {
           <p className="text-white/40 text-xs capitalize">{member.role}{member.status === 'invited' ? ' · Invite pending' : ''}</p>
         </div>
         {canTrack && (
-          <button onClick={() => setOpen(o => !o)} aria-expanded={open} className="text-xs font-semibold text-[#2EA0FD] flex items-center gap-1">
+          <button onClick={() => setOpen(o => !o)} aria-expanded={open} className="text-xs font-semibold text-[#2EFD7A] flex items-center gap-1">
             Progress <ChevronDown className={`w-3.5 h-3.5 transition-transform ${open ? 'rotate-180' : ''}`} />
           </button>
         )}

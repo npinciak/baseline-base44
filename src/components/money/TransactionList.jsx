@@ -14,11 +14,11 @@ export default function TransactionList({ transactions }) {
     <section>
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-base font-heading font-bold flex items-center gap-2 text-white">
-          <Wallet className="w-4 h-4 text-[#2EA0FD]" /> Recent Transactions
+          <Wallet className="w-4 h-4 text-[#2EFD7A]" /> Recent Transactions
         </h2>
         <div className="flex gap-1 bg-white/[0.05] rounded-lg p-0.5">
           {['all', 'expenses', 'income'].map(f => (
-            <button key={f} onClick={() => pick(f)} className={`px-2.5 py-1 rounded-md text-[11px] font-semibold capitalize transition-all ${filter === f ? 'bg-[#2EA0FD] text-black' : 'text-white/50 hover:text-white'}`}>
+            <button key={f} onClick={() => pick(f)} className={`px-2.5 py-1 rounded-md text-[11px] font-semibold capitalize transition-all ${filter === f ? 'bg-[#2EFD7A] text-black' : 'text-white/50 hover:text-white'}`}>
               {f}
             </button>
           ))}
@@ -42,7 +42,7 @@ export default function TransactionList({ transactions }) {
             </div>
           ))}
           {filtered.length > PAGE && (
-            <button onClick={() => setLimit(limit >= filtered.length ? PAGE : limit + PAGE)} className="w-full py-2 text-xs font-semibold text-[#2EA0FD] hover:bg-white/[0.03] transition-colors">
+            <button onClick={() => setLimit(limit >= filtered.length ? PAGE : limit + PAGE)} className="w-full py-2 text-xs font-semibold text-[#2EFD7A] hover:bg-white/[0.03] transition-colors">
               {limit >= filtered.length ? 'Show less' : `Show more (${filtered.length - limit} left)`}
             </button>
           )}

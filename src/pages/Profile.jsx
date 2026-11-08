@@ -116,7 +116,7 @@ export default function Profile() {
               <span className="text-xs font-semibold text-[#2EFD7A]">{stats?.total_xp || 0} / {xpForLevel((stats?.current_level || 1) + 1)} Base Coins</span>
             </div>
             <div className="h-3 bg-white/10 rounded-full overflow-hidden">
-              <div className="h-full rounded-full xp-shimmer transition-all duration-700" style={{ width: `${xpProgress}%` }} />
+              <div className="h-full rounded-full bg-[#2EFD7A] transition-all duration-700" style={{ width: `${xpProgress}%` }} />
             </div>
           </div>
         </motion.div>
@@ -124,9 +124,9 @@ export default function Profile() {
         {/* Stats grid */}
         <motion.div variants={itemVariants} className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
           {[
-            { icon: Flame, label: 'Day Streak', value: stats?.current_streak || 0, color: 'text-[#2EA0FD]', bg: 'bg-[#2EA0FD]/10' },
+            { icon: Flame, label: 'Day Streak', value: stats?.current_streak || 0, color: 'text-[#2EFD7A]', bg: 'bg-[#2EFD7A]/10' },
             { icon: Coins, label: 'Base Coins', value: stats?.total_xp || 0, color: 'text-[#2EFD7A]', bg: 'bg-[#2EFD7A]/10' },
-            { icon: BookOpen, label: 'Lessons Done', value: totalLessonsCompleted, color: 'text-[#2BF9E9]', bg: 'bg-[#2BF9E9]/10' },
+            { icon: BookOpen, label: 'Lessons Done', value: totalLessonsCompleted, color: 'text-[#2EFD7A]', bg: 'bg-[#2EFD7A]/10' },
             { icon: Trophy, label: 'Best Streak', value: stats?.longest_streak || 0, color: 'text-[#2EFD7A]', bg: 'bg-[#2EFD7A]/10' },
           ].map(({ icon: Icon, label, value, color, bg }) => (
             <div key={label} className="bg-white/[0.03] border border-white/10 rounded-2xl p-4 text-center">

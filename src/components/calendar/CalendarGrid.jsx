@@ -28,7 +28,7 @@ export default function CalendarGrid({ weeks, month, timeline, selected, todayIs
                 onClick={() => onSelect(key)}
                 className={`relative flex flex-col items-center justify-start gap-0.5 pt-1.5 pb-1.5 min-h-[58px] rounded-xl transition-all ${
                   inMonth ? 'cursor-pointer hover:bg-white/10' : 'opacity-30'
-                } ${future && !isSel ? 'bg-[#2EA0FD]/[0.06]' : ''} ${
+                } ${future && !isSel ? 'bg-[#D4D4D8]/[0.06]' : ''} ${
                   isSel ? 'bg-[#2EFD7A] text-black hover:bg-[#2EFD7A]' : ''
                 } ${isToday && !isSel ? 'ring-1 ring-[#2EFD7A]/70' : ''}`}
               >
@@ -37,7 +37,7 @@ export default function CalendarGrid({ weeks, month, timeline, selected, todayIs
                 </span>
                 {data?.end != null && (
                   <span className={`text-[9px] sm:text-[10px] leading-none font-medium ${
-                    isSel ? 'text-black/70' : future ? 'text-[#2EA0FD]' : 'text-white/60'
+                    isSel ? 'text-black/70' : future ? 'text-[#D4D4D8]' : 'text-white/60'
                   }`}>
                     {compact(data.end)}
                   </span>

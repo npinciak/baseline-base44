@@ -2,8 +2,8 @@ import { useMemo, useState } from 'react';
 import { ChevronRight } from 'lucide-react';
 
 const GROUPS = [
-  { key: 'cash', label: 'Cash', color: '#2BF9E9', types: ['checking', 'savings', 'cash', 'money_market'] },
-  { key: 'investments', label: 'Investments', color: '#2EA0FD', types: ['investment', 'retirement', 'brokerage'] },
+  { key: 'cash', label: 'Cash', color: '#2EFD7A', types: ['checking', 'savings', 'cash', 'money_market'] },
+  { key: 'investments', label: 'Investments', color: '#D4D4D8', types: ['investment', 'retirement', 'brokerage'] },
   { key: 'other', label: 'Other Assets', color: '#A78BFA', types: [] },
 ];
 const LIABILITIES = ['credit_card', 'loan', 'mortgage', 'line_of_credit'];

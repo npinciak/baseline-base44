@@ -27,19 +27,19 @@ export default function LockedToolCard({ access, onCompleteMove }) {
     <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 sm:p-8 flex flex-col md:flex-row md:items-center gap-6">
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-2">
-          <Lock className="w-4 h-4 text-[#2EA0FD]" />
-          <span className="text-[11px] tracking-widest uppercase font-semibold text-[#2EA0FD]">Unlock this tool</span>
+          <Lock className="w-4 h-4 text-[#2EFD7A]" />
+          <span className="text-[11px] tracking-widest uppercase font-semibold text-[#2EFD7A]">Unlock this tool</span>
         </div>
         <h3 className="text-white text-xl font-semibold">{label}</h3>
         <p className="text-white/60 text-sm mt-1 max-w-md">{blurb}</p>
       </div>
       <div className="md:w-80 space-y-3">
-        <Step done={chapter.learned} Icon={BookOpen} color="#2EA0FD" title={`Chapter ${chapter.number}: ${chapter.title}`}
+        <Step done={chapter.learned} Icon={BookOpen} color="#2EFD7A" title={`Chapter ${chapter.number}: ${chapter.title}`}
           sub={chapter.comingSoon ? 'Lessons coming soon' : `${chapter.lessonsDone} of ${chapter.modules.length} lessons done`} />
         <Step done={chapter.moveDone} Icon={Zap} color="#2EFD7A" title={chapter.move.title} sub="Money move" />
         {!chapter.learned && !chapter.comingSoon && (
           <Link to={chapter.unlocked && next ? `/lesson/${next.id}` : '/dashboard'}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#2EA0FD] text-black text-sm font-semibold hover:bg-[#2EA0FD]/90 transition-all">
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#2EFD7A] text-black text-sm font-semibold hover:bg-[#2EFD7A]/90 transition-all">
             {chapter.unlocked ? 'Continue chapter' : 'Go to BasePath'} <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         )}

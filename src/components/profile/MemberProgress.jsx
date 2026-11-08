@@ -27,7 +27,7 @@ export default function MemberProgress({ memberId }) {
       </div>
       <div>
         <div className="flex justify-between text-[11px] text-white/50 mb-1"><span>BasePath progress</span><span>{pct}%</span></div>
-        <div className="h-1.5 bg-white/10 rounded-full overflow-hidden"><div className="h-full bg-[#2EA0FD] rounded-full" style={{ width: `${pct}%` }} /></div>
+        <div className="h-1.5 bg-white/10 rounded-full overflow-hidden"><div className="h-full bg-[#2EFD7A] rounded-full" style={{ width: `${pct}%` }} /></div>
       </div>
       {p.recent.length > 0 && (
         <p className="text-xs text-white/50">Recently finished: <span className="text-white/80">{p.recent.map(r => r.title).join(', ')}</span></p>

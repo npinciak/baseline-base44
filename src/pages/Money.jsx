@@ -88,7 +88,7 @@ export default function Money() {
   if (!ready) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-black">
-        <div className="w-8 h-8 border-4 border-white/10 border-t-[#2EA0FD] rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-white/10 border-t-[#2EFD7A] rounded-full animate-spin" />
       </div>
     );
   }
@@ -127,9 +127,9 @@ export default function Money() {
         <GoalsBanner learning={learning} />
 
         {isSample && (
-          <motion.div variants={itemVariants} className="flex flex-wrap items-center justify-between gap-4 px-5 py-4 bg-[#2EA0FD]/10 border border-[#2EA0FD]/30 rounded-2xl">
+          <motion.div variants={itemVariants} className="flex flex-wrap items-center justify-between gap-4 px-5 py-4 bg-[#2EFD7A]/10 border border-[#2EFD7A]/30 rounded-2xl">
             <div className="flex items-center gap-3 text-sm text-white">
-              <Sparkles className="w-5 h-5 text-[#2EA0FD] shrink-0" />
+              <Sparkles className="w-5 h-5 text-[#2EFD7A] shrink-0" />
               <span>You're exploring <strong>sample data</strong>. Link your bank to see your real numbers and future.</span>
             </div>
             <ConnectBankButton onConnected={load} />

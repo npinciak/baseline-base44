@@ -8,7 +8,7 @@ export default function SpendingDonut({ categoryList, total }) {
   return (
     <div className="rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-sm p-5 h-full">
       <h3 className="flex items-center gap-2 text-white font-heading font-bold mb-3">
-        <PieIcon className="w-5 h-5 text-[#2EA0FD]" /> Where it goes
+        <PieIcon className="w-5 h-5 text-[#2EFD7A]" /> Where it goes
       </h3>
       {categoryList.length === 0 ? (
         <p className="text-white/50 text-sm py-12 text-center">No spending yet</p>

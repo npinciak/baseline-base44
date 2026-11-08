@@ -15,7 +15,7 @@ const ACCOUNT_TYPE_ICONS = {
 };
 
 const ACCOUNT_TYPE_STYLES = {
-  checking: 'bg-[#2BF9E9]/15 text-[#2BF9E9]',
+  checking: 'bg-[#2EFD7A]/15 text-[#2EFD7A]',
   savings: 'bg-[#2EFD7A]/15 text-[#2EFD7A]',
   credit_card: 'bg-pink-400/15 text-pink-400',
   investment: 'bg-amber-400/15 text-amber-400',
@@ -53,7 +53,7 @@ function AccountRow({ account }) {
         <p className="text-xs text-white truncate leading-tight">{account.name || account.institution_name || 'Account'}</p>
         <div className="flex items-center justify-between gap-2 mt-0.5">
           <p className="text-xs text-white/70 capitalize truncate">{ACCOUNT_TYPE_LABELS[type] || type}</p>
-          <span className={`text-xs font-bold shrink-0 whitespace-nowrap ${isNegative ? 'text-red-400' : 'text-[#2EA0FD]'}`}>
+          <span className={`text-xs font-bold shrink-0 whitespace-nowrap ${isNegative ? 'text-red-400' : 'text-[#2EFD7A]'}`}>
             {isNegative ? '-' : ''}${animatedBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </span>
         </div>
@@ -97,9 +97,9 @@ export default function LinkedAccountsWidget() {
           <motion.div
             animate={{ y: [0, -4, 0], rotate: [0, -6, 6, 0] }}
             transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
-            className="w-12 h-12 rounded-2xl bg-[#2EA0FD]/15 flex items-center justify-center shadow-[0_0_20px_rgba(46,160,253,0.3)]"
+            className="w-12 h-12 rounded-2xl bg-[#2EFD7A]/15 flex items-center justify-center shadow-[0_0_20px_rgba(46,253,122,0.3)]"
           >
-            <Link className="w-6 h-6 text-[#2EA0FD]" />
+            <Link className="w-6 h-6 text-[#2EFD7A]" />
           </motion.div>
           <p className="text-xs text-white/80">No accounts linked yet.<br />Connect a bank to see your balances!</p>
           <ConnectBankButton onConnected={loadAccounts} />
@@ -112,7 +112,7 @@ export default function LinkedAccountsWidget() {
     <div className={cardClass}>
       <div className="flex items-center justify-between gap-3 mb-4">
         <h3 className="text-white/80 text-xs font-light tracking-widest uppercase whitespace-nowrap truncate min-w-0">Linked Accounts</h3>
-        <RouterLink to="/money" className="text-xs text-[#2EA0FD] font-medium hover:opacity-80 transition-opacity">
+        <RouterLink to="/money" className="text-xs text-[#2EFD7A] font-medium hover:opacity-80 transition-opacity">
           View
         </RouterLink>
       </div>
