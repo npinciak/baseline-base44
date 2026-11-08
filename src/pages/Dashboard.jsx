@@ -62,13 +62,11 @@ export default function Dashboard() {
           <h1 className="text-3xl md:text-4xl font-light tracking-tight text-white mb-2">
             {greeting()}, <span className="font-extrabold">{profile?.first_name || user?.full_name?.split(' ')[0] || 'there'}</span>
           </h1>
-          <p className="text-white/60 text-sm">Two small habits, done consistently, change your financial future.</p>
         </motion.div>
 
         <motion.section variants={itemVariants}>
           <div className="mb-5">
-            <h2 className="text-white/60 text-xs font-light tracking-widest uppercase mb-1">Learning Path</h2>
-            <p className="text-white text-lg font-light">Master personal finance <span className="font-extrabold">one lesson at a time</span></p>
+            <h2 className="text-white/60 text-xs font-light tracking-widest uppercase mb-1">BasePath</h2>
           </div>
           <WindingLearningPath chapters={learning.chapters} onCompleteMove={learning.completeMove} />
         </motion.section>
