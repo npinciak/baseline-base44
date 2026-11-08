@@ -24,7 +24,7 @@ export default function GoalProgressTracker({ goal }) {
         <div className="space-y-1.5">
           <p className="text-xs text-muted-foreground"><span className="font-semibold text-foreground">{money.format(current)}</span> of {money.format(target)}</p>
           <div role="progressbar" aria-label={`${goal.name} savings progress`} aria-valuenow={percent} aria-valuemin={0} aria-valuemax={100} className="h-1.5 rounded-full bg-secondary overflow-hidden">
-            <div className="h-full rounded-full bg-[#2EFD7A]" style={{ width: `${percent}%` }} />
+            <div className="h-full rounded-full bg-gradient-to-r from-[#17C964] to-[#2EFD7A]" style={{ width: `${percent}%` }} />
           </div>
         </div>
       </div>
