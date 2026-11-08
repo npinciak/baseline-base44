@@ -15,7 +15,8 @@ import AssetsBreakdown, { SAMPLE_ACCOUNTS } from '@/components/money/AssetsBreak
 import CategoryList from '@/components/money/CategoryList';
 import RecurringList from '@/components/money/RecurringList';
 import TransactionList from '@/components/money/TransactionList';
-import ToolGate from '@/components/money/ToolGate';
+import LockedToolCard from '@/components/money/LockedToolCard';
+import { toolAccess } from '@/lib/curriculum';
 import MoneySection from '@/components/money/MoneySection';
 import useLearningState from '@/hooks/useLearningState';
 import {
@@ -91,7 +92,24 @@ export default function Money() {
     );
   }
 
-  const gate = { chapters: learning.chapters, onCompleteMove: learning.completeMove };
+  const tools = [
+    { key: 'recurring', node: <RecurringList recurring={recurring} /> },
+    { key: 'spending', node: (
+      <div className="space-y-6">
+        <div className="grid lg:grid-cols-2 gap-6">
+          <SpendingDonut categoryList={categoryList} total={grandTotal} />
+          <CashflowBars weeks={weeks} />
+        </div>
+        <CategoryList categoryList={categoryList} grandTotal={grandTotal} expenses={expenses} />
+      </div>
+    ) },
+    { key: 'calendar', node: <FinancialCalendar balance={isSample || accounts.length ? balance : null} txs={txs} isSample={isSample} /> },
+    { key: 'cashflow', node: <SankeyCashflow txs={txs} /> },
+    { key: 'networth', node: <AssetsBreakdown accounts={isSample ? SAMPLE_ACCOUNTS : accounts} /> },
+    { key: 'forecast', node: <ForecastChart startBalance={balance} dailyIncome={summary.dailyIncome} dailySpend={summary.dailySpend} /> },
+  ].map(t => ({ ...t, access: toolAccess(t.key, learning.chapters) }));
+  const openTools = tools.filter(t => t.access.unlocked);
+  const lockedTools = tools.filter(t => !t.access.unlocked);
 
   return (
     <div className="relative min-h-screen bg-black px-4 py-8 overflow-hidden">
@@ -118,45 +136,29 @@ export default function Money() {
         <motion.div variants={itemVariants}>
           <MoneySection id="overview" kicker="Where you stand" title="Your money today">
             <MoneyKpis balance={balance} income={summary.income} spent={summary.spent} days={summary.days} />
-            <div id="networth" className="scroll-mt-6">
-              <ToolGate tool="networth" {...gate}>
-                <AssetsBreakdown accounts={isSample ? SAMPLE_ACCOUNTS : accounts} />
-              </ToolGate>
-            </div>
-          </MoneySection>
-        </motion.div>
-
-        <motion.div variants={itemVariants}>
-          <MoneySection id="spending" kicker="Where it goes" title="Spending and bills">
-            <div className="grid lg:grid-cols-2 gap-6">
-              <SpendingDonut categoryList={categoryList} total={grandTotal} />
-              <CashflowBars weeks={weeks} />
-            </div>
-            <div id="recurring" className="grid lg:grid-cols-2 gap-6 items-start scroll-mt-6">
-              <CategoryList categoryList={categoryList} grandTotal={grandTotal} expenses={expenses} />
-              <RecurringList recurring={recurring} />
-            </div>
-            <div id="cashflow" className="scroll-mt-6">
-              <ToolGate tool="cashflow" {...gate}>
-                <SankeyCashflow txs={txs} />
-              </ToolGate>
-            </div>
             <TransactionList transactions={txs} />
           </MoneySection>
         </motion.div>
 
-        <motion.div variants={itemVariants}>
-          <MoneySection id="forecast" kicker="Where it's heading" title="Plan ahead">
-            <div id="calendar" className="scroll-mt-6">
-              <ToolGate tool="calendar" {...gate}>
-                <FinancialCalendar balance={isSample || accounts.length ? balance : null} txs={txs} isSample={isSample} />
-              </ToolGate>
-            </div>
-            <ToolGate tool="forecast" {...gate}>
-              <ForecastChart startBalance={balance} dailyIncome={summary.dailyIncome} dailySpend={summary.dailySpend} />
-            </ToolGate>
-          </MoneySection>
-        </motion.div>
+        {openTools.length > 0 && (
+          <motion.div variants={itemVariants}>
+            <MoneySection id="tools" kicker="Unlocked" title="Your tools">
+              {openTools.map(t => <div key={t.key} id={t.key} className="scroll-mt-6">{t.node}</div>)}
+            </MoneySection>
+          </motion.div>
+        )}
+
+        {lockedTools.length > 0 && (
+          <motion.div variants={itemVariants}>
+            <MoneySection id="locked" kicker="Coming up on your path" title="Tools to unlock">
+              {lockedTools.map(t => (
+                <div key={t.key} id={t.key} className="scroll-mt-6">
+                  <LockedToolCard access={t.access} onCompleteMove={learning.completeMove} />
+                </div>
+              ))}
+            </MoneySection>
+          </motion.div>
+        )}
       </motion.div>
     </div>
   );

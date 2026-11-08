@@ -4,12 +4,12 @@ import { CATEGORY_COLORS, CATEGORY_LABELS } from '@/lib/moneyData';
 
 export default function TransactionList({ transactions }) {
   const [filter, setFilter] = useState('all');
-  const shown = transactions.filter(tx => (filter === 'income' ? tx.is_income : filter === 'expenses' ? !tx.is_income : true)).slice(0, 100);
+  const shown = transactions.filter(tx => (filter === 'income' ? tx.is_income : filter === 'expenses' ? !tx.is_income : true)).slice(0, 10);
   return (
     <section>
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-heading font-bold flex items-center gap-2 text-white">
-          <Wallet className="w-5 h-5 text-[#2EA0FD]" /> All Transactions
+          <Wallet className="w-5 h-5 text-[#2EA0FD]" /> Recent Transactions
         </h2>
         <div className="flex gap-1 bg-white/[0.05] rounded-xl p-1">
           {['all', 'expenses', 'income'].map(f => (

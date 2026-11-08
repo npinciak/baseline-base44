@@ -3,16 +3,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import { Target, ChevronRight, ChevronLeft, Plus } from 'lucide-react';
-import LinkedAccountsWidget from '@/components/LinkedAccountsWidget';
 import WindingLearningPath from '@/components/WindingLearningPath';
 import GoalCard from '@/components/dashboard/GoalCard';
 import GoalsSummaryWidget from '@/components/dashboard/GoalsSummaryWidget';
 import CreateGoalModal from '@/components/dashboard/CreateGoalModal';
-import StatsBar from '@/components/dashboard/StatsBar';
-import HabitPanel from '@/components/dashboard/HabitPanel';
 import AmbientBackdrop from '@/components/dashboard/AmbientBackdrop';
 import useLearningState from '@/hooks/useLearningState';
-import { orderedModules } from '@/lib/curriculum';
 
 const containerVariants = { hidden: {}, show: { transition: { staggerChildren: 0.12 } } };
 const itemVariants = {
@@ -25,7 +21,6 @@ const EMPTY_FORM = { name: '', description: '', target_amount: '', saved_amount:
 export default function Dashboard() {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
-  const [stats, setStats] = useState(null);
   const [goals, setGoals] = useState([]);
   const [loading, setLoading] = useState(true);
   const learning = useLearningState();
@@ -46,7 +41,6 @@ export default function Dashboard() {
         base44.functions.invoke('getSupabaseGoals', {}).catch(() => ({ data: { goals: [] } })),
       ]);
       if (statsArr.length === 0) { navigate('/onboarding'); return; }
-      setStats(statsArr[0]);
       setGoals(goalsRes?.data?.goals || []);
       setLoading(false);
     };
@@ -108,16 +102,6 @@ export default function Dashboard() {
           </h1>
           <p className="text-white/60 text-sm">Two small habits, done consistently, change your financial future.</p>
         </motion.div>
-
-        <motion.div variants={itemVariants} className="mb-10">
-          <HabitPanel modules={orderedModules(learning.chapters)} progress={learning.progress} goals={goals} />
-        </motion.div>
-
-        {stats && (
-          <motion.div variants={itemVariants}>
-            <StatsBar stats={stats} />
-          </motion.div>
-        )}
 
         <div className="grid md:grid-cols-5 gap-8">
           {/* Main column */}
@@ -208,7 +192,6 @@ export default function Dashboard() {
           {/* Sidebar widgets */}
           <motion.div variants={itemVariants} className="md:col-span-1 space-y-5">
             {goals.length > 0 && <GoalsSummaryWidget goals={goals} />}
-            <LinkedAccountsWidget />
           </motion.div>
         </div>
       </motion.div>

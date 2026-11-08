@@ -44,6 +44,8 @@ export const CHAPTERS = [
 // Advanced Money tools: unlock after the chapter's lessons AND its money move are done.
 // Tools not listed here are always available.
 export const MONEY_TOOLS = {
+  recurring: { label: 'Recurring Bills', chapter: 'money-in', blurb: 'Spot the charges that repeat every month.' },
+  spending: { label: 'Spending Breakdown', chapter: 'money-out', blurb: 'See your spending by category and week.' },
   calendar: { label: 'Financial Calendar', chapter: 'money-out', blurb: 'See every bill and paycheck on a calendar, with your projected balance each day.' },
   cashflow: { label: 'Cashflow Map', chapter: 'build-budget', blurb: 'Watch your income flow into needs, wants and savings.' },
   networth: { label: 'Net Worth Breakdown', chapter: 'banking', blurb: 'See all your accounts together: what you own and what you owe.' },
