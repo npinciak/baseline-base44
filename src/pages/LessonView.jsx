@@ -42,7 +42,6 @@ export default function LessonView() {
   }, [moduleId]);
 
   useEffect(() => {
-    // For PayloadCMS question content, options come from the correct_answer field
     setSelectedAnswer(null);
     setAnswered(false);
   }, [currentIndex, lessons]);
@@ -262,12 +261,11 @@ export default function LessonView() {
                 })}
               </div>
             ) : (
-              /* multiple_choice — treat correct_answer as one of the options; generate plausible distractors from explanation */
+              /* multiple_choice — answer choices come from the curriculum */
               <div className="space-y-3">
                 {(() => {
                   const correct = currentLesson.correct_answer || '';
-                  // Build options: correct answer + "False" / "I don't know" as distractors for single-answer questions
-                  const opts = correct ? [correct, 'I\'m not sure', 'None of the above'] : [];
+                  const opts = currentLesson.options?.length ? currentLesson.options : correct ? [correct] : [];
                   return opts.map((opt) => {
                     let buttonClass = 'border-white/10 bg-white/[0.03] text-white hover:border-[#2EA0FD]/60 hover:bg-white/[0.06]';
                     if (answered) {

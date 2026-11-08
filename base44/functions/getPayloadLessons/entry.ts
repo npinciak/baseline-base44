@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
+import { EDITS, EXTRA_SCREENS, NEW_UNITS } from './curriculumContent.ts';
 
 // Convert a Lexical JSON string to plain HTML
 function lexicalToHtml(raw: string | null | undefined): string {
@@ -67,6 +68,41 @@ function toScreen(c: any, unitId: string) {
   };
 }
 
+const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const paras = (v: string | string[]) => [].concat(v as any).map((t: string) => `<p>${esc(t)}</p>`).join('');
+const parseChoices = (list: string[]) => ({
+  options: list.map(c => c.replace(/^\*/, '')),
+  correct: (list.find(c => c.startsWith('*')) || '').slice(1),
+});
+
+// Apply audited copy and attach real answer choices (CMS choices unless the edit replaces them).
+function applyEdit(screen: any, edit: any, cmsChoices: any[] = []) {
+  const s = { ...screen };
+  if (s.content_type === 'question') {
+    if (edit?.choices) {
+      const { options, correct } = parseChoices(edit.choices);
+      s.options = options; s.correct_answer = correct;
+    } else if (cmsChoices.length) {
+      s.options = cmsChoices.map(c => c.text);
+      s.correct_answer = cmsChoices.find(c => c.is_correct)?.text ?? s.correct_answer;
+    }
+  }
+  if (!edit) return s;
+  if (edit.title) s.title = edit.title;
+  if (edit.text) s.text_content = paras(edit.text);
+  if (edit.q) s.question_prompt = paras(edit.q);
+  if (edit.e) s.explanation = paras(edit.e);
+  if (edit.k) s.takeaway_text = paras(edit.k);
+  return s;
+}
+
+// Build a screen that doesn't exist in the CMS from a spec in curriculumContent.
+function fromSpec(spec: any, id: string, unitId: string) {
+  const content_type = spec.type === 'question' ? 'question' : spec.type === 'takeaway' ? 'key_takeaway' : 'text_card';
+  const base = toScreen({ id, title: spec.title, content_type, points: content_type === 'question' ? 100 : content_type === 'text_card' ? 1 : 5, takeaway_icon: 'lightbulb' }, unitId);
+  return applyEdit({ ...base, question_type: content_type === 'question' ? 'multiple_choice' : null }, spec);
+}
+
 // Returns one "module" per lesson unit: a text card plus the question and takeaway that follow it.
 // Chapter grouping and order live in the app's curriculum map.
 export default async function(req) {
@@ -84,33 +120,49 @@ export default async function(req) {
       'Content-Type': 'application/json',
     };
 
-    const res = await fetch(`${supabaseUrl}/rest/v1/lesson_contents?order=id.asc`, { headers });
-    const contents = await res.json();
+    const [contents, choices] = await Promise.all([
+      fetch(`${supabaseUrl}/rest/v1/lesson_contents?order=id.asc`, { headers, signal: AbortSignal.timeout(15000) }).then(r => r.json()),
+      fetch(`${supabaseUrl}/rest/v1/lesson_contents_choices?order=_parent_id.asc,_order.asc`, { headers, signal: AbortSignal.timeout(15000) }).then(r => r.json()),
+    ]);
     if (!Array.isArray(contents)) return Response.json({ modules: [] });
+    const choicesByParent: Record<string, any[]> = {};
+    for (const ch of Array.isArray(choices) ? choices : []) (choicesByParent[ch._parent_id] ||= []).push(ch);
 
-    // Group every screen under the nearest preceding text card (regardless of status),
-    // then keep only published screens of units whose text card is published.
+    // Group every screen under the nearest preceding text card. The whole audited curriculum is live,
+    // so draft status in the CMS no longer hides a unit.
     const units: { head: any; items: any[] }[] = [];
     for (const c of contents) {
       if (c.content_type === 'text_card') units.push({ head: c, items: [] });
       if (units.length) units[units.length - 1].items.push(c);
     }
 
-    const modules = units
-      .filter(u => u.head.status === 'published')
-      .map(({ head, items }, idx) => {
-        const unitId = String(head.id);
-        const published = items.filter(c => c.status === 'published');
-        return {
-          id: unitId,
-          title: head.title || 'Untitled Lesson',
-          description: '',
-          order_index: idx,
-          xp_reward: published.reduce((sum, c) => sum + (c.points || 5), 0) || 100,
-          is_published: true,
-          lessons: published.map(c => toScreen(c, unitId)),
-        };
-      });
+    const cmsModules = units.map(({ head, items }) => {
+      const unitId = String(head.id);
+      const screens = items.map(c => applyEdit(toScreen(c, unitId), EDITS[c.id], choicesByParent[c.id]));
+      (EXTRA_SCREENS[head.id] || []).forEach((s, i) => screens.push(fromSpec(s, `${unitId}-x${i + 1}`, unitId)));
+      return {
+        id: unitId,
+        title: EDITS[head.id]?.title || head.title || 'Untitled Lesson',
+        lessons: screens,
+      };
+    });
+    const newModules = NEW_UNITS.map(u => ({
+      id: u.id,
+      title: u.title,
+      lessons: [
+        fromSpec({ type: 'text', title: u.title, text: u.text }, `${u.id}-1`, u.id),
+        fromSpec({ type: 'question', title: `${u.title} Quiz`, q: u.q, choices: u.choices, e: u.e }, `${u.id}-2`, u.id),
+        fromSpec({ type: 'takeaway', title: `${u.title} - Key Takeaway`, k: u.k }, `${u.id}-3`, u.id),
+      ],
+    }));
+
+    const modules = [...cmsModules, ...newModules].map((m, idx) => ({
+      ...m,
+      description: '',
+      order_index: idx,
+      xp_reward: m.lessons.reduce((sum, l) => sum + l.xp_reward, 0),
+      is_published: true,
+    }));
 
     return Response.json({ modules });
   } catch (error) {

@@ -1,21 +1,21 @@
 // BasePath curriculum: chapters reference CMS lesson units by the id of their opening text card.
 // Each unit keeps its CMS point → question → takeaway cadence. Order here is the learning order.
 export const CHAPTERS = [
-  { id: 'money-in', title: 'Money In', topic: 'budgeting', units: [34, 40, 37, 175],
+  { id: 'money-in', title: 'Money In', topic: 'budgeting', units: [34, 40, 37, 'bl-paycheck'],
     move: { key: 'find-take-home', title: 'Find your monthly take-home pay', detail: 'Check your income and note what actually lands in your account each month.', tool: 'overview' } },
   { id: 'money-out', title: 'Money Out', topic: 'budgeting', units: [43, 46, 49, 169],
     move: { key: 'list-fixed-bills', title: 'List your fixed bills', detail: 'Review your recurring charges and confirm which ones hit every month.', tool: 'recurring' } },
   { id: 'needs-wants', title: 'Needs vs. Wants', topic: 'budgeting', units: [187, 28, 190, 193],
     move: { key: 'spot-a-want', title: "Spot one want in last month's spending", detail: 'Open your spending breakdown and pick one purchase that was a want, not a need.', tool: 'spending' } },
-  { id: 'build-budget', title: 'Build Your Budget', topic: 'budgeting', units: [25, 31, 172],
+  { id: 'build-budget', title: 'Build Your Budget', topic: 'budgeting', units: [25, 31, 172, 175],
     move: { key: 'sort-50-30-20', title: 'Sort your spending into 50/30/20', detail: 'Compare your needs, wants and savings against the 50/30/20 split.', tool: 'spending' } },
   { id: 'banking', title: 'Banking Basics', topic: 'saving', units: [100, 103, 106, 94],
     move: { key: 'connect-bank', title: 'Connect your bank account', detail: 'Link your checking or savings account so your real numbers show up.', tool: 'overview' } },
   { id: 'goals', title: 'Setting Goals', topic: 'saving', units: [19, 22, 16],
     move: { key: 'create-goal', title: 'Create your first savings goal', detail: 'Pick something you want and give it a target amount and date.', tool: 'goals' } },
-  { id: 'saving-smart', title: 'Saving Smart', topic: 'saving', units: [178, 181, 184],
+  { id: 'saving-smart', title: 'Saving Smart', topic: 'saving', units: [178, 'bl-insurance', 181, 184],
     move: { key: 'first-deposit', title: 'Make a deposit toward your goal', detail: 'Move any amount, even $5, into savings and log it on your goal.', tool: 'goals' } },
-  { id: 'growth', title: 'Interest & Growth', topic: 'investing', units: [91, 97, 79],
+  { id: 'growth', title: 'Interest & Growth', topic: 'investing', units: [91, 97, 79, 'bl-retirement'],
     move: { key: 'try-scenario', title: 'Run a "what if" forecast', detail: 'Shift your spending in the forecast and see how your future balance changes.', tool: 'forecast' } },
   { id: 'credit-101', title: 'Credit 101', topic: 'credit', units: [52, 58, 196, 208],
     move: { key: 'credit-rules', title: 'Write your personal credit rules', detail: "Write down when you will, and won't, use credit." } },
@@ -25,7 +25,7 @@ export const CHAPTERS = [
     move: { key: 'check-basescore', title: 'Check your BaseScore', detail: 'See where you stand today and which area to work on first.', tool: 'profile' } },
   { id: 'score-deep-dive', title: 'Your Score, Up Close', topic: 'credit', units: [109, 112, 199, 202],
     move: { key: 'check-utilization', title: 'Check your credit utilization', detail: 'If you have a card, divide the balance by the limit. Aim for under 30%.', tool: 'networth' } },
-  { id: 'building-credit', title: 'Building Credit', topic: 'credit', units: [205, 211, 214],
+  { id: 'building-credit', title: 'Building Credit', topic: 'credit', units: [205, 211, 214, 'bl-identity'],
     move: { key: 'starter-credit-plan', title: 'Choose a starter credit plan', detail: 'Decide which first step fits you: authorized user, secured card, or student card.' } },
   { id: 'investing-basics', title: 'Investing Basics', topic: 'investing', units: [73, 76, 118, 121],
     move: { key: 'pick-a-company', title: 'Pick a company you would want to own', detail: 'Choose a company you use every week and look up whether it pays a dividend.' } },
@@ -41,7 +41,7 @@ export const CHAPTERS = [
     move: { key: 'closing-checklist', title: 'Make a closing-day checklist', detail: 'List every cost and step between making an offer and getting the keys.' } },
 ];
 
-// Advanced Money tools: unlock after the chapter's lessons AND its money move are done.
+// Advanced Money tools: unlock once the chapter's money move is done (which requires its lessons).
 // Tools not listed here are always available.
 export const MONEY_TOOLS = {
   recurring: { label: 'Recurring Bills', chapter: 'money-in', blurb: 'Spot the charges that repeat every month.' },
@@ -90,5 +90,7 @@ export const orderedModules = (chapters) => chapters.flatMap((c) => c.modules);
 export function toolAccess(key, chapters) {
   const tool = MONEY_TOOLS[key];
   const chapter = chapters.find((c) => c.id === tool.chapter);
-  return { ...tool, chapter, unlocked: !!chapter && chapter.learned && chapter.moveDone };
+  // The move can only be done once the chapter is learned, so a done move keeps the tool unlocked
+  // even if new lessons are later added to that chapter.
+  return { ...tool, chapter, unlocked: !!chapter && chapter.moveDone };
 }
