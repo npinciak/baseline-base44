@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import { Sparkles } from 'lucide-react';
 import ConnectBankButton from '@/components/ConnectBankButton';
+import GoalsBanner from '@/components/money/GoalsBanner';
 import FinancialCalendar from '@/components/FinancialCalendar';
 import AmbientBackdrop from '@/components/dashboard/AmbientBackdrop';
 import ForecastChart from '@/components/money/ForecastChart';
@@ -122,6 +123,8 @@ export default function Money() {
           </div>
           {!isSample && <ConnectBankButton onConnected={load} />}
         </motion.div>
+
+        <GoalsBanner learning={learning} />
 
         {isSample && (
           <motion.div variants={itemVariants} className="flex flex-wrap items-center justify-between gap-4 px-5 py-4 bg-[#2EA0FD]/10 border border-[#2EA0FD]/30 rounded-2xl">

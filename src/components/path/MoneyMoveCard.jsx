@@ -34,9 +34,9 @@ export default function MoneyMoveCard({ chapter, onComplete }) {
               Open tool <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           )}
-          <button onClick={markDone} disabled={saving} className="px-4 py-2 rounded-full bg-[#2EFD7A] text-black text-sm font-semibold hover:bg-[#2EFD7A]/90 disabled:opacity-50 transition-all">
+          {move.key !== 'create-emergency-fund' && <button onClick={markDone} disabled={saving} className="px-4 py-2 rounded-full bg-[#2EFD7A] text-black text-sm font-semibold hover:bg-[#2EFD7A]/90 disabled:opacity-50 transition-all">
             {saving ? 'Saving…' : 'I did it'}
-          </button>
+          </button>}
         </div>
       )}
       {chapter.moveDone && <p className="text-sm text-[#2EFD7A] font-medium mt-3">Done. Nice work.</p>}

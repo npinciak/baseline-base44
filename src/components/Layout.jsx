@@ -37,7 +37,6 @@ export default function Layout() {
     { to: '/dashboard', icon: LayoutDashboard, label: 'Home', iconColor: 'text-[#2EA0FD]' },
     { to: '/money', icon: Wallet, label: 'Money', iconColor: 'text-[#2EFD7A]' },
     { to: '/basecamp', icon: ShoppingBag, label: 'Basecamp', iconColor: 'text-[#2EA0FD]' },
-    { to: '/goals', icon: Target, label: 'Goals', iconColor: 'text-[#2EFD7A]' },
     { to: '/profile', icon: User, label: 'Profile', iconColor: 'text-[#2EA0FD]' },
   ];
 

@@ -1,7 +1,7 @@
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
-import { BrowserRouter as Router, Route, Routes, Outlet } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Outlet, Navigate } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import ProtectedRoute from '@/components/ProtectedRoute';
@@ -18,7 +18,8 @@ import Onboarding from './pages/Onboarding';
 import LessonView from './pages/LessonView';
 import Profile from './pages/Profile';
 import Admin from './pages/Admin';
-import Goals from './pages/Goals';
+import Mfa from '@/pages/Mfa';
+import LegacyGoalRedirect from '@/components/money/LegacyGoalRedirect';
 import GoalDetail from './pages/GoalDetail';
 import Dashboard from './pages/Dashboard';
 import Money from './pages/Money';
@@ -46,6 +47,7 @@ const AuthenticatedApp = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/mfa" element={<Mfa />} />
       <Route element={<ProtectedRoute />}>
         <Route path="/onboarding" element={<Onboarding />} />
         <Route element={<Layout />}>
@@ -53,8 +55,9 @@ const AuthenticatedApp = () => {
           <Route path="/lesson/:moduleId" element={<LessonView />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/admin" element={<Admin />} />
-          <Route path="/goals" element={<Goals />} />
-          <Route path="/goals/:goalId" element={<GoalDetail />} />
+          <Route path="/goals" element={<Navigate to="/money#goals" replace />} />
+          <Route path="/goals/:goalId" element={<LegacyGoalRedirect />} />
+          <Route path="/money/goals/:goalId" element={<GoalDetail />} />
           <Route path="/money" element={<Money />} />
           <Route path="/basecamp" element={<Basecamp />} />
         </Route>

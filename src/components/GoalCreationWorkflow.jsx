@@ -67,7 +67,7 @@ export default function GoalCreationWorkflow({ user, onClose, onCreated }) {
       });
 
       onCreated();
-      navigate('/goals');
+      navigate('/money#goals');
     } catch (err) {
       setSubmitError('Something went wrong. Please try again.');
     } finally {

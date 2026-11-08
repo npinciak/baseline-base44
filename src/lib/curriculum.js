@@ -2,7 +2,7 @@
 // Each unit keeps its CMS point → question → takeaway cadence. Order here is the learning order.
 export const CHAPTERS = [
   { id: 'money-in', title: 'Money In', topic: 'budgeting', units: [34, 40, 37, 'bl-paycheck'],
-    move: { key: 'find-take-home', title: 'Find your monthly take-home pay', detail: 'Check your income and note what actually lands in your account each month.', tool: 'overview' } },
+    move: { key: 'create-emergency-fund', title: 'Set up your emergency fund', detail: 'Create a savings goal for unexpected expenses on Money. Choose a target and start building your cushion.', tool: 'goals' } },
   { id: 'money-out', title: 'Money Out', topic: 'budgeting', units: [43, 46, 49, 169],
     move: { key: 'list-fixed-bills', title: 'List your fixed bills', detail: 'Review your recurring charges and confirm which ones hit every month.', tool: 'recurring' } },
   { id: 'needs-wants', title: 'Needs vs. Wants', topic: 'budgeting', units: [187, 28, 190, 193],
@@ -44,6 +44,7 @@ export const CHAPTERS = [
 // Advanced Money tools: unlock once the chapter's money move is done (which requires its lessons).
 // Tools not listed here are always available.
 export const MONEY_TOOLS = {
+  goals: { label: 'Savings Goals', chapter: 'money-in', blurb: 'Build your emergency fund and track your savings goals.' },
   recurring: { label: 'Recurring Bills', chapter: 'money-in', blurb: 'Spot the charges that repeat every month.' },
   spending: { label: 'Spending Breakdown', chapter: 'money-out', blurb: 'See your spending by category and week.' },
   calendar: { label: 'Financial Calendar', chapter: 'money-out', blurb: 'See every bill and paycheck on a calendar, with your projected balance each day.' },
@@ -55,7 +56,7 @@ export const MONEY_TOOLS = {
 export const TOOL_LINKS = {
   overview: '/money#overview', recurring: '/money#recurring', spending: '/money#spending',
   networth: '/money#networth', forecast: '/money#forecast', calendar: '/money#calendar',
-  goals: '/goals', profile: '/profile',
+  goals: '/money#goals', profile: '/profile',
 };
 
 export function buildChapters(modules, progress, moves) {
@@ -78,7 +79,8 @@ export function buildChapters(modules, progress, moves) {
       ...c, number: i + 1, modules: units, lessonsDone, comingSoon: units.length === 0,
       learned: units.length > 0 && lessonsDone === units.length,
       moveDone: !!c.move && moveSet.has(c.move.key),
-      unlocked: prev ? prev.unlocked && prev.lessonsDone > 0 : true,
+      legacyTakeHomeDone: c.id === 'money-in' && moveSet.has('find-take-home'),
+      unlocked: prev ? prev.unlocked && prev.lessonsDone > 0 && (prev.id !== 'money-in' || prev.moveDone) : true,
     };
     if (!chapter.comingSoon) prev = chapter;
     return chapter;
@@ -92,5 +94,5 @@ export function toolAccess(key, chapters) {
   const chapter = chapters.find((c) => c.id === tool.chapter);
   // The move can only be done once the chapter is learned, so a done move keeps the tool unlocked
   // even if new lessons are later added to that chapter.
-  return { ...tool, chapter, unlocked: !!chapter && chapter.moveDone };
+  return { ...tool, chapter, unlocked: !!chapter && (chapter.moveDone || (key === 'recurring' && chapter.legacyTakeHomeDone)) };
 }
