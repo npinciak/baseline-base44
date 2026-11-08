@@ -1,6 +1,6 @@
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { User, Flame, Coins, LogOut, Shield, Target, LayoutDashboard, Wallet, ShoppingBag } from 'lucide-react';
+import { User, Flame, Coins, LogOut, Shield, Target, LayoutDashboard, Wallet, ShoppingBag, BookOpen } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export default function Layout() {
@@ -23,11 +23,13 @@ export default function Layout() {
   }, []);
 
   const [walletBalance, setWalletBalance] = useState(null);
+  const [isOwner, setIsOwner] = useState(false);
 
   useEffect(() => {
     if (!user) return;
     base44.entities.UserStats.filter({ user_id: user.id }).then(r => r[0] && setStats(r[0]));
     base44.functions.invoke('getWallet', {}).then(r => setWalletBalance(r?.data?.balance ?? 0)).catch(() => {});
+    base44.functions.invoke('curriculumReview', { mode: 'check' }).then(r => setIsOwner(!!r?.data?.allowed)).catch(() => {});
   }, [user]);
 
   const xpForLevel = (level) => level * 200;
@@ -115,6 +117,19 @@ export default function Layout() {
             >
               <Shield className="w-5 h-5" />
               Admin
+            </NavLink>
+          )}
+          {isOwner && (
+            <NavLink
+              to="/curriculum-review"
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 border ${
+                  isActive ? 'bg-white/10 text-white border-white/50' : 'text-white/50 border-transparent hover:text-white hover:bg-white/5'
+                }`
+              }
+            >
+              <BookOpen className="w-5 h-5 text-[#2EA0FD]" />
+              Curriculum
             </NavLink>
           )}
         </nav>

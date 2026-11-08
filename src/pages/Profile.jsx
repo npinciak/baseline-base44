@@ -6,6 +6,7 @@ import BaseScoreSection from '@/components/profile/BaseScoreSection';
 import FamilySection from '@/components/profile/FamilySection';
 import JourneySection from '@/components/profile/JourneySection';
 import AmbientBackdrop from '@/components/dashboard/AmbientBackdrop';
+import { LESSON_REWARD } from '@/lib/coinEconomy';
 
 const LEVEL_TITLES = ['Rookie', 'Learner', 'Saver', 'Investor', 'Planner', 'Strategist', 'Expert', 'Master', 'Guru', 'Legend'];
 
@@ -150,7 +151,7 @@ export default function Profile() {
 
         {/* Family Dashboard (For Parents) */}
         <motion.div variants={itemVariants} className="mb-6">
-          <FamilySection profile={profile} user={user} lessonsThisWeek={lessonsThisWeek} topicTags={recentTopicTags} goal={activeGoal} />
+          <FamilySection profile={profile} user={user} />
         </motion.div>
 
         {/* Badges */}
@@ -194,7 +195,7 @@ export default function Profile() {
                 <div key={mod.id} className="flex items-center gap-3 p-3 bg-white/[0.03] border border-white/10 rounded-xl">
                   <CheckCircle className="w-5 h-5 text-[#2EFD7A] shrink-0" />
                   <span className="text-sm font-medium text-white">{mod.title}</span>
-                  <span className="ml-auto text-xs text-[#2EFD7A] font-semibold">+{mod.xp_reward} BC</span>
+                  <span className="ml-auto text-xs text-[#2EFD7A] font-semibold">+{LESSON_REWARD} BC</span>
                 </div>
               ))}
             </div>

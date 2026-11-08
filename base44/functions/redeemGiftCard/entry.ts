@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.31';
+import { GIFT_CARD_PRICES } from '../../shared/coinEconomy.ts';
 
 function isUuid(value) {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
@@ -10,8 +11,10 @@ Deno.serve(async (req) => {
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { giftCardId, brand, amountUsd, coinsCost } = await req.json();
-    if (!giftCardId || !coinsCost) return Response.json({ error: 'Missing required fields' }, { status: 400 });
+    const { giftCardId } = await req.json().catch(() => ({}));
+    const card = GIFT_CARD_PRICES[giftCardId];
+    if (!card) return Response.json({ error: 'Unknown reward' }, { status: 400 });
+    const { brand, amount: amountUsd, coinsCost } = card;
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');

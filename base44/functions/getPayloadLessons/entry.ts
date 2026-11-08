@@ -1,5 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 import { EDITS, EXTRA_SCREENS, NEW_UNITS } from './curriculumContent.ts';
+import { LESSON_REWARD } from '../../shared/coinEconomy.ts';
 
 // Convert a Lexical JSON string to plain HTML
 function lexicalToHtml(raw: string | null | undefined): string {
@@ -160,7 +161,7 @@ export default async function(req) {
       ...m,
       description: '',
       order_index: idx,
-      xp_reward: m.lessons.reduce((sum, l) => sum + l.xp_reward, 0),
+      xp_reward: LESSON_REWARD,
       is_published: true,
     }));
 

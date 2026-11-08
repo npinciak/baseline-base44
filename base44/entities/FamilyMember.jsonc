@@ -1,0 +1,72 @@
+{
+  "name": "FamilyMember",
+  "type": "object",
+  "properties": {
+    "family_id": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "display_name": {
+      "type": "string"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "Set once the invited person joins"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "parent",
+        "child"
+      ],
+      "enumColors": [
+        "blue",
+        "green"
+      ],
+      "default": "child"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "invited",
+        "active"
+      ],
+      "enumColors": [
+        "yellow",
+        "green"
+      ],
+      "default": "invited"
+    }
+  },
+  "required": [
+    "family_id",
+    "email",
+    "display_name",
+    "role",
+    "status"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

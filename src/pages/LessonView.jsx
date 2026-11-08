@@ -52,19 +52,17 @@ export default function LessonView() {
   const handleComplete = async () => {
     if (!currentLesson || !user) return;
 
-    const xp = currentLesson.xp_reward || 20;
     const alreadyCompleted = isCompleted(currentLesson.id);
+    const lessonFinished = lessons.every(l => l.id === currentLesson.id || isCompleted(l.id));
 
     if (!alreadyCompleted) {
-      setXpEarned(prev => prev + xp);
-
       // Record progress
       await base44.entities.UserProgress.create({
         user_id: user.id,
         lesson_id: currentLesson.id,
         module_id: moduleId,
         completed: true,
-        xp_earned: xp,
+        xp_earned: 0,
         score: score,
         completed_at: new Date().toISOString(),
       });
@@ -72,8 +70,13 @@ export default function LessonView() {
       // Update local progress state so isCompleted reflects immediately
       setProgress(prev => [...prev, { lesson_id: currentLesson.id, module_id: moduleId, completed: true }]);
 
-      // Credit Supabase wallet
-      await base44.functions.invoke('creditWallet', { amount: xp }).catch(() => {});
+      // The whole lesson is done: credit the lesson reward once (amount is set server-side)
+      let xp = 0;
+      if (lessonFinished) {
+        const res = await base44.functions.invoke('creditWallet', { moduleId }).catch(() => null);
+        xp = res?.data?.awarded || 0;
+        setXpEarned(xp);
+      }
 
       // Update UserStats
       const statsArr = await base44.entities.UserStats.filter({ user_id: user.id });
@@ -140,9 +143,9 @@ export default function LessonView() {
           <div className="bg-white/[0.03] border border-white/10 backdrop-blur-sm rounded-2xl p-6 mb-6 shadow-[0_0_40px_-10px_rgba(46,160,253,0.3)]">
             <div className="flex items-center justify-center gap-2 text-3xl font-display font-extrabold text-[#2EA0FD]">
               <Coins className="w-8 h-8" />
-              +{xpEarned} Base Coins
+              {xpEarned > 0 ? `+${xpEarned} Base Coins` : 'Coins already earned'}
             </div>
-            <p className="text-sm text-white/60 mt-1">added to your profile</p>
+            <p className="text-sm text-white/60 mt-1">{xpEarned > 0 ? 'added to your wallet' : 'Each lesson pays out once'}</p>
           </div>
           {chapterLearned && chapter.move && (
             <div className="text-left bg-[#2EFD7A]/[0.06] border border-[#2EFD7A]/30 rounded-2xl p-5 mb-6">

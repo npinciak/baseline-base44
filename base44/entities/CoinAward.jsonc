@@ -1,0 +1,50 @@
+{
+  "name": "CoinAward",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "module_id": {
+      "type": "string",
+      "description": "Lesson (unit) the coins were awarded for"
+    },
+    "amount": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "user_id",
+    "module_id",
+    "amount"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "$or": [
+        {
+          "data.user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -9,10 +9,10 @@ export default function GoalsBanner({ learning }) {
   const state = useMoneyGoals(learning);
   const available = state.unlocked || state.goals.length > 0;
   return (
-    <section id="goals" className="scroll-mt-6 min-w-0 rounded-3xl bg-card/60 border border-border p-4 sm:p-5 space-y-3 text-foreground">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-base font-semibold">Savings goals</h2>
-        {available && !state.loading && <Button disabled={!!state.error} onClick={state.open}>{state.emergency || !state.unlocked ? 'New goal' : 'Set up emergency fund'}</Button>}
+    <section id="goals" className="scroll-mt-6 min-w-0 rounded-2xl bg-card/60 border border-border p-3 sm:p-4 space-y-2 text-foreground">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h2 className="text-sm font-semibold">Savings goals</h2>
+        {available && !state.loading && <Button size="sm" disabled={!!state.error} onClick={state.open}>{state.emergency || !state.unlocked ? 'New goal' : 'Set up emergency fund'}</Button>}
       </div>
       {state.loading ? <p role="status" className="text-muted-foreground">Loading your goals…</p> : <>
         {state.error && !state.creating && <div role="alert"><p>{state.error}</p><Button variant="outline" onClick={state.load}>Try again</Button></div>}

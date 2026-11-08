@@ -1,72 +1,41 @@
 import { Users } from 'lucide-react';
+import useFamily from '@/hooks/useFamily';
+import FamilySwitchCard from '@/components/profile/FamilySwitchCard';
+import FamilyInviteForm from '@/components/profile/FamilyInviteForm';
+import FamilyMemberRow from '@/components/profile/FamilyMemberRow';
+import PendingInvites from '@/components/profile/PendingInvites';
 
-export default function FamilySection({ profile, user, lessonsThisWeek, topicTags, goal }) {
-  const parentInitial = profile?.first_name?.[0] || user?.full_name?.[0] || 'P';
-  const familyName = profile?.last_name ? `The ${profile.last_name} Family` : 'Your Family';
-  const saved = goal?.current_amount || 0;
-  const target = goal?.target_amount || 20000;
-  const pct = Math.min(100, Math.round((saved / target) * 100));
+export default function FamilySection({ profile, user }) {
+  const fam = useFamily();
+  const isParent = fam.me?.role === 'parent';
+  const defaultName = profile?.last_name ? `The ${profile.last_name} Family` : 'My Family';
+  const leave = () => window.confirm(isParent ? 'Leave this family account? If you are the only parent, the family will be closed.' : 'Leave this family account?') && fam.run({ action: 'remove', member_id: fam.members.find(m => m.is_me)?.id });
 
   return (
     <div className="bg-white/[0.03] border border-white/10 backdrop-blur-sm rounded-3xl p-6 md:p-8">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-white/60 text-xs font-light tracking-widest uppercase">For Parents · Family Dashboard</h3>
+      <div className="flex items-center justify-between mb-5">
+        <h3 className="text-white/60 text-xs font-light tracking-widest uppercase">{fam.family ? 'Family Account' : 'Account Type'}</h3>
         <Users className="w-4 h-4 text-white/30" />
       </div>
-
-      {/* Family card */}
-      <div className="flex items-center gap-3 mb-5">
-        <div className="flex -space-x-2">
-          <div className="w-9 h-9 rounded-full bg-[#2EA0FD] border-2 border-black flex items-center justify-center text-xs font-bold text-black">{parentInitial}</div>
-          <div className="w-9 h-9 rounded-full bg-[#2BF9E9] border-2 border-black flex items-center justify-center text-xs font-bold text-black">K</div>
-        </div>
-        <div>
-          <p className="text-white text-sm font-bold">{familyName}</p>
-          <p className="text-white/40 text-xs">Parent + 1 child</p>
-        </div>
-      </div>
-
-      {/* Child progress */}
-      <div className="bg-[#2EFD7A]/10 border border-[#2EFD7A]/30 rounded-2xl p-4 mb-4">
-        <div className="flex items-center gap-2 mb-2">
-          <div className="w-7 h-7 rounded-full bg-[#2EFD7A] flex items-center justify-center text-[10px] font-bold text-black">K</div>
-          <div>
-            <p className="text-white text-sm font-bold">Kyle's Progress</p>
-            <p className="text-[#2EFD7A] text-xs">{lessonsThisWeek} lesson{lessonsThisWeek === 1 ? '' : 's'} this week 🔥</p>
+      {fam.loading ? <p role="status" className="text-white/40 text-sm">Loading…</p> : <>
+        <PendingInvites pending={fam.pending} busy={fam.busy} onRespond={(action, id) => fam.run({ action, member_id: id })} />
+        {!fam.family ? (
+          <FamilySwitchCard defaultName={defaultName} busy={fam.busy} onSwitch={name => fam.run({ action: 'create', name })} />
+        ) : (
+          <div className="space-y-4">
+            <div>
+              <p className="text-white text-lg font-bold">{fam.family.name}</p>
+              <p className="text-white/40 text-xs">{fam.members.length} member{fam.members.length === 1 ? '' : 's'} · You're a {fam.me.role}</p>
+            </div>
+            <div className="space-y-2">
+              {fam.members.map(m => <FamilyMemberRow key={m.id} member={m} isParent={isParent} busy={fam.busy} onRemove={mem => window.confirm(`Remove ${mem.display_name} from the family?`) && fam.run({ action: 'remove', member_id: mem.id })} />)}
+            </div>
+            {isParent && <FamilyInviteForm busy={fam.busy} onInvite={form => fam.run({ action: 'invite', ...form })} />}
+            <button onClick={leave} disabled={fam.busy} className="text-xs text-white/40 hover:text-white transition-colors">Leave family account</button>
           </div>
-        </div>
-        <div className="flex gap-1.5">
-          {(topicTags.length > 0 ? topicTags : ['Budget', 'Saving', 'Credit']).slice(0, 3).map((tag, i) => (
-            <span key={tag} className={`text-[10px] px-2 py-0.5 rounded-full font-bold capitalize ${i === 0 ? 'bg-[#2EFD7A] text-black' : 'bg-white/10 text-white/50'}`}>{tag}</span>
-          ))}
-        </div>
-      </div>
-
-      {/* Parent nudge */}
-      <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-4 mb-4">
-        <p className="text-white/40 text-[10px] uppercase tracking-widest mb-1.5">Parent Nudge</p>
-        <p className="text-white text-sm font-semibold mb-3">"Great job finishing this week's lessons! 🎉"</p>
-        <div className="flex gap-2">
-          <button className="flex-1 text-center py-2 rounded-lg bg-[#2EFD7A]/15 text-[#2EFD7A] text-xs font-bold hover:bg-[#2EFD7A]/25 transition-colors">Send Message</button>
-          <button className="flex-1 text-center py-2 rounded-lg bg-white/10 text-white/60 text-xs font-bold hover:bg-white/15 transition-colors">Add Goal</button>
-        </div>
-      </div>
-
-      {/* Shared goal */}
-      <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-4 mb-5">
-        <div className="flex justify-between items-center mb-1.5">
-          <p className="text-white text-sm font-semibold">🎓 {goal?.name || 'College Fund'}</p>
-          <span className="text-[#2EFD7A] text-xs font-bold">{pct}%</span>
-        </div>
-        <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
-          <div className="h-full bg-[#2EFD7A] rounded-full transition-all duration-700" style={{ width: `${pct}%` }} />
-        </div>
-        <p className="text-white/40 text-xs mt-1.5">${saved.toLocaleString()} of ${target.toLocaleString()}</p>
-      </div>
-
-      <button className="w-full py-3 rounded-full bg-white/10 hover:bg-white/15 text-white text-sm font-semibold transition-colors">
-        Manage Family
-      </button>
+        )}
+        {fam.error && <p role="alert" className="text-red-400 text-xs mt-3">{fam.error}</p>}
+      </>}
     </div>
   );
 }
