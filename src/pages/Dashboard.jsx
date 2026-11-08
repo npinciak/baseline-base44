@@ -11,6 +11,8 @@ import CreateGoalModal from '@/components/dashboard/CreateGoalModal';
 import StatsBar from '@/components/dashboard/StatsBar';
 import HabitPanel from '@/components/dashboard/HabitPanel';
 import AmbientBackdrop from '@/components/dashboard/AmbientBackdrop';
+import useLearningState from '@/hooks/useLearningState';
+import { orderedModules } from '@/lib/curriculum';
 
 const containerVariants = { hidden: {}, show: { transition: { staggerChildren: 0.12 } } };
 const itemVariants = {
@@ -25,9 +27,8 @@ export default function Dashboard() {
   const [profile, setProfile] = useState(null);
   const [stats, setStats] = useState(null);
   const [goals, setGoals] = useState([]);
-  const [modules, setModules] = useState([]);
-  const [progress, setProgress] = useState([]);
   const [loading, setLoading] = useState(true);
+  const learning = useLearningState();
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [showGoalModal, setShowGoalModal] = useState(false);
   const [goalForm, setGoalForm] = useState(EMPTY_FORM);
@@ -40,17 +41,13 @@ export default function Dashboard() {
       setUser(u);
       const profileRes = await base44.functions.invoke('getUserProfile', {}).catch(() => null);
       setProfile(profileRes?.data?.profile || null);
-      const [statsArr, goalsRes, modulesRes, prog] = await Promise.all([
+      const [statsArr, goalsRes] = await Promise.all([
         base44.entities.UserStats.filter({ user_id: u.id }),
         base44.functions.invoke('getSupabaseGoals', {}).catch(() => ({ data: { goals: [] } })),
-        base44.functions.invoke('getPayloadLessons', {}).catch(() => ({ data: { modules: [] } })),
-        base44.entities.UserProgress.filter({ user_id: u.id }),
       ]);
       if (statsArr.length === 0) { navigate('/onboarding'); return; }
       setStats(statsArr[0]);
       setGoals(goalsRes?.data?.goals || []);
-      setModules(modulesRes?.data?.modules || []);
-      setProgress(prog);
       setLoading(false);
     };
     init().catch(() => setLoading(false));
@@ -80,7 +77,7 @@ export default function Dashboard() {
     setSavingGoal(false);
   };
 
-  if (loading) {
+  if (loading || learning.loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-black">
         <div className="w-8 h-8 border-4 border-white/10 border-t-[#2EFD7A] rounded-full animate-spin" />
@@ -113,7 +110,7 @@ export default function Dashboard() {
         </motion.div>
 
         <motion.div variants={itemVariants} className="mb-10">
-          <HabitPanel modules={modules} progress={progress} goals={goals} />
+          <HabitPanel modules={orderedModules(learning.chapters)} progress={learning.progress} goals={goals} />
         </motion.div>
 
         {stats && (
@@ -204,7 +201,7 @@ export default function Dashboard() {
                 <h2 className="text-white/60 text-xs font-light tracking-widest uppercase mb-1">Learning Path</h2>
                 <p className="text-white text-lg font-light">Master personal finance <span className="font-extrabold">one lesson at a time</span></p>
               </div>
-              <WindingLearningPath modules={modules} progress={progress} />
+              <WindingLearningPath chapters={learning.chapters} onCompleteMove={learning.completeMove} />
             </motion.section>
           </div>
 

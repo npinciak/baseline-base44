@@ -1,0 +1,24 @@
+{
+  "name": "MoneyMoveCompletion",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "move_key": {
+      "type": "string",
+      "description": "Key of the money move from the curriculum map"
+    },
+    "chapter_id": {
+      "type": "string"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "user_id",
+    "move_key"
+  ]
+}

@@ -4,6 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
 import { ArrowRight, CheckCircle, Coins, X } from 'lucide-react';
 import AmbientBackdrop from '@/components/dashboard/AmbientBackdrop';
+import { CHAPTERS } from '@/lib/curriculum';
 
 export default function LessonView() {
   const { moduleId } = useParams();
@@ -19,6 +20,7 @@ export default function LessonView() {
   const [showCompletion, setShowCompletion] = useState(false);
   const [xpEarned, setXpEarned] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [allModules, setAllModules] = useState([]);
 
   useEffect(() => {
     const init = async () => {
@@ -26,10 +28,11 @@ export default function LessonView() {
       setUser(u);
       const [modulesRes, prog] = await Promise.all([
         base44.functions.invoke('getPayloadLessons', {}),
-        base44.entities.UserProgress.filter({ user_id: u.id, module_id: moduleId }),
+        base44.entities.UserProgress.filter({ user_id: u.id }),
       ]);
-      const allModules = modulesRes?.data?.modules || [];
-      const mod = allModules.find(m => m.id === moduleId);
+      const mods = modulesRes?.data?.modules || [];
+      setAllModules(mods);
+      const mod = mods.find(m => m.id === moduleId);
       setModule(mod || null);
       setLessons(mod?.lessons || []);
       setProgress(prog);
@@ -121,6 +124,11 @@ export default function LessonView() {
   }
 
   if (showCompletion) {
+    const chapter = CHAPTERS.find(c => c.units.map(String).includes(moduleId));
+    const chapterLearned = chapter && chapter.units
+      .map(id => allModules.find(m => m.id === String(id)))
+      .filter(Boolean)
+      .every(m => m.lessons.every(l => isCompleted(l.id)));
     return (
       <div className="relative min-h-screen bg-black flex items-center justify-center p-6 overflow-hidden">
         <AmbientBackdrop />
@@ -128,7 +136,7 @@ export default function LessonView() {
           <div className="w-24 h-24 rounded-full bg-[#2EFD7A]/15 border-4 border-[#2EFD7A] flex items-center justify-center mx-auto mb-6 shadow-[0_0_40px_rgba(46,253,122,0.35)]">
             <CheckCircle className="w-12 h-12 text-[#2EFD7A]" />
           </div>
-          <h2 className="text-3xl font-display font-extrabold mb-2 text-white">Module Complete!</h2>
+          <h2 className="text-3xl font-display font-extrabold mb-2 text-white">{chapterLearned ? 'Chapter Complete!' : 'Lesson Complete!'}</h2>
           <p className="text-white/60 mb-6">You've finished <strong className="text-white">{module?.title}</strong></p>
           <div className="bg-white/[0.03] border border-white/10 backdrop-blur-sm rounded-2xl p-6 mb-6 shadow-[0_0_40px_-10px_rgba(46,160,253,0.3)]">
             <div className="flex items-center justify-center gap-2 text-3xl font-display font-extrabold text-[#2EA0FD]">
@@ -137,6 +145,13 @@ export default function LessonView() {
             </div>
             <p className="text-sm text-white/60 mt-1">added to your profile</p>
           </div>
+          {chapterLearned && chapter.move && (
+            <div className="text-left bg-[#2EFD7A]/[0.06] border border-[#2EFD7A]/30 rounded-2xl p-5 mb-6">
+              <p className="text-[11px] tracking-widest uppercase font-semibold text-[#2EFD7A] mb-1">Money move unlocked</p>
+              <p className="text-white font-semibold">{chapter.move.title}</p>
+              <p className="text-white/60 text-sm mt-1">{chapter.move.detail}</p>
+            </div>
+          )}
           <button
             onClick={() => navigate('/dashboard')}
             className="w-full py-4 bg-[#2EFD7A] text-black rounded-2xl font-bold text-lg hover:bg-[#2EFD7A]/90 hover:scale-[1.02] active:scale-95 transition-all duration-200"
@@ -302,7 +317,7 @@ export default function LessonView() {
         >
           {isCompleted(currentLesson.id)
             ? (currentIndex < lessons.length - 1 ? 'Next' : 'Finish Review')
-            : (currentIndex < lessons.length - 1 ? currentLesson.text_cta || 'Continue' : 'Complete Module')}
+            : (currentIndex < lessons.length - 1 ? currentLesson.text_cta || 'Continue' : 'Complete Lesson')}
           <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
         </button>
       </motion.div>

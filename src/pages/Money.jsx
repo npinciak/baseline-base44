@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import { Sparkles } from 'lucide-react';
@@ -14,6 +15,9 @@ import AssetsBreakdown, { SAMPLE_ACCOUNTS } from '@/components/money/AssetsBreak
 import CategoryList from '@/components/money/CategoryList';
 import RecurringList from '@/components/money/RecurringList';
 import TransactionList from '@/components/money/TransactionList';
+import ToolGate from '@/components/money/ToolGate';
+import MoneySection from '@/components/money/MoneySection';
+import useLearningState from '@/hooks/useLearningState';
 import {
   CATEGORY_COLORS, CATEGORY_LABELS, normalizeMxTransaction, detectRecurring,
   summarize, weeklyCashflow, buildSampleTransactions, SAMPLE_BALANCE,
@@ -39,6 +43,8 @@ export default function Money() {
   const [transactions, setTransactions] = useState([]);
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const learning = useLearningState();
+  const location = useLocation();
 
   const load = useCallback(async () => {
     const [txRes, acctRes] = await Promise.all([
@@ -51,6 +57,13 @@ export default function Money() {
   }, []);
 
   useEffect(() => { load(); }, [load]);
+
+  const ready = !loading && !learning.loading;
+  useEffect(() => {
+    if (ready && location.hash) {
+      setTimeout(() => document.getElementById(location.hash.slice(1))?.scrollIntoView({ behavior: 'smooth' }), 300);
+    }
+  }, [ready, location.hash]);
 
   const isSample = transactions.length === 0;
   const sample = useMemo(() => buildSampleTransactions(), []);
@@ -70,13 +83,15 @@ export default function Money() {
   }, [expenses]);
   const grandTotal = categoryList.reduce((s, c) => s + c.total, 0);
 
-  if (loading) {
+  if (!ready) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-black">
         <div className="w-8 h-8 border-4 border-white/10 border-t-[#2EA0FD] rounded-full animate-spin" />
       </div>
     );
   }
+
+  const gate = { chapters: learning.chapters, onCompleteMove: learning.completeMove };
 
   return (
     <div className="relative min-h-screen bg-black px-4 py-8 overflow-hidden">
@@ -101,37 +116,46 @@ export default function Money() {
         )}
 
         <motion.div variants={itemVariants}>
-          <MoneyKpis balance={balance} income={summary.income} spent={summary.spent} days={summary.days} />
+          <MoneySection id="overview" kicker="Where you stand" title="Your money today">
+            <MoneyKpis balance={balance} income={summary.income} spent={summary.spent} days={summary.days} />
+            <div id="networth" className="scroll-mt-6">
+              <ToolGate tool="networth" {...gate}>
+                <AssetsBreakdown accounts={isSample ? SAMPLE_ACCOUNTS : accounts} />
+              </ToolGate>
+            </div>
+          </MoneySection>
         </motion.div>
 
         <motion.div variants={itemVariants}>
-          <ForecastChart startBalance={balance} dailyIncome={summary.dailyIncome} dailySpend={summary.dailySpend} />
+          <MoneySection id="spending" kicker="Where it goes" title="Spending and bills">
+            <div className="grid lg:grid-cols-2 gap-6">
+              <SpendingDonut categoryList={categoryList} total={grandTotal} />
+              <CashflowBars weeks={weeks} />
+            </div>
+            <div id="recurring" className="grid lg:grid-cols-2 gap-6 items-start scroll-mt-6">
+              <CategoryList categoryList={categoryList} grandTotal={grandTotal} expenses={expenses} />
+              <RecurringList recurring={recurring} />
+            </div>
+            <div id="cashflow" className="scroll-mt-6">
+              <ToolGate tool="cashflow" {...gate}>
+                <SankeyCashflow txs={txs} />
+              </ToolGate>
+            </div>
+            <TransactionList transactions={txs} />
+          </MoneySection>
         </motion.div>
 
         <motion.div variants={itemVariants}>
-          <SankeyCashflow txs={txs} />
-        </motion.div>
-
-        <motion.div variants={itemVariants}>
-          <AssetsBreakdown accounts={isSample ? SAMPLE_ACCOUNTS : accounts} />
-        </motion.div>
-
-        <motion.div variants={itemVariants} className="grid lg:grid-cols-2 gap-6">
-          <SpendingDonut categoryList={categoryList} total={grandTotal} />
-          <CashflowBars weeks={weeks} />
-        </motion.div>
-
-        <motion.div variants={itemVariants}>
-          <FinancialCalendar balance={isSample || accounts.length ? balance : null} txs={txs} isSample={isSample} />
-        </motion.div>
-
-        <motion.div variants={itemVariants} className="grid lg:grid-cols-2 gap-6 items-start">
-          <CategoryList categoryList={categoryList} grandTotal={grandTotal} expenses={expenses} />
-          <RecurringList recurring={recurring} />
-        </motion.div>
-
-        <motion.div variants={itemVariants}>
-          <TransactionList transactions={txs} />
+          <MoneySection id="forecast" kicker="Where it's heading" title="Plan ahead">
+            <div id="calendar" className="scroll-mt-6">
+              <ToolGate tool="calendar" {...gate}>
+                <FinancialCalendar balance={isSample || accounts.length ? balance : null} txs={txs} isSample={isSample} />
+              </ToolGate>
+            </div>
+            <ToolGate tool="forecast" {...gate}>
+              <ForecastChart startBalance={balance} dailyIncome={summary.dailyIncome} dailySpend={summary.dailySpend} />
+            </ToolGate>
+          </MoneySection>
         </motion.div>
       </motion.div>
     </div>
