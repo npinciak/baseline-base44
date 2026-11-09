@@ -41,29 +41,48 @@ Deno.serve(async (req) => {
     if (!profiles?.length) return Response.json({ error: 'Profile not found' }, { status: 404 });
     const userProfileId = profiles[0].id;
 
-    // Fetch current wallet balance (server-side check)
-    const walletRes = await fetch(
-      `${supabaseUrl}/rest/v1/user_wallet?user_profile_id=eq.${userProfileId}&limit=1`,
-      { headers }
-    );
-    const wallets = await walletRes.json();
-    if (!wallets?.length) return Response.json({ error: 'Wallet not found' }, { status: 404 });
+    // Atomically deduct the coins with a compare-and-swap on the wallet balance:
+    // the PATCH only matches while the balance still equals what we read, so
+    // concurrent redemptions cannot all pass the check on the same snapshot.
+    const MAX_ATTEMPTS = 5;
+    let currentBalance = null;
+    let newBalance = null;
 
-    const currentBalance = wallets[0].balance;
-    if (currentBalance < coinsCost) {
-      return Response.json({ error: 'Insufficient balance' }, { status: 402 });
+    for (let attempt = 0; attempt < MAX_ATTEMPTS && newBalance === null; attempt++) {
+      const walletRes = await fetch(
+        `${supabaseUrl}/rest/v1/user_wallet?user_profile_id=eq.${userProfileId}&select=balance&limit=1`,
+        { headers }
+      );
+      const wallets = await walletRes.json();
+      if (!wallets?.length) return Response.json({ error: 'Wallet not found' }, { status: 404 });
+
+      const seenBalance = Number(wallets[0].balance);
+      if (seenBalance < coinsCost) {
+        return Response.json({ error: 'Insufficient balance' }, { status: 402 });
+      }
+      const candidate = seenBalance - coinsCost;
+
+      const patchRes = await fetch(
+        `${supabaseUrl}/rest/v1/user_wallet?user_profile_id=eq.${userProfileId}&balance=eq.${seenBalance}`,
+        {
+          method: 'PATCH',
+          headers: { ...headers, Prefer: 'return=representation' },
+          body: JSON.stringify({ balance: candidate }),
+        }
+      );
+      if (!patchRes.ok) {
+        return Response.json({ error: 'Failed to update wallet' }, { status: 500 });
+      }
+      const updated = await patchRes.json().catch(() => []);
+      if (Array.isArray(updated) && updated.length === 1) {
+        currentBalance = seenBalance;
+        newBalance = candidate;
+      }
+      // No row updated means the balance changed meanwhile: re-read and retry.
     }
 
-    const newBalance = currentBalance - coinsCost;
-
-    // Decrement balance
-    const patchRes = await fetch(`${supabaseUrl}/rest/v1/user_wallet?user_profile_id=eq.${userProfileId}`, {
-      method: 'PATCH',
-      headers: { ...headers, Prefer: 'return=minimal' },
-      body: JSON.stringify({ balance: newBalance }),
-    });
-    if (!patchRes.ok) {
-      return Response.json({ error: 'Failed to update wallet' }, { status: 500 });
+    if (newBalance === null) {
+      return Response.json({ error: 'Wallet is busy, please try again' }, { status: 409 });
     }
 
     // Insert redemption history
@@ -80,12 +99,15 @@ Deno.serve(async (req) => {
       }),
     });
     if (!historyRes.ok) {
-      // Rollback balance
-      await fetch(`${supabaseUrl}/rest/v1/user_wallet?user_profile_id=eq.${userProfileId}`, {
-        method: 'PATCH',
-        headers: { ...headers, Prefer: 'return=minimal' },
-        body: JSON.stringify({ balance: currentBalance }),
-      });
+      // Rollback balance (conditional, only if it still holds our deduction)
+      await fetch(
+        `${supabaseUrl}/rest/v1/user_wallet?user_profile_id=eq.${userProfileId}&balance=eq.${newBalance}`,
+        {
+          method: 'PATCH',
+          headers: { ...headers, Prefer: 'return=minimal' },
+          body: JSON.stringify({ balance: currentBalance }),
+        }
+      );
       return Response.json({ error: 'Failed to record redemption, transaction rolled back' }, { status: 500 });
     }
 
