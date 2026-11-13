@@ -49,7 +49,7 @@ export default function Basecamp() {
       setRedeemSuccess(redeemedCard);
       toast({
         title: 'Redemption successful!',
-        description: `Your $${redeemedCard.amount} ${redeemedCard.brand} gift card is on its way to your email.`,
+        description: `We'll email your $${redeemedCard.amount} ${redeemedCard.brand} gift card code within 3 business days.`,
       });
     } catch (err) {
       const msg = err?.response?.data?.error || 'Redemption failed. Please try again.';
@@ -102,7 +102,7 @@ export default function Basecamp() {
               </div>
               <h3 className="text-2xl font-display font-extrabold mb-2 text-white">Redemption Successful!</h3>
               <p className="text-white/60 text-sm mb-2">
-                Your <strong className="text-white">${redeemSuccess.amount} {redeemSuccess.brand}</strong> gift card is on its way to your email.
+                Your <strong className="text-white">${redeemSuccess.amount} {redeemSuccess.brand}</strong> gift card code will arrive by email within 3 business days. A confirmation is in your inbox now.
               </p>
               <div className="flex items-center justify-center gap-2 text-[#2EFD7A] font-bold text-lg mb-6">
                 <Coins className="w-5 h-5" />
