@@ -41,23 +41,44 @@ export const CHAPTERS = [
     move: { key: 'closing-checklist', title: 'Make a closing-day checklist', detail: 'List every cost and step between making an offer and getting the keys.' } },
 ];
 
-// Advanced Money tools: unlock once the chapter's money move is done (which requires its lessons).
-// Tools not listed here are always available.
+// Money tools: unlock once the chapter's money move is done (which requires its lessons).
+// Tools without a chapter are always available. `group` drives the inventory on the Money page.
 export const MONEY_TOOLS = {
-  goals: { label: 'Savings Goals', chapter: 'money-in', blurb: 'Build your emergency fund and track your savings goals.' },
-  recurring: { label: 'Recurring Bills', chapter: 'money-in', blurb: 'Spot the charges that repeat every month.' },
-  spending: { label: 'Spending Breakdown', chapter: 'money-out', blurb: 'See your spending by category and week.' },
-  calendar: { label: 'Financial Calendar', chapter: 'money-out', blurb: 'See every bill and paycheck on a calendar, with your projected balance each day.' },
-  cashflow: { label: 'Cashflow Map', chapter: 'build-budget', blurb: 'Watch your income flow into needs, wants and savings.' },
-  networth: { label: 'Net Worth Breakdown', chapter: 'banking', blurb: 'See all your accounts together: what you own and what you owe.' },
-  forecast: { label: 'Forecast & Scenarios', chapter: 'saving-smart', blurb: 'Project your future balance and test "what if" spending changes.' },
+  goals: { label: 'Savings Goals', group: 'plan', chapter: 'money-in', blurb: 'Build your emergency fund and track your savings goals.' },
+  recurring: { label: 'Recurring Bills', group: 'track', chapter: 'money-in', blurb: 'Spot the charges that repeat every month.' },
+  spending: { label: 'Spending Breakdown', group: 'track', chapter: 'money-out', blurb: 'See where your money goes, category by category.' },
+  calendar: { label: 'Calendar & Forecast', group: 'plan', chapter: 'money-out', blurb: 'See every bill and paycheck on a calendar, then test "what if" changes to your future balance.' },
+  cashflow: { label: 'Cashflow', group: 'track', chapter: 'build-budget', blurb: 'Compare income and spending week by week, and see where each dollar flows.' },
+  networth: { label: 'Net Worth', group: 'grow', chapter: 'banking', blurb: 'See all your accounts together: what you own and what you owe.' },
+  knowledge: { label: 'Financial Knowledge', group: 'score', chapter: null, blurb: 'Track what you have learned and jump into your next lesson.' },
+  debt_ratio: { label: 'Income-to-Debt Ratio', group: 'score', chapter: 'debt', blurb: 'See how much of your income goes to debt payments each month.' },
+  credit_score: { label: 'Credit Score', group: 'score', chapter: 'credit-score', blurb: 'See your credit health, card utilization and what moves your score.' },
+  risk: { label: 'Risk Appetite', group: 'grow', chapter: 'investing-basics', blurb: 'Find your investing comfort zone and compare it with your current mix.' },
 };
+
+export const TOOL_GROUPS = [
+  { key: 'track', label: 'Track' },
+  { key: 'plan', label: 'Plan' },
+  { key: 'grow', label: 'Grow' },
+  { key: 'score', label: 'Score' },
+];
 
 export const TOOL_LINKS = {
   overview: '/money#overview', recurring: '/money#recurring', spending: '/money#spending',
-  networth: '/money#networth', forecast: '/money#forecast', calendar: '/money#calendar',
-  goals: '/money#goals', profile: '/profile',
+  networth: '/money#networth', forecast: '/money#calendar', calendar: '/money#calendar',
+  goals: '/money#goals', profile: '/basescore', credit_score: '/money#credit_score',
+  debt_ratio: '/money#debt_ratio', risk: '/money#risk', knowledge: '/money#knowledge',
 };
+
+/** First incomplete lesson in the furthest unlocked chapter, or null when caught up. */
+export function nextLesson(chapters) {
+  for (const c of chapters) {
+    if (!c.unlocked) break;
+    const m = c.modules.find((x) => !x.completed);
+    if (m) return m;
+  }
+  return null;
+}
 
 export function buildChapters(modules, progress, moves) {
   const byId = Object.fromEntries(modules.map((m) => [m.id, m]));
@@ -91,6 +112,7 @@ export const orderedModules = (chapters) => chapters.flatMap((c) => c.modules);
 
 export function toolAccess(key, chapters) {
   const tool = MONEY_TOOLS[key];
+  if (!tool.chapter) return { ...tool, chapter: null, unlocked: true };
   const chapter = chapters.find((c) => c.id === tool.chapter);
   // The move can only be done once the chapter is learned, so a done move keeps the tool unlocked
   // even if new lessons are later added to that chapter.

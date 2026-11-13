@@ -27,6 +27,7 @@ import Basecamp from './pages/Basecamp';
 import Baseline30 from './pages/Baseline30';
 import ClipPathGroup from './pages/ClipPathGroup';
 import BaseScoreQuiz from './pages/BaseScoreQuiz';
+import BaseScore from './pages/BaseScore';
 import CurriculumReview from './pages/CurriculumReview';
 
 const AuthenticatedApp = () => {
@@ -61,6 +62,7 @@ const AuthenticatedApp = () => {
           <Route path="/money/goals/:goalId" element={<GoalDetail />} />
           <Route path="/money" element={<Money />} />
           <Route path="/basecamp" element={<Basecamp />} />
+          <Route path="/basescore" element={<BaseScore />} />
           <Route path="/curriculum-review" element={<CurriculumReview />} />
         </Route>
       </Route>

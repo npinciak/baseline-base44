@@ -36,7 +36,7 @@ export default function BaseScoreGlance({ score }) {
   const pct = (score / MAX_SCORE) * 100;
 
   return (
-    <Link to="/profile" className="flex items-center gap-2.5 group">
+    <Link to="/basescore" className="flex items-center gap-2.5 group">
       <RingGauge pct={pct} size={40} strokeWidth={4} color="#2EFD7A" accentColor="#2BF9E9">
         <span className="text-[10px] font-bold text-white">{score}</span>
       </RingGauge>

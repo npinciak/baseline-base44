@@ -546,10 +546,10 @@ export default function Baseline30() {
             Start <span className="font-extrabold">Saving</span>
           </h2>
           <button
-            onClick={() => handleNav("/onboarding")}
+            onClick={() => handleNav("/basescore-quiz")}
             className="px-[41px] py-[13.6px] bg-teal-400 text-black font-semibold text-[15px] rounded-full hover:bg-teal-300 transition-all"
           >
-            Let's Go
+            Start now
           </button>
         </motion.div>
       </section>

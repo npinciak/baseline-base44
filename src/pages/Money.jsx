@@ -20,6 +20,12 @@ import LockedToolCard from '@/components/money/LockedToolCard';
 import { toolAccess } from '@/lib/curriculum';
 import MoneySection from '@/components/money/MoneySection';
 import useLearningState from '@/hooks/useLearningState';
+import useUserStats from '@/hooks/useUserStats';
+import ToolInventory from '@/components/money/ToolInventory';
+import KnowledgeTool from '@/components/money/KnowledgeTool';
+import DebtRatioTool from '@/components/money/DebtRatioTool';
+import CreditScoreTool from '@/components/money/CreditScoreTool';
+import RiskTool from '@/components/money/RiskTool';
 import {
   CATEGORY_COLORS, CATEGORY_LABELS, normalizeMxTransaction, detectRecurring,
   summarize, weeklyCashflow, buildSampleTransactions, SAMPLE_BALANCE,
@@ -46,6 +52,7 @@ export default function Money() {
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
   const learning = useLearningState();
+  const { stats, loading: statsLoading } = useUserStats();
   const location = useLocation();
 
   const load = useCallback(async () => {
@@ -60,7 +67,7 @@ export default function Money() {
 
   useEffect(() => { load(); }, [load]);
 
-  const ready = !loading && !learning.loading;
+  const ready = !loading && !learning.loading && !statsLoading;
   useEffect(() => {
     if (ready && location.hash) {
       setTimeout(() => document.getElementById(location.hash.slice(1))?.scrollIntoView({ behavior: 'smooth' }), 300);
@@ -93,24 +100,36 @@ export default function Money() {
     );
   }
 
+  const shownAccounts = isSample ? SAMPLE_ACCOUNTS : accounts;
   const tools = [
     { key: 'recurring', node: <RecurringList recurring={recurring} /> },
     { key: 'spending', node: (
-      <div className="space-y-6">
-        <div className="grid lg:grid-cols-2 gap-6">
-          <SpendingDonut categoryList={categoryList} total={grandTotal} />
-          <CashflowBars weeks={weeks} />
-        </div>
+      <div className="grid lg:grid-cols-2 gap-6">
+        <SpendingDonut categoryList={categoryList} total={grandTotal} />
         <CategoryList categoryList={categoryList} grandTotal={grandTotal} expenses={expenses} />
       </div>
     ) },
-    { key: 'calendar', node: <FinancialCalendar balance={isSample || accounts.length ? balance : null} txs={txs} isSample={isSample} /> },
-    { key: 'cashflow', node: <SankeyCashflow txs={txs} /> },
-    { key: 'networth', node: <AssetsBreakdown accounts={isSample ? SAMPLE_ACCOUNTS : accounts} /> },
-    { key: 'forecast', node: <ForecastChart startBalance={balance} dailyIncome={summary.dailyIncome} dailySpend={summary.dailySpend} /> },
+    { key: 'cashflow', node: (
+      <div className="space-y-6">
+        <CashflowBars weeks={weeks} />
+        <SankeyCashflow txs={txs} />
+      </div>
+    ) },
+    { key: 'calendar', node: (
+      <div className="space-y-6">
+        <FinancialCalendar balance={isSample || accounts.length ? balance : null} txs={txs} isSample={isSample} />
+        <ForecastChart startBalance={balance} dailyIncome={summary.dailyIncome} dailySpend={summary.dailySpend} />
+      </div>
+    ) },
+    { key: 'networth', node: <AssetsBreakdown accounts={shownAccounts} /> },
+    { key: 'risk', node: <RiskTool accounts={shownAccounts} riskScore={stats?.score_risk_appetite ?? null} /> },
+    { key: 'knowledge', node: <KnowledgeTool chapters={learning.chapters} knowledgeScore={stats?.score_financial_knowledge ?? null} /> },
+    { key: 'debt_ratio', node: <DebtRatioTool accounts={shownAccounts} summary={summary} recurring={recurring} /> },
+    { key: 'credit_score', node: <CreditScoreTool accounts={shownAccounts} creditHealth={stats?.score_credit_health ?? null} /> },
   ].map(t => ({ ...t, access: toolAccess(t.key, learning.chapters) }));
   const openTools = tools.filter(t => t.access.unlocked);
   const lockedTools = tools.filter(t => !t.access.unlocked);
+  const inventory = [{ key: 'goals', access: { ...toolAccess('goals', learning.chapters), unlocked: true } }, ...tools];
 
   return (
     <div className="relative min-h-screen bg-black px-4 py-8 overflow-hidden">
@@ -140,6 +159,12 @@ export default function Money() {
           <MoneySection id="overview" kicker="Where you stand" title="Your money today">
             <MoneyKpis balance={balance} income={summary.income} spent={summary.spent} days={summary.days} />
             <TransactionList transactions={txs} />
+          </MoneySection>
+        </motion.div>
+
+        <motion.div variants={itemVariants}>
+          <MoneySection id="all-tools" kicker="Everything in one place" title="All money tools">
+            <ToolInventory tools={inventory} />
           </MoneySection>
         </motion.div>
 
