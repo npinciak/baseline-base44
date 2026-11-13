@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,6 +7,10 @@ import { LogIn, Mail, Lock, Loader2 } from "lucide-react";
 import AuthLayout from "@/components/AuthLayout";
 import GoogleIcon from "@/components/GoogleIcon";
 import { safeReturnTo } from "@/lib/authReturnTo";
+import { loginWithMfa } from "@/lib/authMfa";
+import { signInWithProvider } from "@/lib/authMfaFlow";
+import MfaFlow from "@/components/MfaFlow";
+import { MfaScreen } from "@/components/MfaParts";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -15,8 +18,10 @@ export default function Login() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const [challenge, setChallenge] = useState(null);
   const handleGoogle = () => {
-    base44.auth.loginWithProvider("google", safeReturnTo());
+    setError("");
+    signInWithProvider("google", safeReturnTo()).catch(err => setError(err.message || "Unable to continue with Google"));
   };
 
   const handleSubmit = async (e) => {
@@ -24,7 +29,8 @@ export default function Login() {
     setError("");
     setLoading(true);
     try {
-      await base44.auth.loginViaEmailPassword(email, password);
+      const result = await loginWithMfa(email, password);
+      if (result.mfa_required) { setChallenge(result); return; }
       window.location.href = safeReturnTo();
     } catch (err) {
       setError(err.message || "Failed to log in");
@@ -32,10 +38,13 @@ export default function Login() {
     }
   };
 
+  if (challenge) return <MfaScreen><MfaFlow challenge={challenge} returnTo={safeReturnTo()} /></MfaScreen>;
+
   return (
     <AuthLayout
       icon={LogIn}
       title="Welcome Back"
+      subtitle="Sign in to keep building your financial future"
       footer={
         <>
           Don't have an account?{" "}

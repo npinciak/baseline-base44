@@ -181,7 +181,7 @@ export default function Money() {
             <MoneySection id="locked" kicker="Coming up on your path" title="Tools to unlock">
               {lockedTools.map(t => (
                 <div key={t.key} id={t.key} className="scroll-mt-6">
-                  <LockedToolCard access={t.access} onCompleteMove={learning.completeMove} />
+                  <LockedToolCard toolKey={t.key} access={t.access} onCompleteMove={learning.completeMove} />
                 </div>
               ))}
             </MoneySection>

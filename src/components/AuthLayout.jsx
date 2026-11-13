@@ -42,7 +42,7 @@ function Wordmark({ className = "" }) {
 
 export default function AuthLayout({ icon: Icon, title, subtitle, footer, children }) {
   return (
-    <div className="relative h-screen flex flex-col items-center justify-center bg-black px-4 py-4 overflow-hidden">
+    <div className="auth-brand relative min-h-screen flex flex-col items-center justify-center bg-background px-4 py-8 overflow-x-hidden">
       {/* Aurora borealis background — slow drifting green/blue glows, kept dim so black dominates */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
@@ -59,13 +59,13 @@ export default function AuthLayout({ icon: Icon, title, subtitle, footer, childr
         />
         <motion.div
           className="absolute bottom-[-20%] left-1/4 w-[50%] h-[50%] rounded-full"
-          style={{ background: "radial-gradient(circle, rgba(46,253,203,0.13) 0%, rgba(46,253,203,0.04) 45%, transparent 75%)" }}
+          style={{ background: "radial-gradient(circle, hsla(var(--primary),0.13) 0%, hsla(var(--primary),0.04) 45%, transparent 75%)" }}
           animate={{ x: [0, 40, -40, 0], y: [0, -20, 30, 0], opacity: [0.15, 0.28, 0.15] }}
           transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 2 }}
         />
       </div>
 
-      <div className="relative z-10 w-full max-w-md h-full flex flex-col items-center justify-center">
+      <div className="relative z-10 w-full max-w-md flex flex-col items-center justify-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -97,7 +97,7 @@ export default function AuthLayout({ icon: Icon, title, subtitle, footer, childr
           <h1 className="text-2xl font-light tracking-tight text-white">{title}</h1>
 
           {Icon && (
-            <div className="inline-flex items-center justify-center w-10 h-10 rounded-2xl bg-primary/15 border border-primary/30 mt-3 mb-1 shadow-[0_0_30px_hsla(175,94%,57%,0.15)]">
+            <div className="inline-flex items-center justify-center w-10 h-10 rounded-2xl bg-primary/15 border border-primary/30 mt-3 mb-1 shadow-sm">
               <Icon className="w-5 h-5 text-primary" aria-hidden="true" />
             </div>
           )}

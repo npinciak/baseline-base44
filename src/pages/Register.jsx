@@ -9,6 +9,9 @@ import { UserPlus, Mail, Lock, Loader2, ShieldCheck } from "lucide-react";
 import AuthLayout from "@/components/AuthLayout";
 import GoogleIcon from "@/components/GoogleIcon";
 import { safeReturnTo } from "@/lib/authReturnTo";
+import { signInWithProvider } from "@/lib/authMfaFlow";
+import MfaFlow from "@/components/MfaFlow";
+import { MfaScreen } from "@/components/MfaParts";
 
 export default function Register() {
   const [step, setStep] = useState("form"); // "form" | "otp"
@@ -20,8 +23,10 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
 
+  const [challenge, setChallenge] = useState(null);
   const handleGoogle = () => {
-    base44.auth.loginWithProvider("google", safeReturnTo());
+    setError("");
+    signInWithProvider("google", safeReturnTo()).catch(err => setError(err.message || "Unable to continue with Google"));
   };
 
   const handleSubmit = async (e) => {
@@ -47,8 +52,9 @@ export default function Register() {
     setError("");
     setLoading(true);
     try {
-      const { access_token } = await base44.auth.verifyOtp({ email, otpCode });
-      base44.auth.setToken(access_token);
+      const result = await base44.auth.verifyOtp({ email, otpCode });
+      if (result.mfa_required) { setChallenge(result); return; }
+      base44.auth.setToken(result.access_token);
       window.location.href = safeReturnTo();
     } catch (err) {
       setError(err.message || "Invalid code, please try again");
@@ -68,6 +74,8 @@ export default function Register() {
       setResending(false);
     }
   };
+
+  if (challenge) return <MfaScreen><MfaFlow challenge={challenge} returnTo={safeReturnTo()} /></MfaScreen>;
 
   if (step === "otp") {
     return (

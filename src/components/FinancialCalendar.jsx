@@ -16,7 +16,7 @@ const EMPTY_FORM = { name: '', amount: '', type: 'expense', category: 'bills_uti
  * balance: current net worth (null = unavailable). txs: normalized transactions.
  * Past days use actual transactions; future days use scheduled events + predicted patterns.
  */
-export default function FinancialCalendar({ balance = null, txs = [], isSample = false }) {
+export default function FinancialCalendar({ balance = null, txs = [], isSample = false, readOnlyPreview = false }) {
   const [today] = useState(new Date());
   const todayIso = iso(today);
   const [userId, setUserId] = useState(null);
@@ -30,11 +30,12 @@ export default function FinancialCalendar({ balance = null, txs = [], isSample =
   const [editingId, setEditingId] = useState(null);
 
   useEffect(() => {
+    if (readOnlyPreview) { setLoading(false); return; }
     base44.auth.me().then((u) => {
       setUserId(u.id);
       return base44.entities.FinancialEvent.filter({ user_id: u.id });
     }).then(setEvents).catch(() => setEvents([])).finally(() => setLoading(false));
-  }, []);
+  }, [readOnlyPreview]);
 
   const reload = () => base44.entities.FinancialEvent.filter({ user_id: userId }).then(setEvents);
 

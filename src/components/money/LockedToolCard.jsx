@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Lock, Check, BookOpen, Zap, ArrowRight } from 'lucide-react';
+import LockedToolPreview from '@/components/money/LockedToolPreview';
 
 function Step({ done, Icon, color, title, sub }) {
   return (
@@ -17,15 +18,19 @@ function Step({ done, Icon, color, title, sub }) {
 }
 
 /** Shown in place of an advanced Money tool until its chapter lessons and money move are done. */
-export default function LockedToolCard({ access, onCompleteMove }) {
+export default function LockedToolCard({ access, onCompleteMove, toolKey }) {
   const [saving, setSaving] = useState(false);
   const { label, blurb, chapter } = access;
   const next = chapter.modules.find((m) => !m.completed);
   const markDone = async () => { setSaving(true); await onCompleteMove(chapter); setSaving(false); };
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 sm:p-8 flex flex-col md:flex-row md:items-center gap-6">
-      <div className="flex-1 min-w-0">
+    <div className="relative isolate overflow-hidden rounded-2xl border border-border bg-card p-6 sm:p-8 flex flex-col xl:flex-row xl:items-center gap-6">
+      <div aria-hidden="true" inert="" className="absolute inset-0 pointer-events-none select-none blur-sm opacity-50">
+        <LockedToolPreview toolKey={toolKey} />
+      </div>
+      <div aria-hidden="true" className="absolute inset-0 bg-background/70 pointer-events-none" />
+      <div className="relative flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-2">
           <Lock className="w-4 h-4 text-[#2EFD7A]" />
           <span className="text-[11px] tracking-widest uppercase font-semibold text-[#2EFD7A]">Unlock this tool</span>
@@ -33,7 +38,7 @@ export default function LockedToolCard({ access, onCompleteMove }) {
         <h3 className="text-white text-xl font-semibold">{label}</h3>
         <p className="text-white/60 text-sm mt-1 max-w-md">{blurb}</p>
       </div>
-      <div className="md:w-80 space-y-3">
+      <div className="relative min-w-0 xl:w-80 space-y-3">
         <Step done={chapter.learned} Icon={BookOpen} color="#2EFD7A" title={`Chapter ${chapter.number}: ${chapter.title}`}
           sub={chapter.comingSoon ? 'Lessons coming soon' : `${chapter.lessonsDone} of ${chapter.modules.length} lessons done`} />
         <Step done={chapter.moveDone} Icon={Zap} color="#2EFD7A" title={chapter.move.title} sub="Money move" />
