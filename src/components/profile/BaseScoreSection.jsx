@@ -4,7 +4,7 @@ import { ArrowRight, ShieldCheck } from 'lucide-react';
 import { MAX_SCORE, SCORE_CATEGORIES, standingFor } from '@/lib/baseScore';
 import ScoreCategoryRow from '@/components/profile/ScoreCategoryRow';
 
-export default function BaseScoreSection({ stats, knowledgeHref = '/dashboard', cta = { to: '/basescore', label: 'See how to improve' } }) {
+export default function BaseScoreSection({ stats, knowledgeHref = '/dashboard', stacked = false, cta = { to: '/basescore', label: 'See how to improve' } }) {
   const score = stats?.base_score;
   const rows = (
     <div className="space-y-1">
@@ -36,9 +36,9 @@ export default function BaseScoreSection({ stats, knowledgeHref = '/dashboard', 
   const circumference = 2 * Math.PI * 64;
 
   return (
-    <div className="bg-white/[0.03] border border-white/10 backdrop-blur-sm rounded-3xl p-6 md:p-8">
+    <div className={stacked ? 'bg-navy-card border border-white/15 rounded-3xl p-6 md:p-8' : 'bg-white/[0.03] border border-white/10 backdrop-blur-sm rounded-3xl p-6 md:p-8'}>
       <h3 className="text-white/60 text-xs font-light tracking-widest uppercase mb-6">Your BaseScore™</h3>
-      <div className="flex flex-col md:flex-row items-center gap-8">
+      <div className={stacked ? 'flex flex-col items-center gap-6' : 'flex flex-col md:flex-row items-center gap-8'}>
         <div className="relative w-40 h-40 shrink-0 flex items-center justify-center">
           <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 144 144">
             <circle cx="72" cy="72" r="64" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="10" />
@@ -51,10 +51,12 @@ export default function BaseScoreSection({ stats, knowledgeHref = '/dashboard', 
             <p className="text-white/40 text-xs mt-1">of {MAX_SCORE}</p>
           </div>
         </div>
-        <div className="flex-1 w-full">
+        <div className={stacked ? 'w-full' : 'flex-1 w-full'}>
+          <div className={stacked ? 'text-center' : ''}>
           <span className="inline-block mb-3 text-xs font-bold px-3 py-1 rounded-full bg-[#2EFD7A]/15 text-[#2EFD7A] border border-[#2EFD7A]/30">
             {standingFor(score)}
           </span>
+          </div>
           {rows}
         </div>
       </div>

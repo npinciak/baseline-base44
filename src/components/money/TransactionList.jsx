@@ -12,7 +12,7 @@ export default function TransactionList({ transactions }) {
   const pick = (f) => { setFilter(f); setLimit(PAGE); };
   return (
     <section>
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
         <h2 className="text-base font-heading font-bold flex items-center gap-2 text-white">
           <Wallet className="w-4 h-4 text-[#2EFD7A]" /> Recent Transactions
         </h2>

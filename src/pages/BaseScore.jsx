@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import AmbientBackdrop from '@/components/dashboard/AmbientBackdrop';
+import { Link } from 'react-router-dom';
 import BaseScoreSection from '@/components/profile/BaseScoreSection';
 import useUserStats from '@/hooks/useUserStats';
 import useLearningState from '@/hooks/useLearningState';
@@ -20,16 +20,16 @@ export default function BaseScore() {
   const next = nextLesson(learning.chapters);
 
   return (
-    <div className="relative min-h-screen bg-black px-4 py-8 overflow-hidden">
-      <AmbientBackdrop />
+    <div className="min-h-screen bg-black px-6 py-10 md:px-10">
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 260, damping: 22 }}
-        className="relative z-10 max-w-3xl mx-auto space-y-6">
-        <div>
-          <h1 className="text-3xl sm:text-4xl font-display font-extrabold text-white mb-1">BaseScore™</h1>
-          <p className="text-white/60">Your whole financial picture in five parts. Tap any part to start improving it.</p>
+        className="min-w-0 max-w-lg mx-auto space-y-6">
+        <div className="text-center">
+          <h1 className="text-3xl sm:text-4xl font-light tracking-tight text-white mb-3">Your <span className="font-extrabold">BaseScore™</span></h1>
+          <p className="text-white/60 text-sm leading-relaxed">Understand your whole financial picture. Tap any of the five parts to start improving it.</p>
         </div>
-        <BaseScoreSection stats={stats} knowledgeHref={next ? `/lesson/${next.id}` : '/dashboard'}
-          cta={{ to: '/basescore-quiz', label: 'Retake the assessment' }} />
+        <BaseScoreSection stats={stats} stacked knowledgeHref={next ? `/lesson/${next.id}` : '/dashboard'}
+          cta={{ to: next ? `/lesson/${next.id}` : '/dashboard', label: 'Improve My Score' }} />
+        {stats?.base_score != null && <Link to="/basescore-quiz" className="block text-center text-sm text-white/60 hover:text-white transition-colors">Retake the assessment</Link>}
       </motion.div>
     </div>
   );

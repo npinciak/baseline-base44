@@ -7,7 +7,7 @@ export default function ToolInventory({ tools }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {TOOL_GROUPS.map((g) => (
-        <div key={g.key} className="rounded-2xl bg-white/[0.03] border border-white/10 p-3">
+        <div key={g.key} className="min-w-0 rounded-2xl bg-white/[0.03] border border-white/10 p-3">
           <p className="text-white/50 text-[11px] uppercase tracking-widest px-2 pt-1 pb-2">{g.label}</p>
           {tools.filter((t) => t.access.group === g.key).map((t) => (
             <button key={t.key} onClick={() => jump(t.key)}

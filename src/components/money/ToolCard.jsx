@@ -18,7 +18,7 @@ export default function ToolCard({ icon: Icon, title, subtitle, children }) {
 
 export function StatTile({ label, value, hint }) {
   return (
-    <div className="rounded-xl bg-white/[0.04] border border-white/5 p-4">
+    <div className="min-w-0 break-words rounded-xl bg-white/[0.04] border border-white/5 p-4">
       <p className="text-white/50 text-[11px] uppercase tracking-widest">{label}</p>
       <p className="text-white text-2xl font-bold tabular-nums mt-1">{value}</p>
       {hint && <p className="text-white/50 text-xs mt-1">{hint}</p>}

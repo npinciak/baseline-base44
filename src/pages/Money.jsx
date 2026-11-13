@@ -134,7 +134,7 @@ export default function Money() {
   return (
     <div className="relative min-h-screen bg-black px-4 py-8 overflow-hidden">
       <AmbientBackdrop />
-      <motion.div variants={containerVariants} initial="hidden" animate="show" className="relative z-10 max-w-6xl mx-auto space-y-6">
+      <motion.div variants={containerVariants} initial="hidden" animate="show" className="relative z-10 w-full min-w-0 max-w-6xl mx-auto space-y-6">
         <motion.div variants={itemVariants} className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <h1 className="text-3xl sm:text-4xl font-display font-extrabold text-white mb-1">Mission Control</h1>

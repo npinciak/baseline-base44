@@ -159,7 +159,7 @@ export default function Layout() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 md:ml-64 pb-20 md:pb-0 bg-black">
+      <main className="min-w-0 flex-1 md:ml-64 pb-20 md:pb-0 bg-black">
         <Outlet />
       </main>
 

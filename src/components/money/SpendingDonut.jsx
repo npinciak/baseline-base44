@@ -28,7 +28,7 @@ export default function SpendingDonut({ categoryList, total }) {
               <span className="text-xl font-display font-extrabold text-white">{money(total)}</span>
             </div>
           </div>
-          <ul className="flex-1 w-full space-y-2.5">
+          <ul className="min-w-0 flex-1 w-full space-y-2.5">
             {top.map(c => (
               <li key={c.cat} className="flex items-center gap-2 text-sm">
                 <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: c.color }} />
