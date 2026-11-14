@@ -21,7 +21,6 @@ import { toolAccess } from '@/lib/curriculum';
 import MoneySection from '@/components/money/MoneySection';
 import useLearningState from '@/hooks/useLearningState';
 import useUserStats from '@/hooks/useUserStats';
-import ToolInventory from '@/components/money/ToolInventory';
 import KnowledgeTool from '@/components/money/KnowledgeTool';
 import DebtRatioTool from '@/components/money/DebtRatioTool';
 import CreditScoreTool from '@/components/money/CreditScoreTool';
@@ -129,7 +128,6 @@ export default function Money() {
   ].map(t => ({ ...t, access: toolAccess(t.key, learning.chapters) }));
   const openTools = tools.filter(t => t.access.unlocked);
   const lockedTools = tools.filter(t => !t.access.unlocked);
-  const inventory = [{ key: 'goals', access: toolAccess('goals', learning.chapters) }, ...tools];
 
   return (
     <div className="relative min-h-screen bg-black px-4 py-8 overflow-hidden">
@@ -159,12 +157,6 @@ export default function Money() {
           <MoneySection id="overview" kicker="Where you stand" title="Your money today">
             <MoneyKpis balance={balance} income={summary.income} spent={summary.spent} days={summary.days} />
             <TransactionList transactions={txs} />
-          </MoneySection>
-        </motion.div>
-
-        <motion.div variants={itemVariants}>
-          <MoneySection id="all-tools" kicker="Everything in one place" title="All money tools">
-            <ToolInventory tools={inventory} />
           </MoneySection>
         </motion.div>
 
