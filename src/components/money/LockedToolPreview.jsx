@@ -4,7 +4,6 @@ import CashflowBars from '@/components/money/CashflowBars';
 import AssetsBreakdown, { SAMPLE_ACCOUNTS } from '@/components/money/AssetsBreakdown';
 import DebtRatioTool from '@/components/money/DebtRatioTool';
 import CreditScoreTool from '@/components/money/CreditScoreTool';
-import RiskTool from '@/components/money/RiskTool';
 import FinancialCalendar from '@/components/FinancialCalendar';
 import { buildSampleTransactions, detectRecurring, summarize, weeklyCashflow, SAMPLE_BALANCE, CATEGORY_COLORS, CATEGORY_LABELS } from '@/lib/moneyData';
 
@@ -24,7 +23,6 @@ export default function LockedToolPreview({ toolKey }) {
     case 'networth': return <AssetsBreakdown accounts={SAMPLE_ACCOUNTS} />;
     case 'debt_ratio': return <DebtRatioTool accounts={SAMPLE_ACCOUNTS} summary={summary} recurring={recurring} />;
     case 'credit_score': return <CreditScoreTool accounts={SAMPLE_ACCOUNTS} creditHealth={66} />;
-    case 'risk': return <RiskTool accounts={SAMPLE_ACCOUNTS} riskScore={68} />;
     default: return null;
   }
 }

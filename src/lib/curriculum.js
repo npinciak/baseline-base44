@@ -24,7 +24,7 @@ export const CHAPTERS = [
   { id: 'credit-score', title: 'Credit Scores', topic: 'credit', units: [64, 67, 70, 115],
     move: { key: 'check-basescore', title: 'Check your BaseScore', detail: 'See where you stand today and which area to work on first.', tool: 'profile' } },
   { id: 'score-deep-dive', title: 'Your Score, Up Close', topic: 'credit', units: [109, 112, 199, 202],
-    move: { key: 'check-utilization', title: 'Check your credit utilization', detail: 'If you have a card, divide the balance by the limit. Aim for under 30%.', tool: 'networth' } },
+    move: { key: 'check-utilization', title: 'Check your credit utilization', detail: 'If you have a card, divide the balance by the limit. Aim for under 30%.', tool: 'credit_score' } },
   { id: 'building-credit', title: 'Building Credit', topic: 'credit', units: [205, 211, 214, 'bl-identity'],
     move: { key: 'starter-credit-plan', title: 'Choose a starter credit plan', detail: 'Decide which first step fits you: authorized user, secured card, or student card.' } },
   { id: 'investing-basics', title: 'Investing Basics', topic: 'investing', units: [73, 76, 118, 121],
@@ -44,16 +44,19 @@ export const CHAPTERS = [
 // Money tools: unlock once the chapter's money move is done (which requires its lessons).
 // Tools without a chapter are always available. `group` drives the inventory on the Money page.
 export const MONEY_TOOLS = {
-  goals: { label: 'Savings Goals', group: 'plan', chapter: 'money-in', blurb: 'Build your emergency fund and track your savings goals.' },
-  recurring: { label: 'Recurring Bills', group: 'track', chapter: 'money-in', blurb: 'Spot the charges that repeat every month.' },
-  spending: { label: 'Spending Breakdown', group: 'track', chapter: 'money-out', blurb: 'See where your money goes, category by category.' },
-  calendar: { label: 'Calendar & Forecast', group: 'plan', chapter: 'money-out', blurb: 'See every bill and paycheck on a calendar, then test "what if" changes to your future balance.' },
-  cashflow: { label: 'Cashflow', group: 'track', chapter: 'build-budget', blurb: 'Compare income and spending week by week, and see where each dollar flows.' },
-  networth: { label: 'Net Worth', group: 'grow', chapter: 'banking', blurb: 'See all your accounts together: what you own and what you owe.' },
-  knowledge: { label: 'Financial Knowledge', group: 'score', chapter: null, blurb: 'Track what you have learned and jump into your next lesson.' },
-  debt_ratio: { label: 'Income-to-Debt Ratio', group: 'score', chapter: 'debt', blurb: 'See how much of your income goes to debt payments each month.' },
-  credit_score: { label: 'Credit Score', group: 'score', chapter: 'credit-score', blurb: 'See your credit health, card utilization and what moves your score.' },
-  risk: { label: 'Risk Appetite', group: 'grow', chapter: 'investing-basics', blurb: 'Find your investing comfort zone and compare it with your current mix.' },
+  goals: { label: 'Savings Goals', group: 'plan', chapter: 'money-in', decision: 'keep', blurb: 'Build your emergency fund. Additional goals require a subscription.', audit: 'Free: one emergency fund. Paid: additional goals. Initial setup is the chapter money move, not an early tool unlock.' },
+  recurring: { label: 'Recurring Bills', group: 'track', chapter: 'money-out', decision: 'keep', blurb: 'Spot the charges that repeat every month.', audit: 'Confirm repeating charges against bank statements. Detection is an estimate, not a confirmed bill schedule.' },
+  spending: { label: 'Spending Breakdown', group: 'track', chapter: 'needs-wants', decision: 'keep', blurb: 'Understand where your money goes, category by category.', audit: 'Apply Needs vs. Wants. Categorization needs review; a spending chart is not a budget.' },
+  calendar: { label: 'Calendar & Forecast', group: 'plan', chapter: 'saving-smart', decision: 'keep', blurb: 'Plan bill dates, paydays and savings, then explore your future balance.', audit: 'Unlock after Saving Smart and its deposit money move. Forecasts are sandbox estimates, never changes to bank history.' },
+  cashflow: { label: 'Cashflow', group: 'track', chapter: 'build-budget', decision: 'review', blurb: 'Compare money coming in and going out over time.', audit: 'Owner decision pending: retain the income-versus-outgo time view, or combine it with Calendar. Category flow overlaps Spending Breakdown.' },
+  networth: { label: 'Net Worth', group: 'grow', chapter: 'banking', decision: 'review', blurb: 'Compare assets and liabilities across your accounts.', audit: 'Owner decision pending: improve or retire. It is not a credit-utilization destination.' },
+  knowledge: { label: 'Financial Knowledge', group: 'score', chapter: null, decision: 'keep', blurb: 'Track learning progress and return to your next lesson.', audit: 'Informational learning summary, not a gated financial tool.' },
+  debt_ratio: { label: 'Income-to-Debt Ratio', group: 'score', chapter: 'debt', decision: 'review', blurb: 'Compare monthly debt payments with income.', audit: 'Owner decision pending: improve or include this supporting metric in Debt Payoff Planner.' },
+  credit_score: { label: 'Credit Score', group: 'score', chapter: 'credit-score', decision: 'keep', blurb: 'Understand credit health, utilization and score factors.', audit: 'Keep separate from BaseScore. No bureau score should be implied without an actual credit-report source.' },
+  risk: { label: 'Risk Appetite', group: 'grow', chapter: 'investing-basics', decision: 'removed', blurb: 'Removed from Money tools.', audit: 'Rejected by owner. Historical assessment data is preserved; no standalone Risk Appetite tool.' },
+  budget_builder: { label: 'Budget Builder', group: 'plan', chapter: 'build-budget', decision: 'planned', blurb: 'Turn needs, wants and savings lessons into a spending plan.', audit: 'Candidate only: set category limits, compare planned versus actual, and choose a realistic savings amount. Not implemented.' },
+  debt_payoff: { label: 'Debt Payoff Planner', group: 'plan', chapter: 'debt', decision: 'planned', blurb: 'Apply interest lessons to a debt repayment plan.', audit: 'Candidate only: balances, APRs, minimum payments, snowball versus avalanche, payoff date and total interest. Not implemented.' },
+  investment_planning: { label: 'Investment Planning', group: 'grow', chapter: 'investing-strategies', decision: 'planned', blurb: 'Apply compounding and diversification to a long-term plan.', audit: 'Candidate only: contribution, horizon and return scenarios, with clear uncertainty. No trading or personalized investment advice. Not implemented.' },
 };
 
 export const TOOL_GROUPS = [
@@ -96,14 +99,15 @@ export function buildChapters(modules, progress, moves) {
       ...m, topic_tag: c.topic, completed: m.lessons.length > 0 && m.lessons.every((l) => done.has(l.id)),
     }));
     const lessonsDone = units.filter((u) => u.completed).length;
+    const allUnitsPresent = units.length === c.units.length;
     const chapter = {
       ...c, number: i + 1, modules: units, lessonsDone, comingSoon: units.length === 0,
-      learned: units.length > 0 && lessonsDone === units.length,
+      learned: allUnitsPresent && units.length > 0 && lessonsDone === units.length,
       moveDone: !!c.move && moveSet.has(c.move.key),
       legacyTakeHomeDone: c.id === 'money-in' && moveSet.has('find-take-home'),
-      unlocked: prev ? prev.unlocked && prev.lessonsDone > 0 && (prev.id !== 'money-in' || prev.moveDone) : true,
+      unlocked: prev ? prev.unlocked && prev.learned && (!prev.move || prev.moveDone) : true,
     };
-    if (!chapter.comingSoon) prev = chapter;
+    prev = chapter;
     return chapter;
   });
 }
@@ -114,7 +118,5 @@ export function toolAccess(key, chapters) {
   const tool = MONEY_TOOLS[key];
   if (!tool.chapter) return { ...tool, chapter: null, unlocked: true };
   const chapter = chapters.find((c) => c.id === tool.chapter);
-  // The move can only be done once the chapter is learned, so a done move keeps the tool unlocked
-  // even if new lessons are later added to that chapter.
-  return { ...tool, chapter, unlocked: !!chapter && (chapter.moveDone || (key === 'recurring' && chapter.legacyTakeHomeDone)) };
+  return { ...tool, chapter, unlocked: tool.decision !== 'removed' && tool.decision !== 'planned' && !!chapter && chapter.unlocked && chapter.learned && chapter.moveDone };
 }

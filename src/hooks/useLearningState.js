@@ -25,6 +25,8 @@ export default function useLearningState() {
   );
 
   const completeMove = useCallback(async (chapter) => {
+    if (!chapter?.unlocked || !chapter?.learned || !chapter?.move) throw new Error('Complete every lesson in this chapter first.');
+    if (chapter.moveDone) return;
     const rec = await base44.entities.MoneyMoveCompletion.create({
       user_id: state.user.id,
       move_key: chapter.move.key,

@@ -6,7 +6,7 @@ export default function GoalUpgradePrompt({ onClose }) {
     <Dialog open onOpenChange={open => !open && onClose()}>
       <DialogContent className="bg-card text-card-foreground border-border">
         <DialogHeader><DialogTitle>More goals? Upgrade to grow.</DialogTitle></DialogHeader>
-        <p className="text-muted-foreground">Your free plan includes two savings goals. Upgrade to create more goals while keeping your existing progress.</p>
+        <p className="text-muted-foreground">Your free plan includes one goal: your emergency fund. Additional savings goals require an active subscription. Your existing progress is preserved.</p>
         <p className="text-sm text-muted-foreground">Upgrades aren't available yet. You can continue tracking and editing your existing goals.</p>
         <Button onClick={onClose}>Back to my goals</Button>
       </DialogContent>

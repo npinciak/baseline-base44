@@ -41,14 +41,14 @@ export default function LockedToolCard({ access, onCompleteMove, toolKey }) {
       <div className="relative min-w-0 xl:w-80 space-y-3">
         <Step done={chapter.learned} Icon={BookOpen} color="#2EFD7A" title={`Chapter ${chapter.number}: ${chapter.title}`}
           sub={chapter.comingSoon ? 'Lessons coming soon' : `${chapter.lessonsDone} of ${chapter.modules.length} lessons done`} />
-        <Step done={chapter.moveDone} Icon={Zap} color="#2EFD7A" title={chapter.move.title} sub="Money move" />
+        <Step done={chapter.moveDone} Icon={Zap} color="#2EFD7A" title={chapter.move.title} sub="Complete all chapter lessons, then this money move" />
         {!chapter.learned && !chapter.comingSoon && (
           <Link to={chapter.unlocked && next ? `/lesson/${next.id}` : '/dashboard'}
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#2EFD7A] text-black text-sm font-semibold hover:bg-[#2EFD7A]/90 transition-all">
             {chapter.unlocked ? 'Continue chapter' : 'Go to BasePath'} <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         )}
-        {chapter.learned && !chapter.moveDone && (
+        {chapter.unlocked && chapter.learned && !chapter.moveDone && (
           <button onClick={markDone} disabled={saving}
             className="px-4 py-2 rounded-full bg-[#2EFD7A] text-black text-sm font-semibold hover:bg-[#2EFD7A]/90 disabled:opacity-50 transition-all">
             {saving ? 'Saving…' : 'I did this move'}

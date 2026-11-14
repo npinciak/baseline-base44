@@ -25,7 +25,7 @@ import ToolInventory from '@/components/money/ToolInventory';
 import KnowledgeTool from '@/components/money/KnowledgeTool';
 import DebtRatioTool from '@/components/money/DebtRatioTool';
 import CreditScoreTool from '@/components/money/CreditScoreTool';
-import RiskTool from '@/components/money/RiskTool';
+
 import {
   CATEGORY_COLORS, CATEGORY_LABELS, normalizeMxTransaction, detectRecurring,
   summarize, weeklyCashflow, buildSampleTransactions, SAMPLE_BALANCE,
@@ -122,14 +122,14 @@ export default function Money() {
       </div>
     ) },
     { key: 'networth', node: <AssetsBreakdown accounts={shownAccounts} /> },
-    { key: 'risk', node: <RiskTool accounts={shownAccounts} riskScore={stats?.score_risk_appetite ?? null} /> },
+
     { key: 'knowledge', node: <KnowledgeTool chapters={learning.chapters} knowledgeScore={stats?.score_financial_knowledge ?? null} /> },
     { key: 'debt_ratio', node: <DebtRatioTool accounts={shownAccounts} summary={summary} recurring={recurring} /> },
     { key: 'credit_score', node: <CreditScoreTool accounts={shownAccounts} creditHealth={stats?.score_credit_health ?? null} /> },
   ].map(t => ({ ...t, access: toolAccess(t.key, learning.chapters) }));
   const openTools = tools.filter(t => t.access.unlocked);
   const lockedTools = tools.filter(t => !t.access.unlocked);
-  const inventory = [{ key: 'goals', access: { ...toolAccess('goals', learning.chapters), unlocked: true } }, ...tools];
+  const inventory = [{ key: 'goals', access: toolAccess('goals', learning.chapters) }, ...tools];
 
   return (
     <div className="relative min-h-screen bg-black px-4 py-8 overflow-hidden">

@@ -1,10 +1,11 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.31';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.54';
+import { goalSubscription } from '../../shared/goalPolicy.ts';
 
 function isUuid(value) {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 }
 
-Deno.serve(async (req) => {
+export default async function(req) {
   try {
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me();
@@ -47,8 +48,10 @@ Deno.serve(async (req) => {
       { headers }
     );
     const goals = await goalsRes.json();
-    return Response.json({ goals: goals || [], userProfileId });
+    if (!goalsRes.ok || !Array.isArray(goals)) return Response.json({error:'Could not load savings goals.'},{status:502});
+    const subscription = await goalSubscription(base44,user);
+    return Response.json({ goals, userProfileId, subscription });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
-});
+}

@@ -1,0 +1,6 @@
+import { AUDIT_STATUS, auditTone } from '@/components/review/auditData';
+export default function AuditFilters({ rows, status, setStatus, selected, clear, exportRows }) {
+  return <div className="dt1-toolwrap"><div className="dt1-tools"><div className="dt1-chips" role="group" aria-label="Filter tool audit by decision">
+    {AUDIT_STATUS.map((s, i) => <button key={s} className="dt1-fcard" data-dt1-filter={s} aria-pressed={s === status} style={{...auditTone(s), '--dt1-i': i}} onClick={() => setStatus(s)}><span className="dt1-fcard-dot" aria-hidden="true"/><span className="dt1-fcard-name capitalize">{s === 'all' ? 'All tools' : s}</span><span className="dt1-fcard-n">{rows.filter(r => s === 'all' || r.decision === s).length}</span></button>)}
+  </div></div><div className="dt1-bulk" aria-live="polite"><span className="dt1-bulk-n">{selected.size} selected</span><span className="dt1-spacer"/><button className="dt1-btn" onClick={clear}>Clear</button><button className="dt1-btn dt1-btn--beam" onClick={() => exportRows(true)}><span className="dt1-beam-track" aria-hidden="true"><span className="dt1-beam"/></span>Export selected</button></div></div>;
+}

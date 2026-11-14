@@ -3,6 +3,7 @@ import { ChevronDown, Lock } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { buildChapters } from '@/lib/curriculum';
 import ReviewScreen from '@/components/review/ReviewScreen';
+import MoneyToolAudit from '@/components/review/MoneyToolAudit';
 
 export default function CurriculumReview() {
   const [state, setState] = useState({ loading: true, allowed: false, modules: [] });
@@ -10,12 +11,21 @@ export default function CurriculumReview() {
 
   useEffect(() => {
     base44.functions.invoke('curriculumReview', {})
-      .then(r => setState({ loading: false, allowed: true, modules: r.data.modules }))
+      .then(r => setState({ loading: false, allowed: true, modules: r.data.modules, reviews:r.data.reviews || [] }))
       .catch(() => setState({ loading: false, allowed: false, modules: [] }));
   }, []);
 
   const chapters = useMemo(() => buildChapters(state.modules, [], []), [state.modules]);
   const screenCount = state.modules.reduce((n, m) => n + m.lessons.length, 0);
+  const saveReview = async review => {
+    const result = await base44.functions.invoke('curriculumReview',{mode:'save',review});
+    setState(s=>({...s,reviews:[...(s.reviews || []).filter(r=>r.tool_key !== review.tool_key),result.data.review]}));
+  };
+  const exportAudit = async rows => {
+    const result = await base44.functions.invoke('curriculumReview',{mode:'export',rows});
+    const url = URL.createObjectURL(new Blob(['\uFEFF',result.data.csv],{type:'text/csv;charset=utf-8;'}));
+    const a=document.createElement('a'); a.href=url; a.download='baseline-money-tools-audit.csv'; a.click(); setTimeout(()=>URL.revokeObjectURL(url),1000);
+  };
 
   if (state.loading) return <div className="flex items-center justify-center min-h-screen bg-black"><div className="w-8 h-8 border-4 border-white/10 border-t-[#2EA0FD] rounded-full animate-spin" /></div>;
   if (!state.allowed) return (
@@ -28,10 +38,12 @@ export default function CurriculumReview() {
 
   return (
     <div className="min-h-screen bg-black px-4 md:px-10 py-10">
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-6xl min-w-0 mx-auto">
         <p className="text-[#2EA0FD] text-[11px] uppercase tracking-[0.25em] font-semibold mb-2">Owner tools</p>
         <h1 className="text-3xl font-display font-extrabold text-white">Curriculum Review</h1>
         <p className="text-white/50 text-sm mt-1 mb-8">{chapters.length} chapters · {state.modules.length} lessons · {screenCount} screens, exactly as learners see them.</p>
+        <p className="text-sm text-muted-foreground">Unlocks follow the teaching chapters: emergency fund → bills → spending → budgeting → savings forecast → debt → credit → investing. Planned tools remain proposals, not available features. Full chapter completion and its money move are both required; paying never skips learning.</p>
+        <MoneyToolAudit chapters={chapters} reviews={state.reviews} onSave={saveReview} onExport={exportAudit}/>
         <div className="space-y-6">
           {chapters.map(ch => (
             <section key={ch.id}>

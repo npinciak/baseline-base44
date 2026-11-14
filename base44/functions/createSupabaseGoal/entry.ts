@@ -1,4 +1,6 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.31';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.54';
+import { secrets } from 'base44:runtime';
+import { goalSubscription, requireGoalLessons, freeGoalId } from '../../shared/goalPolicy.ts';
 
 export default async function(req) {
   try {
@@ -14,14 +16,16 @@ export default async function(req) {
     const existing = await base44.functions.invoke('getSupabaseGoals', {});
     const { goals, userProfileId } = existing.data || {};
     if (!userProfileId || !Array.isArray(goals)) return Response.json({ error: 'Could not resolve your savings profile.' }, { status: 409 });
-    if (goals.length >= 2) return Response.json({ code: 'GOAL_LIMIT', error: 'Your free plan includes two savings goals. Upgrade to add more.' }, { status: 403 });
-
-    const supabaseUrl = Deno.env.get('SUPABASE_URL');
-    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    const { paid } = await goalSubscription(base44, user);
+    if (!paid && goals.length >= 1) return Response.json({ code: 'GOAL_LIMIT', error: 'Your free plan includes one emergency fund. Additional goals require an active subscription.' }, { status: 403 });
+    if (!await requireGoalLessons(base44, user)) return Response.json({ code:'CHAPTER_REQUIRED', error:'Complete every lesson in Money In before setting up your emergency fund.' }, {status:403});
+    const supabaseUrl = secrets.get('SUPABASE_URL');
+    const serviceRoleKey = secrets.get('SUPABASE_SERVICE_ROLE_KEY');
 
     const payload = {
-      name,
-      goal_type: goal_type || null,
+      ...(!paid ? { id: await freeGoalId(userProfileId) } : {}),
+      name: !paid ? 'Emergency Fund' : name.trim(),
+      goal_type: !paid ? 'emergency' : goal_type || null,
       image: image || null,
       target_amount: target_amount || 0,
       current_amount: current_amount || 0,
@@ -43,6 +47,7 @@ export default async function(req) {
     });
 
     const result = await res.json();
+    if (res.status === 409 && !paid) return Response.json({code:'GOAL_LIMIT',error:'Your emergency fund already exists. Additional goals require a subscription.'},{status:403});
     if (!res.ok) return Response.json({ error: result }, { status: res.status });
     return Response.json({ goal: result[0] });
   } catch (error) {
