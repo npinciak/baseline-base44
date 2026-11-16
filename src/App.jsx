@@ -29,6 +29,7 @@ import ClipPathGroup from './pages/ClipPathGroup';
 import BaseScoreQuiz from './pages/BaseScoreQuiz';
 import BaseScore from './pages/BaseScore';
 import CurriculumReview from './pages/CurriculumReview';
+import CurriculumRoadmap from './pages/CurriculumRoadmap';
 
 const AuthenticatedApp = () => {
   const { isLoadingPublicSettings } = useAuth();
@@ -63,6 +64,7 @@ const AuthenticatedApp = () => {
           <Route path="/money" element={<Money />} />
           <Route path="/basecamp" element={<Basecamp />} />
           <Route path="/basescore" element={<BaseScore />} />
+          <Route path="/roadmap" element={<CurriculumRoadmap />} />
           <Route path="/curriculum-review" element={<CurriculumReview />} />
         </Route>
       </Route>

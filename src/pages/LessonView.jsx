@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight, CheckCircle, Coins, X } from 'lucide-react';
 import AmbientBackdrop from '@/components/dashboard/AmbientBackdrop';
 import { CHAPTERS } from '@/lib/curriculum';
+import { getLevelInfo } from '@/lib/coinLevels';
 
 export default function LessonView() {
   const { moduleId } = useParams();
@@ -76,6 +77,9 @@ export default function LessonView() {
         const res = await base44.functions.invoke('creditWallet', { moduleId }).catch(() => null);
         xp = res?.data?.awarded || 0;
         setXpEarned(xp);
+        if (typeof res?.data?.newBalance === 'number') {
+          window.dispatchEvent(new CustomEvent('wallet-updated', { detail: { balance: res.data.newBalance } }));
+        }
       }
 
       // Update UserStats
@@ -85,17 +89,23 @@ export default function LessonView() {
         const today = new Date().toISOString().slice(0, 10);
         const lastActivity = s.last_activity_date;
         const daysDiff = lastActivity
-          ? (new Date(today) - new Date(lastActivity)) / 86400000
+          ? Math.round((new Date(today) - new Date(lastActivity)) / 86400000)
           : null;
-        // Only extend streak if last activity was exactly yesterday (not today, not 2+ days ago)
-        const newStreak = daysDiff === 1 ? (s.current_streak + 1) : daysDiff === 0 ? s.current_streak : 1;
+        const usedShield = daysDiff === 2 && !!s.streak_shield_active;
+        const newStreak =
+          daysDiff === 1 || usedShield
+            ? (s.current_streak || 0) + 1
+            : daysDiff === 0
+              ? (s.current_streak || 1)
+              : 1;
         const newXp = (s.total_xp || 0) + xp;
-        const newLevel = Math.floor(newXp / 200) + 1;
+        const newLevel = getLevelInfo(newXp).current.level;
         await base44.entities.UserStats.update(s.id, {
           total_xp: newXp,
           current_level: newLevel,
           current_streak: newStreak,
           longest_streak: Math.max(s.longest_streak || 0, newStreak),
+          streak_shield_active: usedShield ? false : !!s.streak_shield_active,
           last_activity_date: today,
         });
       }

@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import WindingLearningPath from '@/components/WindingLearningPath';
 import AmbientBackdrop from '@/components/dashboard/AmbientBackdrop';
+import DashboardWelcomeHero from '@/components/dashboard/DashboardWelcomeHero';
 import useLearningState from '@/hooks/useLearningState';
 import { getGreetingName } from '@/lib/displayName';
 
@@ -16,6 +17,7 @@ const itemVariants = {
 export default function Dashboard() {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
+  const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const learning = useLearningState();
   const navigate = useNavigate();
@@ -30,6 +32,7 @@ export default function Dashboard() {
       ]);
       setProfile(profileRes?.data?.profile || null);
       if (statsArr.length === 0) { navigate('/onboarding'); return; }
+      setStats(statsArr[0]);
       setLoading(false);
     };
     init().catch(() => setLoading(false));
@@ -43,13 +46,6 @@ export default function Dashboard() {
     );
   }
 
-  const greeting = () => {
-    const h = new Date().getHours();
-    if (h < 12) return 'Good morning';
-    if (h < 18) return 'Good afternoon';
-    return 'Good evening';
-  };
-
   return (
     <div className="relative min-h-screen bg-black px-6 md:px-10 py-10 overflow-hidden">
       <AmbientBackdrop dotsOnly />
@@ -59,15 +55,21 @@ export default function Dashboard() {
         animate="show"
         className="relative z-10 max-w-5xl mx-auto"
       >
-        <motion.div variants={itemVariants} className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-light tracking-tight text-white mb-2">
-            {greeting()}, <span className="font-extrabold">{getGreetingName(user, profile)}</span>
-          </h1>
+        <motion.div variants={itemVariants}>
+          <DashboardWelcomeHero
+            name={getGreetingName(user, profile)}
+            stats={stats}
+            chapters={learning.chapters}
+            onCompleteMove={learning.completeMove}
+          />
         </motion.div>
 
         <motion.section variants={itemVariants}>
-          <div className="mb-5">
-            <h2 className="text-white/60 text-xs font-light tracking-widest uppercase mb-1">BasePath</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-white/60 text-xs font-semibold tracking-widest uppercase">Your BasePath</h2>
+            <span className="text-xs text-white/45">
+              {learning.chapters.filter((c) => c.learned).length} of {learning.chapters.length} chapters mastered
+            </span>
           </div>
           <WindingLearningPath chapters={learning.chapters} onCompleteMove={learning.completeMove} />
         </motion.section>

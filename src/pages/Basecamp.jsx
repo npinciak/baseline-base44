@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
-import { Coins, CheckCircle, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Coins, CheckCircle, X, Sparkles } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import AmbientBackdrop from '@/components/dashboard/AmbientBackdrop';
 import MountainHero from '@/components/basecamp/MountainHero';
 import CampSection from '@/components/basecamp/CampSection';
 
 import { GIFT_CARDS } from '@/lib/coinEconomy';
+import { getEffectiveCardCost, getLevelInfo, getLifetimeCoins } from '@/lib/coinLevels';
 
 const containerVariants = { hidden: {}, show: { transition: { staggerChildren: 0.06 } } };
 const itemVariants = {
@@ -17,6 +19,7 @@ const itemVariants = {
 
 export default function Basecamp() {
   const [balance, setBalance] = useState(0);
+  const [lifetimeCoins, setLifetimeCoins] = useState(0);
   const [loading, setLoading] = useState(true);
   const [selectedCard, setSelectedCard] = useState(null);
   const [redeeming, setRedeeming] = useState(false);
@@ -25,13 +28,24 @@ export default function Basecamp() {
   const camps = [...new Set(GIFT_CARDS.map(c => c.coinsCost))].sort((a, b) => a - b);
 
   useEffect(() => {
-    base44.functions.invoke('getWallet', {})
-      .then(res => setBalance(res?.data?.balance ?? 0))
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    const load = async () => {
+      const u = await base44.auth.me().catch(() => null);
+      const [walletRes, statsArr, awards] = await Promise.all([
+        base44.functions.invoke('getWallet', {}).catch(() => null),
+        u ? base44.entities.UserStats.filter({ user_id: u.id }).catch(() => []) : [],
+        u ? base44.entities.CoinAward.filter({ user_id: u.id }).catch(() => []) : [],
+      ]);
+      setBalance(walletRes?.data?.balance ?? 0);
+      const awardSum = (awards || []).reduce((s, a) => s + Number(a.amount || 0), 0);
+      setLifetimeCoins(Math.max(getLifetimeCoins(statsArr?.[0]), awardSum));
+      setLoading(false);
+    };
+    load();
   }, []);
 
-  const canAfford = (card) => balance >= card.coinsCost;
+  const levelInfo = getLevelInfo(lifetimeCoins);
+  const selectedPricing = selectedCard ? getEffectiveCardCost(selectedCard, lifetimeCoins) : null;
+  const canAfford = (card) => balance >= getEffectiveCardCost(card, lifetimeCoins).effectiveCost;
 
   const handleRedeem = async () => {
     if (!selectedCard || !canAfford(selectedCard)) return;
@@ -39,11 +53,9 @@ export default function Basecamp() {
     try {
       const res = await base44.functions.invoke('redeemGiftCard', {
         giftCardId: selectedCard.id,
-        brand: selectedCard.brand,
-        amountUsd: selectedCard.amount,
-        coinsCost: selectedCard.coinsCost,
       });
       setBalance(res.data.newBalance);
+      window.dispatchEvent(new CustomEvent('wallet-updated', { detail: { balance: res.data.newBalance } }));
       const redeemedCard = selectedCard;
       setSelectedCard(null);
       setRedeemSuccess(redeemedCard);
@@ -71,8 +83,31 @@ export default function Basecamp() {
     <div className="relative min-h-screen bg-black px-4 py-8 overflow-hidden">
       <AmbientBackdrop />
       <motion.div variants={containerVariants} initial="hidden" animate="show" className="relative z-10 max-w-5xl mx-auto">
-        <motion.div variants={itemVariants} className="mb-10">
+        <motion.div variants={itemVariants} className="mb-6">
           <MountainHero balance={balance} camps={camps} />
+        </motion.div>
+
+        <motion.div variants={itemVariants} className="mb-10 rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-4 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-[#2EFD7A]/15 border border-[#2EFD7A]/30 flex items-center justify-center text-[#2EFD7A]">
+              <Sparkles className="w-4 h-4" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-white">
+                Level {levelInfo.current.level} · {levelInfo.current.title} ({lifetimeCoins.toLocaleString()} Lifetime BC)
+              </p>
+              <p className="text-xs text-white/60">
+                {lifetimeCoins >= 5600
+                  ? 'Summit Perks active: -100 BC on $10 cards & -300 BC on $25 cards. Spending coins never lowers your level.'
+                  : lifetimeCoins >= 2000
+                    ? 'Camp I Member Perks active: -100 BC on all $10 cards! Reach Level 6 (5,600 BC) for -300 BC on $25 cards.'
+                    : 'Reach Level 4 (2,000 Lifetime BC) for -100 BC on $10 cards, and Level 6 (5,600 BC) for -300 BC on $25 cards.'}
+              </p>
+            </div>
+          </div>
+          <Link to="/profile#levels" className="text-xs font-semibold text-[#2EFD7A] hover:underline shrink-0">
+            All Level Benefits →
+          </Link>
         </motion.div>
 
         <div className="space-y-12">
@@ -83,6 +118,7 @@ export default function Basecamp() {
               cost={cost}
               cards={GIFT_CARDS.filter(c => c.coinsCost === cost)}
               balance={balance}
+              lifetimeCoins={lifetimeCoins}
               onSelect={setSelectedCard}
             />
           ))}
@@ -148,12 +184,22 @@ export default function Basecamp() {
               </div>
               <div className="flex items-center justify-between text-sm mb-1">
                 <span className="text-white/50">Cost</span>
-                <span className="font-semibold text-red-400">- {selectedCard.coinsCost.toLocaleString()} BC</span>
+                <span className="font-semibold text-red-400">
+                  - {(selectedPricing?.effectiveCost ?? selectedCard.coinsCost).toLocaleString()} BC
+                </span>
               </div>
+              {selectedPricing?.rebate > 0 && (
+                <div className="flex items-center justify-between text-xs mb-1 text-[#2EFD7A]">
+                  <span>Level {selectedPricing.tierRequired} Member Rebate</span>
+                  <span>Saved {selectedPricing.rebate} BC</span>
+                </div>
+              )}
               <div className="h-px bg-white/10 my-3" />
               <div className="flex items-center justify-between text-sm mb-6">
                 <span className="font-semibold text-white">Remaining Balance</span>
-                <span className="font-bold text-[#2EFD7A]">{(balance - selectedCard.coinsCost).toLocaleString()} BC</span>
+                <span className="font-bold text-[#2EFD7A]">
+                  {(balance - (selectedPricing?.effectiveCost ?? selectedCard.coinsCost)).toLocaleString()} BC
+                </span>
               </div>
 
               <div className="flex gap-3">

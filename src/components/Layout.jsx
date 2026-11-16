@@ -1,8 +1,9 @@
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { User, Flame, Coins, LogOut, Shield, Target, LayoutDashboard, Wallet, ShoppingBag, BookOpen } from 'lucide-react';
+import { User, Flame, Coins, LogOut, Shield, LayoutDashboard, Wallet, ShoppingBag, BookOpen, Compass } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { getDisplayName, getInitial } from '@/lib/displayName';
+import { getLevelInfo, getLifetimeCoins } from '@/lib/coinLevels';
 
 export default function Layout() {
   const [user, setUser] = useState(null);
@@ -25,8 +26,15 @@ export default function Layout() {
       if (displayName) setUser((prev) => (prev ? { ...prev, display_name: displayName } : prev));
       if (nextProfile !== undefined) setProfile(nextProfile);
     };
+    const onWalletUpdated = (e) => {
+      if (typeof e.detail?.balance === 'number') setWalletBalance(e.detail.balance);
+    };
     window.addEventListener('profile-updated', onProfileUpdated);
-    return () => window.removeEventListener('profile-updated', onProfileUpdated);
+    window.addEventListener('wallet-updated', onWalletUpdated);
+    return () => {
+      window.removeEventListener('profile-updated', onProfileUpdated);
+      window.removeEventListener('wallet-updated', onWalletUpdated);
+    };
   }, []);
 
   const [walletBalance, setWalletBalance] = useState(null);
@@ -39,14 +47,15 @@ export default function Layout() {
     base44.functions.invoke('curriculumReview', { mode: 'check' }).then(r => setIsOwner(!!r?.data?.allowed)).catch(() => {});
   }, [user]);
 
-  const xpForLevel = (level) => level * 200;
-  const xpProgress = stats ? ((stats.total_xp % xpForLevel(stats.current_level)) / xpForLevel(stats.current_level)) * 100 : 0;
+  const levelInfo = getLevelInfo(getLifetimeCoins(stats));
+  const xpProgress = levelInfo.progressPct;
 
   const navItems = [
     { to: '/dashboard', icon: LayoutDashboard, label: 'Home', iconColor: 'text-[#2EA0FD]' },
     { to: '/money', icon: Wallet, label: 'Money', iconColor: 'text-[#2EFD7A]' },
     { to: '/basecamp', icon: ShoppingBag, label: 'Basecamp', iconColor: 'text-[#2EA0FD]' },
-    { to: '/profile', icon: User, label: 'Profile', iconColor: 'text-[#2EFD7A]' },
+    { to: '/roadmap', icon: Compass, label: 'Roadmap', iconColor: 'text-[#2EFD7A]' },
+    { to: '/profile', icon: User, label: 'Profile', iconColor: 'text-[#2EA0FD]' },
   ];
 
   return (
@@ -68,8 +77,10 @@ export default function Layout() {
         {stats && (
           <div className="px-5 py-4 border-b border-white/10">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold text-[#2BF9E9]">Level {stats.current_level}</span>
-              <span className="text-xs font-semibold text-white flex items-center gap-1"><Coins className="w-3 h-3 text-[#2EA0FD]" />{walletBalance !== null ? walletBalance : '---'} Base Coins</span>
+              <NavLink to="/profile#levels" className="text-xs font-semibold text-[#2EFD7A] hover:underline">
+                Lv {levelInfo.current.level} · {levelInfo.current.title}
+              </NavLink>
+              <span className="text-xs font-semibold text-white flex items-center gap-1"><Coins className="w-3 h-3 text-[#2EA0FD]" />{walletBalance !== null ? walletBalance : '---'} BC</span>
             </div>
             <div className="h-2 bg-white/10 rounded-full overflow-hidden">
               <div

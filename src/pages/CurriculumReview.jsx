@@ -4,10 +4,12 @@ import { base44 } from '@/api/base44Client';
 import { buildChapters } from '@/lib/curriculum';
 import ReviewScreen from '@/components/review/ReviewScreen';
 import MoneyToolAudit from '@/components/review/MoneyToolAudit';
+import CurriculumRoadmapView from '@/components/roadmap/CurriculumRoadmapView';
 
 export default function CurriculumReview() {
   const [state, setState] = useState({ loading: true, allowed: false, modules: [] });
   const [openUnit, setOpenUnit] = useState(null);
+  const [tab, setTab] = useState('roadmap');
 
   useEffect(() => {
     base44.functions.invoke('curriculumReview', {})
@@ -40,8 +42,30 @@ export default function CurriculumReview() {
     <div className="min-h-screen bg-black px-4 md:px-10 py-10">
       <div className="max-w-6xl min-w-0 mx-auto">
         <p className="text-[#2EA0FD] text-[11px] uppercase tracking-[0.25em] font-semibold mb-2">Owner tools</p>
-        <h1 className="text-3xl font-display font-extrabold text-white">Curriculum Review</h1>
-        <p className="text-white/50 text-sm mt-1 mb-8">{chapters.length} chapters · {state.modules.length} lessons · {screenCount} screens, exactly as learners see them.</p>
+        <h1 className="text-3xl font-display font-extrabold text-white">Curriculum Review & 3x Roadmap</h1>
+        <p className="text-white/50 text-sm mt-1 mb-5">{chapters.length} live chapters · {state.modules.length} lessons · {screenCount} screens, plus the 38-chapter (142-lesson) 3x expansion roadmap.</p>
+
+        <div className="inline-flex rounded-2xl border border-white/10 bg-white/[0.04] p-1 mb-8">
+          <button
+            type="button"
+            onClick={() => setTab('roadmap')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${tab === 'roadmap' ? 'bg-[#2EFD7A] text-black' : 'text-white/65 hover:text-white'}`}
+          >
+            3x Expansion Roadmap (57 Ch · 213 Lessons)
+          </button>
+          <button
+            type="button"
+            onClick={() => setTab('live')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${tab === 'live' ? 'bg-[#2EFD7A] text-black' : 'text-white/65 hover:text-white'}`}
+          >
+            Live Curriculum & Tool Audit ({chapters.length} Ch)
+          </button>
+        </div>
+
+        {tab === 'roadmap' ? (
+          <CurriculumRoadmapView />
+        ) : (
+        <>
         <p className="text-sm text-muted-foreground">Unlocks follow the teaching chapters: emergency fund → bills → spending → budgeting → savings forecast → debt → credit → investing. Planned tools remain proposals, not available features. Full chapter completion and its money move are both required; paying never skips learning.</p>
         <MoneyToolAudit chapters={chapters} reviews={state.reviews} onSave={saveReview} onExport={exportAudit}/>
         <div className="space-y-6">
@@ -69,6 +93,8 @@ export default function CurriculumReview() {
             </section>
           ))}
         </div>
+        </>
+        )}
       </div>
     </div>
   );

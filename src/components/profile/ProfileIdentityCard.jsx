@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { useToast } from '@/components/ui/use-toast';
 import { getDisplayName, getInitial } from '@/lib/displayName';
 
-export default function ProfileIdentityCard({ user, profile, stats, levelTitle, xpProgress, nextLevelXp, onUpdated }) {
+export default function ProfileIdentityCard({ user, profile, levelInfo, walletBalance, onUpdated }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState('');
   const [saving, setSaving] = useState(false);
@@ -12,7 +12,8 @@ export default function ProfileIdentityCard({ user, profile, stats, levelTitle, 
 
   const displayName = getDisplayName(user, profile) || 'Baseline Member';
   const initial = getInitial(user, profile);
-  const level = stats?.current_level || 1;
+  const level = levelInfo?.current?.level || 1;
+  const levelTitle = levelInfo?.current?.title || 'Trailhead';
 
   const startEdit = () => {
     setDraft(getDisplayName(user, profile));
@@ -107,11 +108,15 @@ export default function ProfileIdentityCard({ user, profile, stats, levelTitle, 
 
       <div className="mt-5">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-xs text-white/50">Level {level} → {level + 1}</span>
-          <span className="text-xs font-semibold text-[#2EFD7A]">{stats?.total_xp || 0} / {nextLevelXp} Base Coins</span>
+          <span className="text-xs text-white/60">
+            {levelInfo?.next ? `Level ${level} → Level ${levelInfo.next.level} (${levelInfo.next.title})` : 'Summit Level Reached'}
+          </span>
+          <span className="text-xs font-semibold text-[#2EFD7A]">
+            {(levelInfo?.lifetimeCoins || 0).toLocaleString()} {levelInfo?.next ? `/ ${levelInfo.next.minLifetimeCoins.toLocaleString()}` : ''} Lifetime BC · {(walletBalance ?? 0).toLocaleString()} Spendable
+          </span>
         </div>
         <div className="h-3 bg-white/10 rounded-full overflow-hidden">
-          <div className="h-full rounded-full bg-[#2EFD7A] transition-all duration-700" style={{ width: `${xpProgress}%` }} />
+          <div className="h-full rounded-full bg-gradient-to-r from-[#2EFD7A] to-[#2EA0FD] transition-all duration-700" style={{ width: `${Math.max(levelInfo?.progressPct || 0, 4)}%` }} />
         </div>
       </div>
     </div>

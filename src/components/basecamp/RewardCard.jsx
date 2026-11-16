@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { Coins, Lock, Sparkles } from 'lucide-react';
+import { getEffectiveCardCost } from '@/lib/coinLevels';
 
 const BRAND_COLORS = {
   Amazon: ['#FF9900', '#7a3e00'],
@@ -10,10 +11,11 @@ const BRAND_COLORS = {
   DoorDash: ['#FF3008', '#541000'],
 };
 
-export default function RewardCard({ card, balance, onSelect }) {
-  const affordable = balance >= card.coinsCost;
+export default function RewardCard({ card, balance, lifetimeCoins = 0, onSelect }) {
+  const { effectiveCost, rebate, unlockHint } = getEffectiveCardCost(card, lifetimeCoins);
+  const affordable = balance >= effectiveCost;
   const [from, to] = BRAND_COLORS[card.brand] || ['#2EA0FD', '#0a2a50'];
-  const pct = Math.min(100, Math.round((balance / card.coinsCost) * 100));
+  const pct = Math.min(100, Math.round((balance / effectiveCost) * 100));
 
   return (
     <motion.button
@@ -49,14 +51,18 @@ export default function RewardCard({ card, balance, onSelect }) {
         </div>
         {affordable ? (
           <div className="flex items-center justify-between">
-            <span className="flex items-center gap-1.5 text-sm font-bold text-white"><Coins className="w-4 h-4 text-[#2BF9E9]" />{card.coinsCost.toLocaleString()} BC</span>
-            <span className="text-xs font-semibold text-[#2EA0FD] group-hover:translate-x-1 transition-transform">Claim →</span>
+            <span className="flex items-center gap-1.5 text-sm font-bold text-white">
+              <Coins className="w-4 h-4 text-[#2EFD7A]" />
+              {effectiveCost.toLocaleString()} BC
+              {rebate > 0 && <span className="text-xs line-through text-white/40">{card.coinsCost.toLocaleString()}</span>}
+            </span>
+            <span className="text-xs font-semibold text-[#2EFD7A] group-hover:translate-x-1 transition-transform">Claim →</span>
           </div>
         ) : (
           <div>
             <div className="flex items-center justify-between text-xs mb-1.5">
-              <span className="text-white/60">{(card.coinsCost - balance).toLocaleString()} BC to unlock</span>
-              <span className="text-white/40">{pct}%</span>
+              <span className="text-white/60">{(effectiveCost - balance).toLocaleString()} BC to unlock</span>
+              <span className="text-white/45">{rebate > 0 ? `Saved ${rebate} BC` : unlockHint || `${pct}%`}</span>
             </div>
             <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
               <motion.div className="h-full rounded-full bg-gradient-to-r from-[#2EA0FD] to-[#2BF9E9]" initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 1, ease: 'easeOut' }} />

@@ -2,14 +2,17 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import { Flame, Coins, Award, CheckCircle, BookOpen, Trophy } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
 import BaseScoreSection from '@/components/profile/BaseScoreSection';
 import FamilySection from '@/components/profile/FamilySection';
 import JourneySection from '@/components/profile/JourneySection';
 import ProfileIdentityCard from '@/components/profile/ProfileIdentityCard';
+import LevelBenefitsPanel from '@/components/levels/LevelBenefitsPanel';
 import AmbientBackdrop from '@/components/dashboard/AmbientBackdrop';
 import { LESSON_REWARD } from '@/lib/coinEconomy';
-
-const LEVEL_TITLES = ['Rookie', 'Learner', 'Saver', 'Investor', 'Planner', 'Strategist', 'Expert', 'Master', 'Guru', 'Legend'];
+import { getLevelInfo, getLifetimeCoins } from '@/lib/coinLevels';
+import { buildChapters } from '@/lib/curriculum';
+import { downloadMoneyPlaybook } from '@/lib/playbookPdf';
 
 const containerVariants = { hidden: {}, show: { transition: { staggerChildren: 0.1 } } };
 const itemVariants = {
@@ -25,8 +28,39 @@ export default function Profile() {
   const [progress, setProgress] = useState([]);
   const [modules, setModules] = useState([]);
   const [goals, setGoals] = useState([]);
+  const [walletBalance, setWalletBalance] = useState(0);
+  const [payloadModules, setPayloadModules] = useState([]);
+  const [moves, setMoves] = useState([]);
+  const [activatingShield, setActivatingShield] = useState(false);
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState(null);
+  const { toast } = useToast();
+
+  const handleActivateShield = async () => {
+    if (activatingShield) return;
+    setActivatingShield(true);
+    try {
+      const res = await base44.functions.invoke('activateStreakShield', {});
+      const nextBal = res?.data?.newBalance;
+      if (typeof nextBal === 'number') {
+        setWalletBalance(nextBal);
+        window.dispatchEvent(new CustomEvent('wallet-updated', { detail: { balance: nextBal } }));
+      }
+      setStats((prev) => (prev ? { ...prev, streak_shield_active: true } : prev));
+      toast({
+        title: 'Streak Shield armed!',
+        description: 'Your daily streak is now protected the next time you miss a single day.',
+      });
+    } catch (err) {
+      toast({
+        title: 'Could not arm Streak Shield',
+        description: err?.response?.data?.error || 'Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setActivatingShield(false);
+    }
+  };
 
   useEffect(() => {
     const init = async () => {
@@ -34,13 +68,16 @@ export default function Profile() {
       setUser(u);
       const profileRes = await base44.functions.invoke('getUserProfile', {}).catch(() => null);
       setProfile(profileRes?.data?.profile || null);
-      const [statsArr, allBadges, ubArr, prog, mods, goalsRes] = await Promise.all([
+      const [statsArr, allBadges, ubArr, prog, mods, goalsRes, walletRes, payloadRes, movesArr] = await Promise.all([
         base44.entities.UserStats.filter({ user_id: u.id }),
         base44.entities.Badge.list(),
         base44.entities.UserBadge.filter({ user_id: u.id }),
         base44.entities.UserProgress.filter({ user_id: u.id }),
         base44.entities.Module.filter({ is_published: true }),
         base44.functions.invoke('getSupabaseGoals', {}).catch(() => ({ data: { goals: [] } })),
+        base44.functions.invoke('getWallet', {}).catch(() => ({ data: { balance: 0 } })),
+        base44.functions.invoke('getPayloadLessons', {}).catch(() => ({ data: { modules: [] } })),
+        base44.entities.MoneyMoveCompletion.filter({ user_id: u.id }).catch(() => []),
       ]);
       setStats(statsArr[0] || null);
       setBadges(allBadges);
@@ -48,6 +85,9 @@ export default function Profile() {
       setProgress(prog);
       setModules(mods);
       setGoals(goalsRes?.data?.goals || []);
+      setWalletBalance(walletRes?.data?.balance ?? 0);
+      setPayloadModules(payloadRes?.data?.modules || []);
+      setMoves(movesArr || []);
       setLoading(false);
     };
     init().catch(() => setLoading(false));
@@ -68,9 +108,10 @@ export default function Profile() {
 
   const activeGoal = goals.find(g => (g.current_amount || 0) < g.target_amount) || goals[0];
 
-  const xpForLevel = (level) => level * 200;
-  const xpProgress = stats ? ((stats.total_xp % xpForLevel(stats.current_level)) / xpForLevel(stats.current_level)) * 100 : 0;
-  const levelTitle = LEVEL_TITLES[Math.min((stats?.current_level || 1) - 1, LEVEL_TITLES.length - 1)];
+  const chapters = buildChapters(payloadModules, progress, moves);
+  const completedUnitsCount = chapters.reduce((s, c) => s + c.lessonsDone, 0);
+  const lifetimeCoins = getLifetimeCoins(stats, completedUnitsCount);
+  const levelInfo = getLevelInfo(lifetimeCoins);
 
   if (loading) {
     return (
@@ -95,10 +136,8 @@ export default function Profile() {
           <ProfileIdentityCard
             user={user}
             profile={profile}
-            stats={stats}
-            levelTitle={levelTitle}
-            xpProgress={xpProgress}
-            nextLevelXp={xpForLevel((stats?.current_level || 1) + 1)}
+            levelInfo={levelInfo}
+            walletBalance={walletBalance}
             onUpdated={(nextUser, nextProfile) => {
               setUser(nextUser);
               setProfile(nextProfile);
@@ -110,8 +149,8 @@ export default function Profile() {
         <motion.div variants={itemVariants} className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
           {[
             { icon: Flame, label: 'Day Streak', value: stats?.current_streak || 0, color: 'text-[#2EFD7A]', bg: 'bg-[#2EFD7A]/10' },
-            { icon: Coins, label: 'Base Coins', value: stats?.total_xp || 0, color: 'text-[#2EFD7A]', bg: 'bg-[#2EFD7A]/10' },
-            { icon: BookOpen, label: 'Lessons Done', value: totalLessonsCompleted, color: 'text-[#2EFD7A]', bg: 'bg-[#2EFD7A]/10' },
+            { icon: Coins, label: 'Spendable BC', value: walletBalance, color: 'text-[#2EA0FD]', bg: 'bg-[#2EA0FD]/10' },
+            { icon: BookOpen, label: 'Lessons Done', value: completedUnitsCount || totalLessonsCompleted, color: 'text-[#2EFD7A]', bg: 'bg-[#2EFD7A]/10' },
             { icon: Trophy, label: 'Best Streak', value: stats?.longest_streak || 0, color: 'text-[#2EFD7A]', bg: 'bg-[#2EFD7A]/10' },
           ].map(({ icon: Icon, label, value, color, bg }) => (
             <div key={label} className="bg-white/[0.03] border border-white/10 rounded-2xl p-4 text-center">
@@ -122,6 +161,28 @@ export default function Profile() {
               <p className="text-xs text-white/50 mt-0.5">{label}</p>
             </div>
           ))}
+        </motion.div>
+
+        {/* BaseCoin Levels & Unlockable Benefits */}
+        <motion.div variants={itemVariants}>
+          <LevelBenefitsPanel
+            lifetimeCoins={lifetimeCoins}
+            walletBalance={walletBalance}
+            shieldActive={!!stats?.streak_shield_active}
+            activatingShield={activatingShield}
+            onActivateShield={handleActivateShield}
+            onDownloadPlaybook={() =>
+              downloadMoneyPlaybook({
+                user,
+                profile,
+                stats,
+                chapters,
+                goals,
+                walletBalance,
+                lifetimeCoins,
+              })
+            }
+          />
         </motion.div>
 
         {/* BaseScore */}
