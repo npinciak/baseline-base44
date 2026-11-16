@@ -8,6 +8,7 @@
 
 @layer base {
   :root {
+    --auth-secondary: 207 98% 59%;
     --background: 222 47% 6%;
     --foreground: 210 40% 96%;
     --card: 222 40% 9%;
@@ -101,10 +102,15 @@
 .auth-brand, .dark .auth-brand {
   --primary: 207 98% 59%;
   --primary-foreground: 222 47% 6%;
+  --auth-secondary: 207 98% 59%;
   --ring: 207 98% 59%;
   --background: 0 0% 0%;
   --card: 0 0% 3%;
   --border: 222 25% 16%;
+}
+
+.auth-login-green, .dark .auth-login-green {
+  --auth-secondary: 142 98% 59%;
 }
 
 /* Custom scrollbar */

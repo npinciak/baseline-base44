@@ -65,6 +65,7 @@ module.exports = {
   				border: 'hsl(var(--sidebar-border))',
   				ring: 'hsl(var(--sidebar-ring))'
   			},
+  			'auth-secondary': 'hsl(var(--auth-secondary) / <alpha-value>)',
   			teal: 'hsl(var(--teal))',
   			turquoise: 'hsl(var(--turquoise))',
   			amber: 'hsl(var(--amber))',

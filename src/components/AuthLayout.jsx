@@ -40,9 +40,10 @@ function Wordmark({ className = "" }) {
   );
 }
 
-export default function AuthLayout({ icon: Icon, title, subtitle, footer, children }) {
+export default function AuthLayout({ icon: Icon, title, subtitle, footer, secondaryTone, children }) {
+  const toneClass = secondaryTone === "green" ? "auth-login-green" : "";
   return (
-    <div className="auth-brand relative min-h-screen flex flex-col items-center justify-center bg-background px-4 py-8 overflow-x-hidden">
+    <div className={`auth-brand ${toneClass} relative min-h-screen flex flex-col items-center justify-center bg-background px-4 py-8 overflow-x-hidden`}>
       {/* Aurora borealis background — slow drifting green/blue glows, kept dim so black dominates */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
@@ -59,7 +60,7 @@ export default function AuthLayout({ icon: Icon, title, subtitle, footer, childr
         />
         <motion.div
           className="absolute bottom-[-20%] left-1/4 w-[50%] h-[50%] rounded-full"
-          style={{ background: "radial-gradient(circle, hsla(var(--primary),0.13) 0%, hsla(var(--primary),0.04) 45%, transparent 75%)" }}
+          style={{ background: "radial-gradient(circle, hsl(var(--auth-secondary) / 0.13) 0%, hsl(var(--auth-secondary) / 0.04) 45%, transparent 75%)" }}
           animate={{ x: [0, 40, -40, 0], y: [0, -20, 30, 0], opacity: [0.15, 0.28, 0.15] }}
           transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 2 }}
         />
@@ -97,8 +98,8 @@ export default function AuthLayout({ icon: Icon, title, subtitle, footer, childr
           <h1 className="text-2xl font-light tracking-tight text-white">{title}</h1>
 
           {Icon && (
-            <div className="inline-flex items-center justify-center w-10 h-10 rounded-2xl bg-primary/15 border border-primary/30 mt-3 mb-1 shadow-sm">
-              <Icon className="w-5 h-5 text-primary" aria-hidden="true" />
+            <div className="inline-flex items-center justify-center w-10 h-10 rounded-2xl bg-auth-secondary/15 border border-auth-secondary/30 mt-3 mb-1 shadow-sm">
+              <Icon className="w-5 h-5 text-auth-secondary" aria-hidden="true" />
             </div>
           )}
 

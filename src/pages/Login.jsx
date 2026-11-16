@@ -45,10 +45,11 @@ export default function Login() {
       icon={LogIn}
       title="Welcome Back"
       subtitle="Sign in to keep building your financial future"
+      secondaryTone="green"
       footer={
         <>
           Don't have an account?{" "}
-          <Link to="/register" className="text-primary font-medium hover:underline">
+          <Link to="/register" className="text-auth-secondary font-medium hover:underline">
             Create one
           </Link>
         </>
@@ -62,7 +63,7 @@ export default function Login() {
 
       <Button
         variant="outline"
-        className="w-full h-11 text-sm font-medium"
+        className="w-full h-11 text-sm font-medium border-auth-secondary/30 hover:bg-auth-secondary/10 hover:border-auth-secondary/50 hover:text-foreground"
         onClick={handleGoogle}
       >
         <GoogleIcon className="w-5 h-5 mr-2" />
@@ -95,7 +96,7 @@ export default function Login() {
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
             <Label htmlFor="password">Password</Label>
-            <Link to="/forgot-password" className="text-xs text-primary hover:underline">
+            <Link to="/forgot-password" className="text-xs text-auth-secondary hover:underline">
               Forgot password?
             </Link>
           </div>
