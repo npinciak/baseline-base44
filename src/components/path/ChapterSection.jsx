@@ -17,8 +17,14 @@ export default function ChapterSection({ chapter, meta, defaultOpen, onCompleteM
     <div className={`rounded-2xl overflow-hidden border border-white/10 bg-white/[0.03] backdrop-blur-sm mb-4 ${chapter.comingSoon ? 'opacity-60' : ''}`}>
       <button onClick={() => setOpen((o) => !o)} className="w-full flex items-center justify-between px-5 py-4 hover:bg-white/[0.04] transition-colors">
         <div className="flex items-center gap-3 text-left min-w-0">
-          <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 text-black text-sm font-extrabold"
-            style={{ background: `linear-gradient(135deg, ${meta.from}, ${meta.to})` }}>
+          <div
+            className="chapter-badge-gradient w-9 h-9 rounded-xl flex items-center justify-center shrink-0 text-black text-sm font-extrabold"
+            style={{
+              backgroundImage: `linear-gradient(135deg, ${meta.from} 0%, ${meta.mid || meta.to} 45%, ${meta.to} 80%, ${meta.from} 100%)`,
+              boxShadow: `0 0 18px -4px ${meta.from}77`,
+              animationDelay: `${(meta.index || 0) * -0.35}s`,
+            }}
+          >
             {chapter.number}
           </div>
           <div className="min-w-0">

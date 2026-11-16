@@ -12,6 +12,18 @@ const TOPIC_META = {
   retirement: { Icon: Shield },
 };
 
+function hslToHex(h, s, l) {
+  const sat = s / 100;
+  const light = l / 100;
+  const a = sat * Math.min(light, 1 - light);
+  const f = (n) => {
+    const k = (n + h / 30) % 12;
+    const color = light - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+    return Math.round(255 * color).toString(16).padStart(2, '0');
+  };
+  return `#${f(0)}${f(8)}${f(4)}`;
+}
+
 export default function WindingLearningPath({ chapters, onCompleteMove }) {
   if (!chapters.some((c) => !c.comingSoon)) {
     return (
@@ -27,30 +39,24 @@ export default function WindingLearningPath({ chapters, onCompleteMove }) {
   return (
     <div>
       {chapters.map((chapter, i) => {
-        // Calculate continuous green (#2EFD7A) to blue (#2EA0FD) gradient across all chapters
         const total = chapters.length > 1 ? chapters.length - 1 : 1;
-        
-        // We'll interpolate HSL to keep the vibrant neon transition
-        // Green is approx H: 142, S: 98, L: 59 
-        // Blue is approx H: 207, S: 98, L: 59
-        const h1 = 142;
-        const h2 = 207;
-        const s = 98;
-        const l = 59;
-        
-        const pctFrom = i / total;
-        const pctTo = Math.min((i + 1) / total, 1);
-        
-        const hFrom = h1 + (h2 - h1) * pctFrom;
-        const hTo = h1 + (h2 - h1) * pctTo;
-        
-        const fromColor = `hsl(${hFrom}, ${s}%, ${l}%)`;
-        const toColor = `hsl(${hTo}, ${s}%, ${l}%)`;
-        
+        const t = i / total;
+
+        // Wide per-badge hue span so each chapter number has a rich gradient while progressing green -> blue
+        const hStart = 140 + (182 - 140) * t;
+        const hMid = 166 + (200 - 166) * t;
+        const hEnd = 190 + (218 - 190) * t;
+
+        const fromColor = hslToHex(hStart, 98, 56);
+        const midColor = hslToHex(hMid, 100, 66);
+        const toColor = hslToHex(hEnd, 98, 56);
+
         const meta = {
           ...(TOPIC_META[chapter.topic] || TOPIC_META.saving),
           from: fromColor,
-          to: toColor
+          mid: midColor,
+          to: toColor,
+          index: i,
         };
         
         return (

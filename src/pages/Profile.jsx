@@ -5,6 +5,7 @@ import { Flame, Coins, Award, CheckCircle, BookOpen, Trophy } from 'lucide-react
 import BaseScoreSection from '@/components/profile/BaseScoreSection';
 import FamilySection from '@/components/profile/FamilySection';
 import JourneySection from '@/components/profile/JourneySection';
+import ProfileIdentityCard from '@/components/profile/ProfileIdentityCard';
 import AmbientBackdrop from '@/components/dashboard/AmbientBackdrop';
 import { LESSON_REWARD } from '@/lib/coinEconomy';
 
@@ -90,35 +91,19 @@ export default function Profile() {
       >
         <motion.h1 variants={itemVariants} className="text-3xl font-display font-extrabold text-white mb-8">My Profile</motion.h1>
 
-        {/* User card */}
-        <motion.div variants={itemVariants} className="bg-white/[0.03] border border-white/10 backdrop-blur-sm rounded-3xl p-6 mb-6">
-          <div className="flex items-center gap-5">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#2EFD7A]/30 to-[#2EFD7A]/10 border border-[#2EFD7A]/20 flex items-center justify-center text-3xl font-display font-extrabold text-[#2EFD7A]">
-              {profile?.first_name?.[0] || user?.full_name?.[0] || 'U'}
-            </div>
-            <div className="flex-1">
-              <h2 className="text-2xl font-display font-extrabold text-white">
-                {profile ? `${profile.first_name || ''} ${profile.last_name || ''}`.trim() : user?.full_name}
-              </h2>
-              <p className="text-white/50 text-sm">{user?.email}</p>
-              <div className="flex items-center gap-2 mt-2">
-                <span className="text-xs px-2.5 py-1 rounded-full bg-[#2EFD7A]/15 text-[#2EFD7A] font-semibold border border-[#2EFD7A]/20">
-                  Level {stats?.current_level || 1} · {levelTitle}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* XP Bar */}
-          <div className="mt-5">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs text-white/50">Level {stats?.current_level || 1} → {(stats?.current_level || 1) + 1}</span>
-              <span className="text-xs font-semibold text-[#2EFD7A]">{stats?.total_xp || 0} / {xpForLevel((stats?.current_level || 1) + 1)} Base Coins</span>
-            </div>
-            <div className="h-3 bg-white/10 rounded-full overflow-hidden">
-              <div className="h-full rounded-full bg-[#2EFD7A] transition-all duration-700" style={{ width: `${xpProgress}%` }} />
-            </div>
-          </div>
+        <motion.div variants={itemVariants}>
+          <ProfileIdentityCard
+            user={user}
+            profile={profile}
+            stats={stats}
+            levelTitle={levelTitle}
+            xpProgress={xpProgress}
+            nextLevelXp={xpForLevel((stats?.current_level || 1) + 1)}
+            onUpdated={(nextUser, nextProfile) => {
+              setUser(nextUser);
+              setProfile(nextProfile);
+            }}
+          />
         </motion.div>
 
         {/* Stats grid */}

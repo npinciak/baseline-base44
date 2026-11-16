@@ -5,6 +5,7 @@ import { base44 } from '@/api/base44Client';
 import WindingLearningPath from '@/components/WindingLearningPath';
 import AmbientBackdrop from '@/components/dashboard/AmbientBackdrop';
 import useLearningState from '@/hooks/useLearningState';
+import { getGreetingName } from '@/lib/displayName';
 
 const containerVariants = { hidden: {}, show: { transition: { staggerChildren: 0.12 } } };
 const itemVariants = {
@@ -60,7 +61,7 @@ export default function Dashboard() {
       >
         <motion.div variants={itemVariants} className="mb-8">
           <h1 className="text-3xl md:text-4xl font-light tracking-tight text-white mb-2">
-            {greeting()}, <span className="font-extrabold">{profile?.first_name || user?.full_name?.split(' ')[0] || 'there'}</span>
+            {greeting()}, <span className="font-extrabold">{getGreetingName(user, profile)}</span>
           </h1>
         </motion.div>
 

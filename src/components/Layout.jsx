@@ -2,6 +2,7 @@ import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { User, Flame, Coins, LogOut, Shield, Target, LayoutDashboard, Wallet, ShoppingBag, BookOpen } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { getDisplayName, getInitial } from '@/lib/displayName';
 
 export default function Layout() {
   const [user, setUser] = useState(null);
@@ -11,15 +12,21 @@ export default function Layout() {
 
   useEffect(() => {
     base44.auth.me().then(u => {
-    setUser(u);
-    // Sync profile with Supabase on every load (mirrors signIn event in auth flow)
-    base44.functions.invoke('syncUserProfile', {})
-      .then(r => setProfile(r?.data?.profile || null))
-      .catch(() => {
-        // Fallback to read-only fetch if sync fails
-        base44.functions.invoke('getUserProfile', {}).then(r => setProfile(r?.data?.profile || null)).catch(() => {});
-      });
+      setUser(u);
+      base44.functions.invoke('syncUserProfile', {})
+        .then(r => setProfile(r?.data?.profile || null))
+        .catch(() => {
+          base44.functions.invoke('getUserProfile', {}).then(r => setProfile(r?.data?.profile || null)).catch(() => {});
+        });
     }).catch(() => {});
+
+    const onProfileUpdated = (e) => {
+      const { displayName, profile: nextProfile } = e.detail || {};
+      if (displayName) setUser((prev) => (prev ? { ...prev, display_name: displayName } : prev));
+      if (nextProfile !== undefined) setProfile(nextProfile);
+    };
+    window.addEventListener('profile-updated', onProfileUpdated);
+    return () => window.removeEventListener('profile-updated', onProfileUpdated);
   }, []);
 
   const [walletBalance, setWalletBalance] = useState(null);
@@ -142,11 +149,11 @@ export default function Layout() {
           {user && (
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-full bg-[#2EA0FD]/15 border border-[#2EA0FD]/40 flex items-center justify-center text-[#2EA0FD] font-bold text-sm">
-                {profile?.first_name?.[0] || user.full_name?.[0] || 'U'}
+                {getInitial(user, profile)}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-white truncate">
-                  {profile ? `${profile.first_name || ''} ${profile.last_name || ''}`.trim() : user.full_name}
+                  {getDisplayName(user, profile)}
                 </p>
                 <p className="text-xs text-white/40 truncate">{user.email}</p>
               </div>
