@@ -51,7 +51,7 @@ export default function Dashboard() {
 
   return (
     <div className="relative min-h-screen bg-black px-6 md:px-10 py-10 overflow-hidden">
-      <AmbientBackdrop />
+      <AmbientBackdrop dotsOnly />
       <motion.div
         variants={containerVariants}
         initial="hidden"
