@@ -2,14 +2,14 @@ import { BookOpen, Wallet, TrendingUp, CreditCard, FileText, Unlock, Umbrella, S
 import ChapterSection from '@/components/path/ChapterSection';
 
 const TOPIC_META = {
-  budgeting:  { Icon: Wallet,     from: '#2EFD7A', to: '#17C964' },
-  investing:  { Icon: TrendingUp, from: '#2EA0FD', to: '#2BF9E9' },
-  credit:     { Icon: CreditCard, from: '#2EA0FD', to: '#1B7FD1' },
-  taxes:      { Icon: FileText,   from: '#2BF9E9', to: '#2EA0FD' },
-  saving:     { Icon: PiggyBank,  from: '#2EFD7A', to: '#2BF9E9' },
-  debt:       { Icon: Unlock,     from: '#2EA0FD', to: '#2EFD7A' },
-  insurance:  { Icon: Umbrella,   from: '#2BF9E9', to: '#17C964' },
-  retirement: { Icon: Shield,     from: '#2EA0FD', to: '#2BF9E9' },
+  budgeting:  { Icon: Wallet },
+  investing:  { Icon: TrendingUp },
+  credit:     { Icon: CreditCard },
+  taxes:      { Icon: FileText },
+  saving:     { Icon: PiggyBank },
+  debt:       { Icon: Unlock },
+  insurance:  { Icon: Umbrella },
+  retirement: { Icon: Shield },
 };
 
 export default function WindingLearningPath({ chapters, onCompleteMove }) {
@@ -26,15 +26,43 @@ export default function WindingLearningPath({ chapters, onCompleteMove }) {
 
   return (
     <div>
-      {chapters.map((chapter) => (
-        <ChapterSection
-          key={chapter.id}
-          chapter={chapter}
-          meta={TOPIC_META[chapter.topic] || TOPIC_META.saving}
-          defaultOpen={chapter.id === current?.id}
-          onCompleteMove={onCompleteMove}
-        />
-      ))}
+      {chapters.map((chapter, i) => {
+        // Calculate continuous green (#2EFD7A) to blue (#2EA0FD) gradient across all chapters
+        const total = chapters.length > 1 ? chapters.length - 1 : 1;
+        
+        // We'll interpolate HSL to keep the vibrant neon transition
+        // Green is approx H: 142, S: 98, L: 59 
+        // Blue is approx H: 207, S: 98, L: 59
+        const h1 = 142;
+        const h2 = 207;
+        const s = 98;
+        const l = 59;
+        
+        const pctFrom = i / total;
+        const pctTo = Math.min((i + 1) / total, 1);
+        
+        const hFrom = h1 + (h2 - h1) * pctFrom;
+        const hTo = h1 + (h2 - h1) * pctTo;
+        
+        const fromColor = `hsl(${hFrom}, ${s}%, ${l}%)`;
+        const toColor = `hsl(${hTo}, ${s}%, ${l}%)`;
+        
+        const meta = {
+          ...(TOPIC_META[chapter.topic] || TOPIC_META.saving),
+          from: fromColor,
+          to: toColor
+        };
+        
+        return (
+          <ChapterSection
+            key={chapter.id}
+            chapter={chapter}
+            meta={meta}
+            defaultOpen={chapter.id === current?.id}
+            onCompleteMove={onCompleteMove}
+          />
+        );
+      })}
     </div>
   );
 }

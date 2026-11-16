@@ -77,12 +77,15 @@ export default function Layout() {
                 <span className="text-xs text-white/60">day streak</span>
               </div>
             </div>
-            <dl className="mt-4 flex items-center justify-between gap-3 text-sm">
-              <dt className="text-muted-foreground">BaseScore</dt>
+            <NavLink 
+              to="/basescore"
+              className="mt-4 flex items-center justify-between gap-3 text-sm hover:bg-white/5 p-2 -mx-2 rounded-lg transition-colors cursor-pointer group"
+            >
+              <dt className="text-muted-foreground group-hover:text-white/80 transition-colors">BaseScore</dt>
               <dd className="font-semibold text-primary tabular-nums" aria-label={stats.base_score == null ? 'BaseScore not yet available' : `BaseScore ${stats.base_score} out of 500`}>
                 {stats.base_score ?? '—'}{stats.base_score != null && <span className="text-xs font-normal text-muted-foreground"> / 500</span>}
               </dd>
-            </dl>
+            </NavLink>
           </div>
         )}
 

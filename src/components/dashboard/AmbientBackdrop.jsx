@@ -22,22 +22,6 @@ export default function AmbientBackdrop() {
         animate={{ x: [0, 40, -40, 0], y: [0, -20, 30, 0] }}
         transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut', delay: 4 }}
       />
-      {[...Array(4)].map((_, i) => (
-        <motion.div
-          key={i}
-          className="absolute rounded-full"
-          style={{
-            width: 6 + i * 3,
-            height: 6 + i * 3,
-            left: `${15 + i * 22}%`,
-            top: `${18 + i * 16}%`,
-            background: i % 2 === 0 ? 'rgba(46,160,253,0.55)' : 'rgba(46,253,122,0.45)',
-            boxShadow: i % 2 === 0 ? '0 0 12px rgba(46,160,253,0.6)' : '0 0 12px rgba(46,253,122,0.5)',
-          }}
-          animate={{ y: [0, -18, 0], opacity: [0.3, 0.7, 0.3] }}
-          transition={{ duration: 8 + i * 2, repeat: Infinity, ease: 'easeInOut', delay: i * 1.5 }}
-        />
-      ))}
     </div>
   );
 }
