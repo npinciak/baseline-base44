@@ -30,6 +30,8 @@ import BaseScoreQuiz from './pages/BaseScoreQuiz';
 import BaseScore from './pages/BaseScore';
 import CurriculumReview from './pages/CurriculumReview';
 import CurriculumRoadmap from './pages/CurriculumRoadmap';
+import About from './pages/About';
+import Contact from './pages/Contact';
 
 const AuthenticatedApp = () => {
   const { isLoadingPublicSettings } = useAuth();
@@ -45,6 +47,8 @@ const AuthenticatedApp = () => {
   return (
     <Routes>
       <Route path="/" element={<Baseline30 />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/contact" element={<Contact />} />
       <Route path="/basescore-quiz" element={<BaseScoreQuiz />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />

@@ -79,6 +79,10 @@
     "score_credit_health": {
       "type": "number",
       "description": "Credit Health category score out of 100"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 1000
     }
   },
   "required": [

@@ -2,6 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Search, ChevronDown } from "lucide-react";
+import PublicNav from "@/components/marketing/PublicNav";
+import PublicFooter from "@/components/marketing/PublicFooter";
+import WhoWeAreSection from "@/components/marketing/WhoWeAreSection";
 
 const BASESCORE_QUESTIONS = [
   "How Healthy Is My Money?",
@@ -362,24 +365,7 @@ export default function Baseline30() {
       animate={{ opacity: isExiting ? 0 : 1, scale: isExiting ? 0.97 : 1 }}
       transition={{ duration: 0.45, ease: "easeInOut" }}
     >
-      {/* Sticky Nav */}
-      <header className="fixed top-0 left-0 w-full px-5 sm:px-8 lg:px-[clamp(16px,5.7vw,109px)] h-[72px] flex items-center justify-between z-50 bg-black/60 backdrop-blur-md border-b border-white/8">
-        <div className="text-white font-bold text-lg tracking-wide">Baseline</div>
-        <div className="flex items-center gap-[clamp(16px,2.8vw,40px)]">
-          <button
-            onClick={() => handleNav("/login")}
-            className="text-white font-semibold text-sm hover:opacity-70 transition-opacity"
-          >
-            Log In
-          </button>
-          <button
-            onClick={() => handleNav("/register")}
-            className="px-4 py-2 bg-white text-black font-semibold text-sm rounded-full hover:bg-white/90 transition-all"
-          >
-            Sign Up
-          </button>
-        </div>
-      </header>
+      <PublicNav onNav={handleNav} />
 
       {/* ─── HERO ─── */}
       <section className="relative w-full min-h-screen flex flex-col md:flex-row items-center overflow-hidden">
@@ -530,6 +516,9 @@ export default function Baseline30() {
         </motion.div>
       </section>
 
+      {/* ─── WHO WE ARE ─── */}
+      <WhoWeAreSection ctaLabel="Read More" ctaTo="/about" />
+
       {/* ─── CTA: SET A GOAL & START SAVING ─── */}
       <section className="w-full flex flex-col items-center justify-center px-5 sm:px-8 py-14 md:py-[86px] gap-8 md:min-h-[60vh]">
         <motion.div
@@ -553,15 +542,8 @@ export default function Baseline30() {
           </button>
         </motion.div>
       </section>
-      {/* ─── FOOTER ─── */}
-      <footer className="w-full border-t border-white/8 px-5 sm:px-8 lg:px-[clamp(48px,8vw,140px)] py-12 flex flex-col md:flex-row items-center justify-between gap-6 max-w-[1600px] mx-auto">
-        <div className="text-white/20 text-sm font-light tracking-wide text-center">© 2026 Baseline. All rights reserved.</div>
-        <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
-          <button onClick={() => handleNav("/basescore-quiz")} className="text-white/30 text-sm font-light hover:text-white/60 transition-colors">Get Your BaseScore™</button>
-          <button onClick={() => handleNav("/login")} className="text-white/30 text-sm font-light hover:text-white/60 transition-colors">Log In</button>
-          <button onClick={() => handleNav("/register")} className="text-white/30 text-sm font-light hover:text-white/60 transition-colors">Sign Up</button>
-        </div>
-      </footer>
+
+      <PublicFooter />
 
     </motion.main>
   );

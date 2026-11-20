@@ -25,6 +25,10 @@
     "provider_reference": {
       "type": "string",
       "description": "Verified billing reference; only trusted administrators or billing handlers may assign access."
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 1000
     }
   },
   "required": [
