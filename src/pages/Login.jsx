@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { LogIn, Mail, Lock, Loader2 } from "lucide-react";
 import AuthLayout from "@/components/AuthLayout";
 import GoogleIcon from "@/components/GoogleIcon";
-import { safeReturnTo } from "@/lib/authReturnTo";
+import { postAuthDestination } from "@/lib/authReturnTo";
 import { loginWithMfa } from "@/lib/authMfa";
 import { signInWithProvider } from "@/lib/authMfaFlow";
 import MfaFlow from "@/components/MfaFlow";
@@ -21,7 +21,7 @@ export default function Login() {
   const [challenge, setChallenge] = useState(null);
   const handleGoogle = () => {
     setError("");
-    signInWithProvider("google", safeReturnTo()).catch(err => setError(err.message || "Unable to continue with Google"));
+    signInWithProvider("google", postAuthDestination()).catch(err => setError(err.message || "Unable to continue with Google"));
   };
 
   const handleSubmit = async (e) => {
@@ -31,14 +31,14 @@ export default function Login() {
     try {
       const result = await loginWithMfa(email, password);
       if (result.mfa_required) { setChallenge(result); return; }
-      window.location.href = safeReturnTo();
+      window.location.href = postAuthDestination();
     } catch (err) {
       setError(err.message || "Failed to log in");
       setLoading(false);
     }
   };
 
-  if (challenge) return <MfaScreen><MfaFlow challenge={challenge} returnTo={safeReturnTo()} /></MfaScreen>;
+  if (challenge) return <MfaScreen><MfaFlow challenge={challenge} returnTo={postAuthDestination()} /></MfaScreen>;
 
   return (
     <AuthLayout

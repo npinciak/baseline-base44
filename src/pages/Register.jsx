@@ -8,7 +8,7 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp
 import { UserPlus, Mail, Lock, Loader2, ShieldCheck } from "lucide-react";
 import AuthLayout from "@/components/AuthLayout";
 import GoogleIcon from "@/components/GoogleIcon";
-import { safeReturnTo } from "@/lib/authReturnTo";
+import { postAuthDestination } from "@/lib/authReturnTo";
 import { signInWithProvider } from "@/lib/authMfaFlow";
 import MfaFlow from "@/components/MfaFlow";
 import { MfaScreen } from "@/components/MfaParts";
@@ -26,7 +26,7 @@ export default function Register() {
   const [challenge, setChallenge] = useState(null);
   const handleGoogle = () => {
     setError("");
-    signInWithProvider("google", safeReturnTo()).catch(err => setError(err.message || "Unable to continue with Google"));
+    signInWithProvider("google", postAuthDestination()).catch(err => setError(err.message || "Unable to continue with Google"));
   };
 
   const handleSubmit = async (e) => {
@@ -62,7 +62,7 @@ export default function Register() {
       await base44.auth.me().catch(() => null);
       base44.analytics.track({ eventName: "user_registered" });
       await new Promise((resolve) => setTimeout(resolve, 250));
-      window.location.href = safeReturnTo();
+      window.location.href = postAuthDestination();
     } catch (err) {
       setError(err.message || "Invalid code, please try again");
     } finally {
@@ -82,7 +82,7 @@ export default function Register() {
     }
   };
 
-  if (challenge) return <MfaScreen><MfaFlow challenge={challenge} returnTo={safeReturnTo()} /></MfaScreen>;
+  if (challenge) return <MfaScreen><MfaFlow challenge={challenge} returnTo={postAuthDestination()} /></MfaScreen>;
 
   if (step === "otp") {
     return (

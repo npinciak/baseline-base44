@@ -8,6 +8,14 @@
 // /\evil.com parses same-origin but normalizes to a protocol-relative
 // //evil.com when assigned to location.href — an open redirect. So require the
 // resolved path to be exactly one leading slash (no "//" prefix, no backslash).
+// Where a finished sign-in or sign-up should land: the page that asked for it,
+// else the learner's home. Without this, a bare /login falls back to "/" (the
+// public marketing homepage) and the signed-in user never reaches the app.
+export function postAuthDestination() {
+  const target = safeReturnTo();
+  return target === "/" ? "/dashboard" : target;
+}
+
 export function safeReturnTo() {
   const raw = new URLSearchParams(window.location.search).get("returnTo");
   if (!raw) return "/";
