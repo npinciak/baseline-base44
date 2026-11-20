@@ -5,7 +5,7 @@ import RewardCard from './RewardCard';
 const ROMAN = ['I', 'II', 'III', 'IV', 'V'];
 const NAMES = ['Trailhead rewards', 'High Ridge rewards', 'Summit rewards'];
 
-export default function CampSection({ index, cost, cards, balance, onSelect }) {
+export default function CampSection({ index, cost, cards, balance, lifetimeCoins = 0, onSelect }) {
   const reached = balance >= cost;
   return (
     <section>
@@ -20,7 +20,7 @@ export default function CampSection({ index, cost, cards, balance, onSelect }) {
         <div className="hidden sm:block h-px flex-1 max-w-xs bg-gradient-to-r from-white/20 to-transparent" />
       </div>
       <motion.div initial="hidden" animate="show" variants={{ hidden: {}, show: { transition: { staggerChildren: 0.07 } } }} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {cards.map(card => <RewardCard key={card.id} card={card} balance={balance} onSelect={onSelect} />)}
+        {cards.map(card => <RewardCard key={card.id} card={card} balance={balance} lifetimeCoins={lifetimeCoins} onSelect={onSelect} />)}
       </motion.div>
     </section>
   );

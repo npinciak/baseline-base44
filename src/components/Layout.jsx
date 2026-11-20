@@ -1,7 +1,9 @@
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { User, Flame, Coins, LogOut, Shield, Target, LayoutDashboard, Wallet, ShoppingBag } from 'lucide-react';
+import { User, Flame, Coins, LogOut, Shield, LayoutDashboard, Wallet, ShoppingBag, BookOpen, Compass } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { getDisplayName, getInitial } from '@/lib/displayName';
+import { getLevelInfo, getLifetimeCoins } from '@/lib/coinLevels';
 
 export default function Layout() {
   const [user, setUser] = useState(null);
@@ -11,33 +13,48 @@ export default function Layout() {
 
   useEffect(() => {
     base44.auth.me().then(u => {
-    setUser(u);
-    // Sync profile with Supabase on every load (mirrors signIn event in auth flow)
-    base44.functions.invoke('syncUserProfile', {})
-      .then(r => setProfile(r?.data?.profile || null))
-      .catch(() => {
-        // Fallback to read-only fetch if sync fails
-        base44.functions.invoke('getUserProfile', {}).then(r => setProfile(r?.data?.profile || null)).catch(() => {});
-      });
+      setUser(u);
+      base44.functions.invoke('syncUserProfile', {})
+        .then(r => setProfile(r?.data?.profile || null))
+        .catch(() => {
+          base44.functions.invoke('getUserProfile', {}).then(r => setProfile(r?.data?.profile || null)).catch(() => {});
+        });
     }).catch(() => {});
+
+    const onProfileUpdated = (e) => {
+      const { displayName, profile: nextProfile } = e.detail || {};
+      if (displayName) setUser((prev) => (prev ? { ...prev, display_name: displayName } : prev));
+      if (nextProfile !== undefined) setProfile(nextProfile);
+    };
+    const onWalletUpdated = (e) => {
+      if (typeof e.detail?.balance === 'number') setWalletBalance(e.detail.balance);
+    };
+    window.addEventListener('profile-updated', onProfileUpdated);
+    window.addEventListener('wallet-updated', onWalletUpdated);
+    return () => {
+      window.removeEventListener('profile-updated', onProfileUpdated);
+      window.removeEventListener('wallet-updated', onWalletUpdated);
+    };
   }, []);
 
   const [walletBalance, setWalletBalance] = useState(null);
+  const [isOwner, setIsOwner] = useState(false);
 
   useEffect(() => {
     if (!user) return;
     base44.entities.UserStats.filter({ user_id: user.id }).then(r => r[0] && setStats(r[0]));
     base44.functions.invoke('getWallet', {}).then(r => setWalletBalance(r?.data?.balance ?? 0)).catch(() => {});
+    base44.functions.invoke('curriculumReview', { mode: 'check' }).then(r => setIsOwner(!!r?.data?.allowed)).catch(() => {});
   }, [user]);
 
-  const xpForLevel = (level) => level * 200;
-  const xpProgress = stats ? ((stats.total_xp % xpForLevel(stats.current_level)) / xpForLevel(stats.current_level)) * 100 : 0;
+  const levelInfo = getLevelInfo(getLifetimeCoins(stats));
+  const xpProgress = levelInfo.progressPct;
+  const canAccessDevTools = user?.role === 'admin' || isOwner;
 
   const navItems = [
     { to: '/dashboard', icon: LayoutDashboard, label: 'Home', iconColor: 'text-[#2EA0FD]' },
     { to: '/money', icon: Wallet, label: 'Money', iconColor: 'text-[#2EFD7A]' },
     { to: '/basecamp', icon: ShoppingBag, label: 'Basecamp', iconColor: 'text-[#2EA0FD]' },
-    { to: '/goals', icon: Target, label: 'Goals', iconColor: 'text-[#2EFD7A]' },
     { to: '/profile', icon: User, label: 'Profile', iconColor: 'text-[#2EA0FD]' },
   ];
 
@@ -60,8 +77,10 @@ export default function Layout() {
         {stats && (
           <div className="px-5 py-4 border-b border-white/10">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold text-[#2BF9E9]">Level {stats.current_level}</span>
-              <span className="text-xs font-semibold text-white flex items-center gap-1"><Coins className="w-3 h-3 text-[#2EA0FD]" />{walletBalance !== null ? walletBalance : '---'} Base Coins</span>
+              <NavLink to="/profile#levels" className="text-xs font-semibold text-[#2EFD7A] hover:underline">
+                Lv {levelInfo.current.level} · {levelInfo.current.title}
+              </NavLink>
+              <span className="text-xs font-semibold text-white flex items-center gap-1"><Coins className="w-3 h-3 text-[#2EA0FD]" />{walletBalance !== null ? walletBalance : '---'} BC</span>
             </div>
             <div className="h-2 bg-white/10 rounded-full overflow-hidden">
               <div
@@ -76,6 +95,15 @@ export default function Layout() {
                 <span className="text-xs text-white/60">day streak</span>
               </div>
             </div>
+            <NavLink 
+              to="/basescore"
+              className="mt-4 flex items-center justify-between gap-3 text-sm hover:bg-white/5 p-2 -mx-2 rounded-lg transition-colors cursor-pointer group"
+            >
+              <dt className="text-muted-foreground group-hover:text-white/80 transition-colors">BaseScore</dt>
+              <dd className="font-semibold text-primary tabular-nums" aria-label={stats.base_score == null ? 'BaseScore not yet available' : `BaseScore ${stats.base_score} out of 500`}>
+                {stats.base_score ?? '—'}{stats.base_score != null && <span className="text-xs font-normal text-muted-foreground"> / 500</span>}
+              </dd>
+            </NavLink>
           </div>
         )}
 
@@ -112,6 +140,32 @@ export default function Layout() {
               Admin
             </NavLink>
           )}
+          {canAccessDevTools && (
+            <>
+              <NavLink
+                to="/roadmap"
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 border ${
+                    isActive ? 'bg-white/10 text-white border-white/50' : 'text-white/50 border-transparent hover:text-white hover:bg-white/5'
+                  }`
+                }
+              >
+                <Compass className="w-5 h-5 text-[#2EFD7A]" />
+                Roadmap
+              </NavLink>
+              <NavLink
+                to="/curriculum-review"
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 border ${
+                    isActive ? 'bg-white/10 text-white border-white/50' : 'text-white/50 border-transparent hover:text-white hover:bg-white/5'
+                  }`
+                }
+              >
+                <BookOpen className="w-5 h-5 text-[#2EA0FD]" />
+                Curriculum
+              </NavLink>
+            </>
+          )}
         </nav>
 
         {/* User */}
@@ -119,11 +173,11 @@ export default function Layout() {
           {user && (
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-full bg-[#2EA0FD]/15 border border-[#2EA0FD]/40 flex items-center justify-center text-[#2EA0FD] font-bold text-sm">
-                {profile?.first_name?.[0] || user.full_name?.[0] || 'U'}
+                {getInitial(user, profile)}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-white truncate">
-                  {profile ? `${profile.first_name || ''} ${profile.last_name || ''}`.trim() : user.full_name}
+                  {getDisplayName(user, profile)}
                 </p>
                 <p className="text-xs text-white/40 truncate">{user.email}</p>
               </div>
@@ -139,7 +193,7 @@ export default function Layout() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 md:ml-64 pb-20 md:pb-0 bg-black">
+      <main className="min-w-0 flex-1 md:ml-64 pb-20 md:pb-0 bg-black">
         <Outlet />
       </main>
 

@@ -1,8 +1,16 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceDot, CartesianGrid } from 'recharts';
 import ScenarioSlider from '@/components/money/ScenarioSlider';
-import { Telescope, TrendingUp, TrendingDown } from 'lucide-react';
+import { Telescope, TrendingUp, TrendingDown, Sparkles, Lock } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
+import { getLifetimeCoins } from '@/lib/coinLevels';
+
+const SANDBOX_PRESETS = [
+  { id: 'trim-wants', label: 'Trim Wants -15%', spendPct: -15, extraDailyIncome: 0 },
+  { id: 'lean-month', label: 'Lean Month -25%', spendPct: -25, extraDailyIncome: 0 },
+  { id: 'side-income', label: '+$200/mo Side Income', spendPct: 0, extraDailyIncome: 200 / 30 },
+];
 
 const HORIZONS = [{ d: 30, l: '1M' }, { d: 90, l: '3M' }, { d: 180, l: '6M' }, { d: 365, l: '1Y' }];
 const fmt = (n) => `${n < 0 ? '-' : ''}$${Math.abs(Math.round(n)).toLocaleString()}`;
@@ -23,27 +31,37 @@ function ForecastTooltip({ active, payload }) {
 export default function ForecastChart({ startBalance, dailyIncome, dailySpend }) {
   const [days, setDays] = useState(90);
   const [change, setChange] = useState(0); // % change in spending
+  const [extraDailyIncome, setExtraDailyIncome] = useState(0);
+  const [presetsUnlocked, setPresetsUnlocked] = useState(false);
+
+  useEffect(() => {
+    base44.auth.me()
+      .then((u) => base44.entities.UserStats.filter({ user_id: u.id }))
+      .then((arr) => setPresetsUnlocked(getLifetimeCoins(arr?.[0]) >= 1000))
+      .catch(() => {});
+  }, []);
 
   const { data, end, baseEnd, low } = useMemo(() => {
     const spend = dailySpend * (1 + change / 100);
+    const inc = dailyIncome + extraDailyIncome;
     const rows = Array.from({ length: days + 1 }, (_, i) => ({
       i,
       base: startBalance + i * (dailyIncome - dailySpend),
-      scenario: startBalance + i * (dailyIncome - spend),
+      scenario: startBalance + i * (inc - spend),
     }));
     const lowest = rows.reduce((m, r) => (r.scenario < m.scenario ? r : m), rows[0]);
     return { data: rows, end: rows[days].scenario, baseEnd: rows[days].base, low: lowest };
-  }, [days, change, startBalance, dailyIncome, dailySpend]);
+  }, [days, change, extraDailyIncome, startBalance, dailyIncome, dailySpend]);
 
   const gain = end - startBalance;
   const diff = end - baseEnd;
   const up = gain >= 0;
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-[#06142a] via-black to-black p-5 sm:p-7 shadow-[0_0_60px_-15px_rgba(46,160,253,0.35)]">
+    <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-[#06142a] via-black to-black p-5 sm:p-7 shadow-[0_0_60px_-15px_rgba(46,253,122,0.35)]">
       <div className="flex flex-wrap items-start justify-between gap-4 mb-2">
         <div>
-          <p className="flex items-center gap-2 text-[11px] uppercase tracking-[0.25em] text-[#2EA0FD] font-semibold mb-2">
+          <p className="flex items-center gap-2 text-[11px] uppercase tracking-[0.25em] text-[#2EFD7A] font-semibold mb-2">
             <Telescope className="w-4 h-4" /> Future view
           </p>
           <p className="text-white/60 text-sm">Where you could be on {dayLabel(days)}</p>
@@ -61,7 +79,7 @@ export default function ForecastChart({ startBalance, dailyIncome, dailySpend })
             <button
               key={h.d}
               onClick={() => setDays(h.d)}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${days === h.d ? 'bg-[#2EA0FD] text-black' : 'text-white/60 hover:text-white'}`}
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${days === h.d ? 'bg-[#2EFD7A] text-black' : 'text-white/60 hover:text-white'}`}
             >
               {h.l}
             </button>
@@ -74,12 +92,12 @@ export default function ForecastChart({ startBalance, dailyIncome, dailySpend })
           <AreaChart data={data} margin={{ top: 20, right: 24, left: 8, bottom: 0 }}>
             <defs>
               <linearGradient id="fcFill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#2EA0FD" stopOpacity={0.55} />
-                <stop offset="100%" stopColor="#2EA0FD" stopOpacity={0} />
+                <stop offset="0%" stopColor="#2EFD7A" stopOpacity={0.55} />
+                <stop offset="100%" stopColor="#2EFD7A" stopOpacity={0} />
               </linearGradient>
               <linearGradient id="fcStroke" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stopColor="#2EA0FD" />
-                <stop offset="100%" stopColor="#2BF9E9" />
+                <stop offset="0%" stopColor="#2EFD7A" />
+                <stop offset="100%" stopColor="#2EFD7A" />
               </linearGradient>
             </defs>
             <CartesianGrid stroke="rgba(255,255,255,0.06)" vertical={false} />
@@ -88,7 +106,7 @@ export default function ForecastChart({ startBalance, dailyIncome, dailySpend })
             <Tooltip content={<ForecastTooltip />} cursor={{ stroke: 'rgba(255,255,255,0.3)', strokeDasharray: '4 4' }} />
             {change !== 0 && <Area type="monotone" dataKey="base" stroke="rgba(255,255,255,0.4)" strokeDasharray="5 5" strokeWidth={1.5} fill="none" dot={false} isAnimationActive={false} />}
             <Area type="monotone" dataKey="scenario" stroke="url(#fcStroke)" strokeWidth={3} fill="url(#fcFill)" dot={false} animationDuration={700} />
-            <ReferenceDot x={days} y={end} r={6} fill="#2BF9E9" stroke="#fff" strokeWidth={2} />
+            <ReferenceDot x={days} y={end} r={6} fill="#2EFD7A" stroke="#fff" strokeWidth={2} />
             {low.i !== days && low.i !== 0 && <ReferenceDot x={low.i} y={low.scenario} r={5} fill="#F5A623" stroke="#fff" strokeWidth={2} />}
           </AreaChart>
         </ResponsiveContainer>
@@ -96,10 +114,51 @@ export default function ForecastChart({ startBalance, dailyIncome, dailySpend })
 
       <div className="mt-4 rounded-2xl border border-white/10 bg-white/[0.04] p-4">
         <div className="flex items-center justify-between text-sm mb-3">
-          <span className="text-white font-semibold">What if I spend {change === 0 ? 'the same' : `${Math.abs(change)}% ${change < 0 ? 'less' : 'more'}`}?</span>
-          {change !== 0 && <button onClick={() => setChange(0)} className="text-xs text-[#2EA0FD] hover:underline">Reset</button>}
+          <span className="text-white font-semibold">
+            What if I spend {change === 0 ? 'the same' : `${Math.abs(change)}% ${change < 0 ? 'less' : 'more'}`}
+            {extraDailyIncome > 0 ? ' + $200/mo side income' : ''}?
+          </span>
+          {(change !== 0 || extraDailyIncome !== 0) && (
+            <button onClick={() => { setChange(0); setExtraDailyIncome(0); }} className="text-xs text-[#2EFD7A] hover:underline">
+              Reset
+            </button>
+          )}
         </div>
         <ScenarioSlider change={change} setChange={setChange} />
+
+        <div className="mt-4 pt-3 border-t border-white/10 flex flex-wrap items-center gap-2">
+          <span className="text-[11px] font-semibold text-white/65 flex items-center gap-1 mr-1">
+            {presetsUnlocked ? <Sparkles className="w-3.5 h-3.5 text-[#2EFD7A]" /> : <Lock className="w-3.5 h-3.5 text-white/40" />}
+            Level 3 Presets:
+          </span>
+          {SANDBOX_PRESETS.map((p) => {
+            const active = change === p.spendPct && Math.abs(extraDailyIncome - p.extraDailyIncome) < 0.01;
+            return (
+              <button
+                key={p.id}
+                type="button"
+                disabled={!presetsUnlocked}
+                onClick={() => {
+                  setChange(p.spendPct);
+                  setExtraDailyIncome(p.extraDailyIncome);
+                }}
+                className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-colors ${
+                  !presetsUnlocked
+                    ? 'border-white/10 bg-white/[0.02] text-white/35 cursor-not-allowed'
+                    : active
+                      ? 'border-[#2EFD7A] bg-[#2EFD7A]/20 text-[#2EFD7A]'
+                      : 'border-white/15 bg-white/[0.04] text-white/80 hover:border-white/30'
+                }`}
+              >
+                {p.label}
+              </button>
+            );
+          })}
+          {!presetsUnlocked && (
+            <span className="text-[11px] text-white/45">Unlocks at 1,000 Lifetime BC (10 lessons)</span>
+          )}
+        </div>
+
         <p className="text-[11px] text-white/60 mt-3">A sandbox projection from your recent income and spending. Nothing here changes your real transactions.</p>
       </div>
     </div>

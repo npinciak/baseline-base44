@@ -4,7 +4,7 @@ import { CATEGORY_META, money } from '@/components/calendar/categoryMeta';
 const SOURCE = {
   actual: { label: 'Actual', cls: 'bg-white/10 text-white/70' },
   scheduled: { label: 'Scheduled', cls: 'bg-[#2EFD7A]/15 text-[#2EFD7A]' },
-  predicted: { label: 'Predicted', cls: 'border border-dashed border-[#2EA0FD]/60 text-[#2EA0FD]' },
+  predicted: { label: 'Predicted', cls: 'border border-dashed border-[#D4D4D8]/60 text-[#D4D4D8]' },
 };
 
 function Stat({ label, value, tone }) {
@@ -25,7 +25,7 @@ export default function DayDetail({ day, onEdit, onDelete }) {
       <div className="grid grid-cols-3 gap-2 sm:gap-3 px-5 pb-4">
         <Stat label="Starting balance" value={known ? money(day.start) : 'Unavailable'} tone="text-white" />
         <Stat label="Day's net change" value={`${net > 0 ? '+' : ''}${money(net)}`} tone={net >= 0 ? 'text-[#2EFD7A]' : 'text-red-400'} />
-        <Stat label={future ? 'Projected end' : 'Ending balance'} value={known ? money(day.end) : 'Unavailable'} tone={future ? 'text-[#2EA0FD]' : 'text-white'} />
+        <Stat label={future ? 'Projected end' : 'Ending balance'} value={known ? money(day.end) : 'Unavailable'} tone={future ? 'text-[#D4D4D8]' : 'text-white'} />
       </div>
 
       <div className="mx-5 mb-5 bg-white/[0.03] rounded-2xl overflow-hidden">

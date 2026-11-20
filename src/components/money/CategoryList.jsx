@@ -7,7 +7,7 @@ export default function CategoryList({ categoryList, grandTotal, expenses }) {
   return (
     <section>
       <h2 className="text-lg font-heading font-bold mb-4 flex items-center gap-2 text-white">
-        <Tag className="w-5 h-5 text-[#2EA0FD]" /> Categories
+        <Tag className="w-5 h-5 text-[#2EFD7A]" /> Categories
       </h2>
       {categoryList.length === 0 ? (
         <div className="bg-white/[0.03] border border-dashed border-white/10 rounded-2xl p-8 text-center text-white/50 text-sm">No expense data yet</div>

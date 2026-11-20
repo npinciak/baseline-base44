@@ -1,24 +1,23 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
+import { EDITS, EXTRA_SCREENS, NEW_UNITS } from './curriculumContent.ts';
+import { LESSON_REWARD } from '../../shared/coinEconomy.ts';
 
 // Convert a Lexical JSON string to plain HTML
-// Falls back to manually extracting text nodes if the npm package isn't available
 function lexicalToHtml(raw: string | null | undefined): string {
   if (!raw) return '';
   let parsed: any;
   try {
     parsed = JSON.parse(raw);
   } catch {
-    // Not JSON — already plain text
     return raw;
   }
-  // Must have Lexical root structure
   if (!parsed?.root?.children) return raw;
 
   function nodeToHtml(node: any): string {
     if (!node) return '';
     if (node.type === 'text') {
       let t = node.text || '';
-      // Apply Lexical format bitmask: 1=bold, 2=italic, 4=strikethrough, 8=underline, 16=code
+      // Lexical format bitmask: 1=bold, 2=italic, 4=strikethrough, 8=underline, 16=code
       if (node.format & 1) t = `<strong>${t}</strong>`;
       if (node.format & 2) t = `<em>${t}</em>`;
       if (node.format & 8) t = `<u>${t}</u>`;
@@ -50,52 +49,63 @@ function lexicalToHtml(raw: string | null | undefined): string {
   }
 }
 
-// Map lesson code -> topic_tag + difficulty for WindingLearningPath visuals
-const CODE_MAP = {
-  // Budgeting
-  'budget_101': { topic_tag: 'budgeting', difficulty: 'beginner' },
-  'budget_201': { topic_tag: 'budgeting', difficulty: 'intermediate' },
-  'budget_301': { topic_tag: 'budgeting', difficulty: 'advanced' },
-  // Investing
-  'invest_101': { topic_tag: 'investing', difficulty: 'beginner' },
-  'invest_201': { topic_tag: 'investing', difficulty: 'intermediate' },
-  'invest_301': { topic_tag: 'investing', difficulty: 'advanced' },
-  // Credit
-  'credit_101': { topic_tag: 'credit', difficulty: 'beginner' },
-  'credit_201': { topic_tag: 'credit', difficulty: 'intermediate' },
-  // Saving
-  'saving_101': { topic_tag: 'saving', difficulty: 'beginner' },
-  'saving_201': { topic_tag: 'saving', difficulty: 'intermediate' },
-  // Debt
-  'debt_101': { topic_tag: 'debt', difficulty: 'beginner' },
-  'debt_201': { topic_tag: 'debt', difficulty: 'intermediate' },
-  // Taxes
-  'tax_101': { topic_tag: 'taxes', difficulty: 'beginner' },
-  'tax_201': { topic_tag: 'taxes', difficulty: 'intermediate' },
-  // Insurance
-  'insurance_101': { topic_tag: 'insurance', difficulty: 'beginner' },
-  // Retirement
-  'retire_101': { topic_tag: 'retirement', difficulty: 'beginner' },
-  'retire_201': { topic_tag: 'retirement', difficulty: 'intermediate' },
-};
-
-function mapCode(code) {
-  if (code && CODE_MAP[code]) return CODE_MAP[code];
-  // Try prefix matching (e.g. 'budget_' prefix)
-  if (code) {
-    const prefix = code.split('_')[0];
-    const tagMap = {
-      budget: 'budgeting', invest: 'investing', credit: 'credit',
-      saving: 'saving', save: 'saving', debt: 'debt', tax: 'taxes',
-      insurance: 'insurance', retire: 'retirement',
-    };
-    if (tagMap[prefix]) {
-      return { topic_tag: tagMap[prefix], difficulty: 'beginner' };
-    }
-  }
-  return { topic_tag: 'budgeting', difficulty: 'beginner' };
+function toScreen(c: any, unitId: string) {
+  return {
+    id: String(c.id),
+    module_id: unitId,
+    title: c.title || 'Untitled',
+    lesson_type: c.content_type === 'question' ? 'quiz' : c.content_type === 'key_takeaway' ? 'flashcard' : 'text',
+    content_type: c.content_type,
+    text_content: lexicalToHtml(c.text_content),
+    text_cta: c.text_cta || 'Next',
+    question_prompt: lexicalToHtml(c.question_prompt),
+    correct_answer: c.correct_answer,
+    explanation: lexicalToHtml(c.explanation),
+    takeaway_text: lexicalToHtml(c.takeaway_text),
+    takeaway_icon: c.takeaway_icon,
+    xp_reward: c.points || 5,
+    order_index: c.order_position || 0,
+    is_published: true,
+  };
 }
 
+const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const paras = (v: string | string[]) => [].concat(v as any).map((t: string) => `<p>${esc(t)}</p>`).join('');
+const parseChoices = (list: string[]) => ({
+  options: list.map(c => c.replace(/^\*/, '')),
+  correct: (list.find(c => c.startsWith('*')) || '').slice(1),
+});
+
+// Apply audited copy and attach real answer choices (CMS choices unless the edit replaces them).
+function applyEdit(screen: any, edit: any, cmsChoices: any[] = []) {
+  const s = { ...screen };
+  if (s.content_type === 'question') {
+    if (edit?.choices) {
+      const { options, correct } = parseChoices(edit.choices);
+      s.options = options; s.correct_answer = correct;
+    } else if (cmsChoices.length) {
+      s.options = cmsChoices.map(c => c.text);
+      s.correct_answer = cmsChoices.find(c => c.is_correct)?.text ?? s.correct_answer;
+    }
+  }
+  if (!edit) return s;
+  if (edit.title) s.title = edit.title;
+  if (edit.text) s.text_content = paras(edit.text);
+  if (edit.q) s.question_prompt = paras(edit.q);
+  if (edit.e) s.explanation = paras(edit.e);
+  if (edit.k) s.takeaway_text = paras(edit.k);
+  return s;
+}
+
+// Build a screen that doesn't exist in the CMS from a spec in curriculumContent.
+function fromSpec(spec: any, id: string, unitId: string) {
+  const content_type = spec.type === 'question' ? 'question' : spec.type === 'takeaway' ? 'key_takeaway' : 'text_card';
+  const base = toScreen({ id, title: spec.title, content_type, points: content_type === 'question' ? 100 : content_type === 'text_card' ? 1 : 5, takeaway_icon: 'lightbulb' }, unitId);
+  return applyEdit({ ...base, question_type: content_type === 'question' ? 'multiple_choice' : null }, spec);
+}
+
+// Returns one "module" per lesson unit: a text card plus the question and takeaway that follow it.
+// Chapter grouping and order live in the app's curriculum map.
 export default async function(req) {
   try {
     const base44 = createClientFromRequest(req);
@@ -111,82 +121,49 @@ export default async function(req) {
       'Content-Type': 'application/json',
     };
 
-    // Fetch all published lessons ordered by order_position
-    const lessonsRes = await fetch(
-      `${supabaseUrl}/rest/v1/lessons?status=eq.published&order=order_position.asc`,
-      { headers }
-    );
-    const lessons = await lessonsRes.json();
+    const [contents, choices] = await Promise.all([
+      fetch(`${supabaseUrl}/rest/v1/lesson_contents?order=id.asc`, { headers, signal: AbortSignal.timeout(15000) }).then(r => r.json()),
+      fetch(`${supabaseUrl}/rest/v1/lesson_contents_choices?order=_parent_id.asc,_order.asc`, { headers, signal: AbortSignal.timeout(15000) }).then(r => r.json()),
+    ]);
+    if (!Array.isArray(contents)) return Response.json({ modules: [] });
+    const choicesByParent: Record<string, any[]> = {};
+    for (const ch of Array.isArray(choices) ? choices : []) (choicesByParent[ch._parent_id] ||= []).push(ch);
 
-    if (!Array.isArray(lessons) || lessons.length === 0) {
-      return Response.json({ modules: [] });
+    // Group every screen under the nearest preceding text card. The whole audited curriculum is live,
+    // so draft status in the CMS no longer hides a unit.
+    const units: { head: any; items: any[] }[] = [];
+    for (const c of contents) {
+      if (c.content_type === 'text_card') units.push({ head: c, items: [] });
+      if (units.length) units[units.length - 1].items.push(c);
     }
 
-    // Fetch lessons_rels + lesson_contents for all lessons in one query
-    const lessonIds = lessons.map(l => l.id).join(',');
-    const relsRes = await fetch(
-      `${supabaseUrl}/rest/v1/lessons_rels?parent_id=in.(${lessonIds})&select=parent_id,order,lesson_contents_id&order=order.asc`,
-      { headers }
-    );
-    const rels = await relsRes.json();
-
-    // Fetch all referenced lesson_contents that are published
-    const contentIds = [...new Set((rels || []).map(r => r.lesson_contents_id).filter(Boolean))];
-    let contentsMap = {};
-
-    if (contentIds.length > 0) {
-      const contentsRes = await fetch(
-        `${supabaseUrl}/rest/v1/lesson_contents?id=in.(${contentIds.join(',')})&status=eq.published`,
-        { headers }
-      );
-      const contents = await contentsRes.json();
-      if (Array.isArray(contents)) {
-        contents.forEach(c => { contentsMap[c.id] = c; });
-      }
-    }
-
-    // Build module objects with embedded lessons array
-    const modules = lessons.map((lesson, idx) => {
-      const { topic_tag, difficulty } = mapCode(lesson.code);
-
-      // Get content blocks for this lesson, ordered by rels.order
-      const lessonRels = (rels || []).filter(r => r.parent_id === lesson.id);
-      const contentBlocks = lessonRels
-        .map(r => contentsMap[r.lesson_contents_id])
-        .filter(Boolean);
-
+    const cmsModules = units.map(({ head, items }) => {
+      const unitId = String(head.id);
+      const screens = items.map(c => applyEdit(toScreen(c, unitId), EDITS[c.id], choicesByParent[c.id]));
+      (EXTRA_SCREENS[head.id] || []).forEach((s, i) => screens.push(fromSpec(s, `${unitId}-x${i + 1}`, unitId)));
       return {
-        id: String(lesson.id),
-        title: lesson.title || 'Untitled Lesson',
-        description: lesson.description || '',
-        topic_tag,
-        difficulty,
-        order_index: lesson.order_position || idx,
-        xp_reward: contentBlocks.reduce((sum, c) => sum + (c.points || 5), 0) || 100,
-        is_published: true,
-        lessons: contentBlocks.map(c => ({
-          id: String(c.id),
-          module_id: String(lesson.id),
-          title: c.title || 'Untitled',
-          lesson_type: c.content_type === 'question' ? 'quiz' : c.content_type === 'key_takeaway' ? 'flashcard' : 'text',
-          content_type: c.content_type,
-          // text_card fields
-          text_content: lexicalToHtml(c.text_content),
-          text_cta: c.text_cta || 'Next',
-          // question fields
-          question_prompt: lexicalToHtml(c.question_prompt),
-          correct_answer: c.correct_answer,
-          explanation: lexicalToHtml(c.explanation),
-          // key_takeaway fields
-          takeaway_text: lexicalToHtml(c.takeaway_text),
-          takeaway_icon: c.takeaway_icon,
-          // shared
-          xp_reward: c.points || 5,
-          order_index: c.order_position || 0,
-          is_published: true,
-        })),
+        id: unitId,
+        title: EDITS[head.id]?.title || head.title || 'Untitled Lesson',
+        lessons: screens,
       };
     });
+    const newModules = NEW_UNITS.map(u => ({
+      id: u.id,
+      title: u.title,
+      lessons: [
+        fromSpec({ type: 'text', title: u.title, text: u.text }, `${u.id}-1`, u.id),
+        fromSpec({ type: 'question', title: `${u.title} Quiz`, q: u.q, choices: u.choices, e: u.e }, `${u.id}-2`, u.id),
+        fromSpec({ type: 'takeaway', title: `${u.title} - Key Takeaway`, k: u.k }, `${u.id}-3`, u.id),
+      ],
+    }));
+
+    const modules = [...cmsModules, ...newModules].map((m, idx) => ({
+      ...m,
+      description: '',
+      order_index: idx,
+      xp_reward: LESSON_REWARD,
+      is_published: true,
+    }));
 
     return Response.json({ modules });
   } catch (error) {

@@ -69,7 +69,7 @@ export default function Onboarding() {
   };
 
   return (
-    <div className="h-screen overflow-hidden flex font-body" style={{ background: "hsl(222,47%,6%)" }}>
+    <div className="h-screen overflow-hidden flex font-body bg-figma-secondary">
       {/* Left panel — branding */}
       <div className="hidden lg:flex flex-col justify-between w-[340px] xl:w-[400px] shrink-0 px-14 pt-16 pb-10 border-r border-white/5">
         <BaselineWordmark scale={0.38} />

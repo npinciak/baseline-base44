@@ -1,0 +1,58 @@
+<mjml>
+  <mj-head>
+    <mj-title>Your {{item_name}} is on the way, {{first_name}}</mj-title>
+    <mj-preview>You redeemed {{total}} for a {{item_name}}. Your code arrives within 3 business days.</mj-preview>
+    <mj-attributes>
+      <mj-all font-family="Poppins, Helvetica, Arial, sans-serif" />
+      <mj-section background-color="#ffffff" padding="0 36px" />
+      <mj-column padding="0" />
+      <mj-text color="#000000" font-size="15px" line-height="1.6" padding="0" />
+      <mj-button background-color="#2efd7a" color="#000000" border-radius="24px" font-size="15px" font-weight="700" inner-padding="14px 28px" padding="0" align="left" />
+      <mj-image padding="0" />
+      <mj-class name="h" font-family="Poppins, Helvetica, Arial, sans-serif" font-weight="700" />
+      <mj-class name="label" font-size="11px" letter-spacing="2px" text-transform="uppercase" font-weight="700" color="#17a34a" />
+      <mj-class name="muted" color="#6b7280" />
+    </mj-attributes>
+  </mj-head>
+  <mj-body background-color="#080c16" width="600px">
+    <mj-wrapper padding="28px 12px" background-color="#080c16">
+      <mj-section background-color="#2efd7a" padding="24px 36px" border-radius="24px 24px 0 0">
+        <mj-column>
+          <mj-image src="https://media.base44.com/images/public/6a3542676f9044e70b439a84/8d15729d7_logo.png" alt="Baseline" width="40px" align="center" padding="0 0 12px" />
+          <mj-text align="center" font-size="12px" letter-spacing="4px" font-weight="700" text-transform="uppercase" color="#000000">Baseline</mj-text>
+        </mj-column>
+      </mj-section>
+      <mj-section padding="40px 36px 8px">
+        <mj-column>
+          <mj-text mj-class="h" font-size="30px" line-height="1.2" padding="0 0 10px">Reward unlocked, {{first_name}}.</mj-text>
+          <mj-text mj-class="muted" font-size="15px">Your BaseCoins paid off. We're preparing your gift card and will email the code to this address within 3 business days.</mj-text>
+        </mj-column>
+      </mj-section>
+      <mj-section padding="24px 36px 0">
+        <mj-group background-color="#eefff4">
+          <mj-column padding="16px 20px 12px"><mj-text mj-class="label">Redemption</mj-text></mj-column>
+          <mj-column padding="16px 20px 12px"><mj-text align="right" font-family="'Courier New', Courier, monospace" font-size="13px">#{{order_id}}</mj-text></mj-column>
+        </mj-group>
+      </mj-section>
+      <mj-section padding="0 36px">
+        <mj-group background-color="#eefff4">
+          <mj-column padding="12px 20px"><mj-text font-size="15px">{{item_name}}</mj-text></mj-column>
+          <mj-column padding="12px 20px"><mj-text align="right" font-family="'Courier New', Courier, monospace" font-size="15px">{{item_price}}</mj-text></mj-column>
+        </mj-group>
+      </mj-section>
+      <mj-section padding="0 36px 28px">
+        <mj-group background-color="#eefff4">
+          <mj-column border-top="1px solid #c9fedc" padding="14px 20px 18px"><mj-text font-size="12px" letter-spacing="2px" text-transform="uppercase" font-weight="700">BaseCoins spent</mj-text></mj-column>
+          <mj-column border-top="1px solid #c9fedc" padding="12px 20px 16px"><mj-text align="right" font-family="'Courier New', Courier, monospace" font-size="20px" font-weight="700">{{total}}</mj-text></mj-column>
+        </mj-group>
+      </mj-section>
+      <mj-section padding="0 36px 40px"><mj-column><mj-button href="https://baselinefi.com/basecamp" align="left">Back to Basecamp</mj-button></mj-column></mj-section>
+      <mj-section background-color="#2efd7a" padding="26px 36px 30px" border-radius="0 0 24px 24px">
+        <mj-column>
+          <mj-text mj-class="h" align="center" font-size="17px" color="#000000" padding="0 0 8px">Baseline</mj-text>
+          <mj-text align="center" font-size="12px" line-height="1.7" color="#000000" padding="0 0 6px">Keep this email for your records. Questions about a reward? Just reply to this message.</mj-text>
+        </mj-column>
+      </mj-section>
+    </mj-wrapper>
+  </mj-body>
+</mjml>

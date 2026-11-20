@@ -7,8 +7,8 @@ const NW = 12;
 const GAP = 10;
 const MINH = 18;
 const DAY = 86400000;
-const INCOME_COLORS = ['#2EFD7A', '#2BF9E9', '#2EA0FD', '#A78BFA'];
-const SPEND_COLORS = ['#2EA0FD', '#F5A623', '#c084fc', '#f87171', '#38BDF8', '#34D399', '#fb7185', '#facc15'];
+const INCOME_COLORS = ['#2EFD7A', '#17C964', '#D4D4D8', '#A1A1AA'];
+const SPEND_COLORS = ['#D4D4D8', '#F5A623', '#c084fc', '#f87171', '#A1A1AA', '#34D399', '#fb7185', '#facc15'];
 const fmt = (n) => `$${Math.round(n).toLocaleString()}`;
 const short = (s) => (s.length > 24 ? `${s.slice(0, 22)}…` : s);
 
@@ -113,7 +113,7 @@ export default function SankeyCashflow({ txs }) {
             <button
               key={d}
               onClick={() => setDays(d)}
-              className={`px-3 py-1 rounded-md text-xs font-semibold transition-colors ${days === d ? 'bg-[#2EA0FD] text-black' : 'text-white/60 hover:text-white'}`}
+              className={`px-3 py-1 rounded-md text-xs font-semibold transition-colors ${days === d ? 'bg-[#2EFD7A] text-black' : 'text-white/60 hover:text-white'}`}
             >
               {d}D
             </button>

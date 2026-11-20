@@ -16,7 +16,7 @@ const EMPTY_FORM = { name: '', amount: '', type: 'expense', category: 'bills_uti
  * balance: current net worth (null = unavailable). txs: normalized transactions.
  * Past days use actual transactions; future days use scheduled events + predicted patterns.
  */
-export default function FinancialCalendar({ balance = null, txs = [], isSample = false }) {
+export default function FinancialCalendar({ balance = null, txs = [], isSample = false, readOnlyPreview = false }) {
   const [today] = useState(new Date());
   const todayIso = iso(today);
   const [userId, setUserId] = useState(null);
@@ -30,11 +30,12 @@ export default function FinancialCalendar({ balance = null, txs = [], isSample =
   const [editingId, setEditingId] = useState(null);
 
   useEffect(() => {
+    if (readOnlyPreview) { setLoading(false); return; }
     base44.auth.me().then((u) => {
       setUserId(u.id);
       return base44.entities.FinancialEvent.filter({ user_id: u.id });
     }).then(setEvents).catch(() => setEvents([])).finally(() => setLoading(false));
-  }, []);
+  }, [readOnlyPreview]);
 
   const reload = () => base44.entities.FinancialEvent.filter({ user_id: userId }).then(setEvents);
 
@@ -123,7 +124,7 @@ export default function FinancialCalendar({ balance = null, txs = [], isSample =
         </div>
         <div className="bg-white/[0.05] rounded-xl p-3">
           <p className="text-xs text-white/60 mb-1">Projected {format(endOfMonth(month), 'MMM d')}</p>
-          <p className="text-lg font-display font-extrabold text-[#2EA0FD]">{known && monthEnd ? money(monthEnd.end) : 'Unavailable'}</p>
+          <p className="text-lg font-display font-extrabold text-[#D4D4D8]">{known && monthEnd ? money(monthEnd.end) : 'Unavailable'}</p>
         </div>
       </div>
 
@@ -136,7 +137,7 @@ export default function FinancialCalendar({ balance = null, txs = [], isSample =
 
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 px-5 pb-3 text-[11px] text-white/60">
         <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-white/60" /> Actual balance</span>
-        <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-[#2EA0FD]" /> Projected balance</span>
+        <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-[#D4D4D8]" /> Projected balance</span>
         <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-[#2EFD7A]" /> Income</span>
         <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-red-400" /> Expense</span>
       </div>

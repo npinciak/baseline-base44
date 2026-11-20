@@ -28,8 +28,10 @@ export function useAppInfo() {
 // shows them returns <MfaScreen> in place of its own layout instead of nesting them in its card.
 export function MfaScreen({ children }) {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4 py-8">
-      <div className="w-full max-w-md bg-card rounded-2xl shadow-sm border border-border p-8">{children}</div>
+    <div className="auth-brand min-h-screen flex flex-col items-center justify-center bg-background px-4 py-8">
+      <p className="font-display text-2xl font-bold text-foreground mb-2">Baseline</p>
+      <p className="text-muted-foreground text-[10px] tracking-[0.3em] uppercase mb-8">Mind Over Money</p>
+      <div className="w-full max-w-md bg-card rounded-3xl border border-border p-5 sm:p-8">{children}</div>
     </div>
   );
 }
@@ -39,10 +41,10 @@ export function MfaScreen({ children }) {
 export function MfaHeader({ title, description }) {
   return (
     <div className="flex flex-col items-center text-center mb-6">
-      <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary mb-4">
-        <ShieldCheck className="w-7 h-7 text-primary-foreground" aria-hidden="true" />
+      <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-primary/15 border border-primary/30 mb-4">
+        <ShieldCheck className="w-6 h-6 text-primary" aria-hidden="true" />
       </div>
-      <h1 className="text-2xl font-bold tracking-tight text-foreground min-h-[2rem]">{title}</h1>
+      <h1 className="text-2xl font-light tracking-tight text-foreground min-h-[2rem]">{title}</h1>
       {description && <p className="text-muted-foreground mt-2">{description}</p>}
     </div>
   );

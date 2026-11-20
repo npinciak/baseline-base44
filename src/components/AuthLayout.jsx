@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
+import useKeyboardViewport from "@/hooks/useKeyboardViewport";
 
 const ORB_SRC = "https://media.base44.com/images/public/6a3542676f9044e70b439a84/156742c3c_2c64e420d_b567a13c189ab17b1195db0aba380e0ba8854e8c.png";
 
@@ -40,9 +41,29 @@ function Wordmark({ className = "" }) {
   );
 }
 
-export default function AuthLayout({ icon: Icon, title, subtitle, footer, children }) {
+export default function AuthLayout({ icon: Icon, title, subtitle, footer, secondaryTone, compact = false, children }) {
+  const toneClass = secondaryTone === "green" ? "auth-login-green" : "";
+  const { keyboardInset, isKeyboardOpen, handleFocusCapture } = useKeyboardViewport(compact);
+
+  const handleBackgroundPointerDown = (e) => {
+    if (!compact) return;
+    const tag = e.target.tagName;
+    if (tag !== "INPUT" && tag !== "TEXTAREA" && tag !== "BUTTON" && tag !== "A" && !e.target.closest("button, a, label, [data-slot]")) {
+      if (document.activeElement && typeof document.activeElement.blur === "function") {
+        document.activeElement.blur();
+      }
+    }
+  };
+
   return (
-    <div className="relative h-screen flex flex-col items-center justify-center bg-black px-4 py-4 overflow-hidden">
+    <div
+      onFocusCapture={handleFocusCapture}
+      onPointerDown={handleBackgroundPointerDown}
+      style={keyboardInset > 0 ? { paddingBottom: `${keyboardInset + 24}px` } : undefined}
+      className={`auth-brand ${toneClass} relative min-h-[100dvh] flex flex-col items-center ${
+        compact ? "px-4 py-3 sm:py-4 lg:py-6" : "justify-center px-4 py-8"
+      } bg-background overflow-x-hidden`}
+    >
       {/* Aurora borealis background — slow drifting green/blue glows, kept dim so black dominates */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
@@ -59,46 +80,79 @@ export default function AuthLayout({ icon: Icon, title, subtitle, footer, childr
         />
         <motion.div
           className="absolute bottom-[-20%] left-1/4 w-[50%] h-[50%] rounded-full"
-          style={{ background: "radial-gradient(circle, rgba(46,253,203,0.13) 0%, rgba(46,253,203,0.04) 45%, transparent 75%)" }}
+          style={{ background: "radial-gradient(circle, hsl(var(--auth-secondary) / 0.13) 0%, hsl(var(--auth-secondary) / 0.04) 45%, transparent 75%)" }}
           animate={{ x: [0, 40, -40, 0], y: [0, -20, 30, 0], opacity: [0.15, 0.28, 0.15] }}
           transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 2 }}
         />
       </div>
 
-      <div className="relative z-10 w-full max-w-md h-full flex flex-col items-center justify-center">
+      <div className={`relative z-10 w-full max-w-md flex flex-col items-center ${compact ? "my-auto" : "justify-center"}`}>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: "easeOut" }}
-          className="flex flex-col items-center text-center mb-3 shrink-0"
+          className={`flex flex-col items-center text-center shrink-0 ${compact ? "mb-2" : "mb-3"}`}
         >
           {/* Cropped power symbol only — the source image is a square with the icon on top and the "Baseline" wordmark baked into the bottom, so we clip to the top fraction to isolate just the icon */}
-          <div className="relative mb-2" style={{ width: 230.4, height: 230.4 * 0.65 }}>
-            <motion.div
-              className="absolute inset-0 rounded-2xl bg-[#2EFD7A]/25 blur-2xl pointer-events-none"
-              animate={{ opacity: [0.4, 0.7, 0.4] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            />
-            <div className="relative w-full h-full overflow-hidden">
-              <motion.img
-                src={ORB_SRC}
-                alt=""
-                className="absolute top-0 left-0 select-none mix-blend-screen"
-                style={{ width: 230.4, height: 230.4, objectFit: "cover" }}
-                animate={{ filter: ["brightness(1)", "brightness(1.3)", "brightness(1)"] }}
+          {compact ? (
+            <div
+              className={`relative mb-1 transition-all duration-200 ${
+                isKeyboardOpen ? "w-14 sm:w-20" : "w-20 sm:w-24 lg:w-32"
+              }`}
+              style={{ aspectRatio: "1 / 0.65" }}
+            >
+              <motion.div
+                className="absolute inset-0 rounded-2xl bg-auth-secondary/25 blur-2xl pointer-events-none"
+                animate={{ opacity: [0.4, 0.7, 0.4] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
               />
+              <div className="relative w-full h-full overflow-hidden">
+                <motion.img
+                  src={ORB_SRC}
+                  alt=""
+                  className="absolute top-0 left-0 w-full select-none mix-blend-screen object-cover"
+                  style={{ height: `${(1 / 0.65) * 100}%` }}
+                  animate={{ filter: ["brightness(1)", "brightness(1.3)", "brightness(1)"] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                />
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="relative mb-2" style={{ width: 230.4, height: 230.4 * 0.65 }}>
+              <motion.div
+                className="absolute inset-0 rounded-2xl bg-[#2EFD7A]/25 blur-2xl pointer-events-none"
+                animate={{ opacity: [0.4, 0.7, 0.4] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              />
+              <div className="relative w-full h-full overflow-hidden">
+                <motion.img
+                  src={ORB_SRC}
+                  alt=""
+                  className="absolute top-0 left-0 select-none mix-blend-screen"
+                  style={{ width: 230.4, height: 230.4, objectFit: "cover" }}
+                  animate={{ filter: ["brightness(1)", "brightness(1.3)", "brightness(1)"] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                />
+              </div>
+            </div>
+          )}
 
-          <Wordmark className="mb-2" />
-          <p className="text-white/40 text-[10px] font-light tracking-[0.3em] uppercase mb-4">Mind Over Money</p>
+          <Wordmark className={compact ? "mb-1 max-w-[135px] sm:max-w-[155px]" : "mb-2"} />
+          <p className={`text-white/40 text-[10px] font-light tracking-[0.3em] uppercase ${compact ? "mb-2" : "mb-4"}`}>
+            Mind Over Money
+          </p>
 
-          <h1 className="text-2xl font-light tracking-tight text-white">{title}</h1>
+          <h1 className={`${compact ? "text-xl sm:text-2xl" : "text-2xl"} font-light tracking-tight text-white`}>
+            {title}
+          </h1>
 
           {Icon && (
-            <div className="inline-flex items-center justify-center w-10 h-10 rounded-2xl bg-primary/15 border border-primary/30 mt-3 mb-1 shadow-[0_0_30px_hsla(175,94%,57%,0.15)]">
-              <Icon className="w-5 h-5 text-primary" aria-hidden="true" />
+            <div
+              className={`inline-flex items-center justify-center ${
+                compact ? "w-8 h-8 sm:w-9 sm:h-9 rounded-xl mt-1.5" : "w-10 h-10 rounded-2xl mt-3 mb-1"
+              } bg-auth-secondary/15 border border-auth-secondary/30 shadow-sm`}
+            >
+              <Icon className={`${compact ? "w-4 h-4" : "w-5 h-5"} text-auth-secondary`} aria-hidden="true" />
             </div>
           )}
 
@@ -109,13 +163,15 @@ export default function AuthLayout({ icon: Icon, title, subtitle, footer, childr
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.15, ease: "easeOut" }}
-          className="bg-white/[0.03] border border-white/10 backdrop-blur-sm rounded-3xl p-5 w-full overflow-y-auto"
+          className={`bg-white/[0.03] border border-white/10 backdrop-blur-sm rounded-3xl ${
+            compact ? "p-4 sm:p-5" : "p-5 overflow-y-auto"
+          } w-full`}
         >
           {children}
         </motion.div>
 
         {footer && (
-          <p className="text-center text-xs text-white/40 mt-3 shrink-0">{footer}</p>
+          <p className={`text-center text-xs text-white/40 ${compact ? "mt-2.5" : "mt-3"} shrink-0`}>{footer}</p>
         )}
       </div>
     </div>

@@ -4,6 +4,8 @@ import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
 import { ArrowRight, CheckCircle, Coins, X } from 'lucide-react';
 import AmbientBackdrop from '@/components/dashboard/AmbientBackdrop';
+import { CHAPTERS } from '@/lib/curriculum';
+import { getLevelInfo } from '@/lib/coinLevels';
 
 export default function LessonView() {
   const { moduleId } = useParams();
@@ -21,6 +23,7 @@ export default function LessonView() {
   const [showCompletion, setShowCompletion] = useState(false);
   const [xpEarned, setXpEarned] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [allModules, setAllModules] = useState([]);
 
   useEffect(() => {
     const init = async () => {
@@ -28,10 +31,11 @@ export default function LessonView() {
       setUser(u);
       const [modulesRes, prog] = await Promise.all([
         base44.functions.invoke('getPayloadLessons', {}),
-        base44.entities.UserProgress.filter({ user_id: u.id, module_id: moduleId }),
+        base44.entities.UserProgress.filter({ user_id: u.id }),
       ]);
-      const allModules = modulesRes?.data?.modules || [];
-      const mod = allModules.find(m => m.id === moduleId);
+      const mods = modulesRes?.data?.modules || [];
+      setAllModules(mods);
+      const mod = mods.find(m => m.id === moduleId);
       const modLessons = mod?.lessons || [];
       setModule(mod || null);
       setLessons(modLessons);
@@ -60,7 +64,6 @@ export default function LessonView() {
   }, [moduleId, requestedLessonId]);
 
   useEffect(() => {
-    // For PayloadCMS question content, options come from the correct_answer field
     setSelectedAnswer(null);
     setAnswered(false);
   }, [currentIndex, lessons]);
@@ -80,20 +83,17 @@ export default function LessonView() {
       }
       return;
     }
-
-    const xp = currentLesson.xp_reward || 20;
     const alreadyCompleted = isCompleted(currentLesson.id);
+    const lessonFinished = lessons.every(l => l.id === currentLesson.id || isCompleted(l.id));
 
     if (!alreadyCompleted) {
-      setXpEarned(prev => prev + xp);
-
       // Record progress
       await base44.entities.UserProgress.create({
         user_id: user.id,
         lesson_id: currentLesson.id,
         module_id: moduleId,
         completed: true,
-        xp_earned: xp,
+        xp_earned: 0,
         score: score,
         completed_at: new Date().toISOString(),
       });
@@ -101,8 +101,16 @@ export default function LessonView() {
       // Update local progress state so isCompleted reflects immediately
       setProgress(prev => [...prev, { lesson_id: currentLesson.id, module_id: moduleId, completed: true }]);
 
-      // Credit Supabase wallet
-      await base44.functions.invoke('creditWallet', { amount: xp }).catch(() => {});
+      // The whole lesson is done: credit the lesson reward once (amount is set server-side)
+      let xp = 0;
+      if (lessonFinished) {
+        const res = await base44.functions.invoke('creditWallet', { moduleId }).catch(() => null);
+        xp = res?.data?.awarded || 0;
+        setXpEarned(xp);
+        if (typeof res?.data?.newBalance === 'number') {
+          window.dispatchEvent(new CustomEvent('wallet-updated', { detail: { balance: res.data.newBalance } }));
+        }
+      }
 
       // Update UserStats
       const statsArr = await base44.entities.UserStats.filter({ user_id: user.id });
@@ -111,17 +119,23 @@ export default function LessonView() {
         const today = new Date().toISOString().slice(0, 10);
         const lastActivity = s.last_activity_date;
         const daysDiff = lastActivity
-          ? (new Date(today) - new Date(lastActivity)) / 86400000
+          ? Math.round((new Date(today) - new Date(lastActivity)) / 86400000)
           : null;
-        // Only extend streak if last activity was exactly yesterday (not today, not 2+ days ago)
-        const newStreak = daysDiff === 1 ? (s.current_streak + 1) : daysDiff === 0 ? s.current_streak : 1;
+        const usedShield = daysDiff === 2 && !!s.streak_shield_active;
+        const newStreak =
+          daysDiff === 1 || usedShield
+            ? (s.current_streak || 0) + 1
+            : daysDiff === 0
+              ? (s.current_streak || 1)
+              : 1;
         const newXp = (s.total_xp || 0) + xp;
-        const newLevel = Math.floor(newXp / 200) + 1;
+        const newLevel = getLevelInfo(newXp).current.level;
         await base44.entities.UserStats.update(s.id, {
           total_xp: newXp,
           current_level: newLevel,
           current_streak: newStreak,
           longest_streak: Math.max(s.longest_streak || 0, newStreak),
+          streak_shield_active: usedShield ? false : !!s.streak_shield_active,
           last_activity_date: today,
         });
       }
@@ -152,6 +166,11 @@ export default function LessonView() {
   }
 
   if (showCompletion) {
+    const chapter = CHAPTERS.find(c => c.units.map(String).includes(moduleId));
+    const chapterLearned = chapter && chapter.units
+      .map(id => allModules.find(m => m.id === String(id)))
+      .filter(Boolean)
+      .every(m => m.lessons.every(l => isCompleted(l.id)));
     return (
       <div className="relative min-h-screen bg-black flex items-center justify-center p-6 overflow-hidden">
         <AmbientBackdrop />
@@ -159,15 +178,22 @@ export default function LessonView() {
           <div className="w-24 h-24 rounded-full bg-[#2EFD7A]/15 border-4 border-[#2EFD7A] flex items-center justify-center mx-auto mb-6 shadow-[0_0_40px_rgba(46,253,122,0.35)]">
             <CheckCircle className="w-12 h-12 text-[#2EFD7A]" />
           </div>
-          <h2 className="text-3xl font-display font-extrabold mb-2 text-white">Module Complete!</h2>
+          <h2 className="text-3xl font-display font-extrabold mb-2 text-white">{chapterLearned ? 'Chapter Complete!' : 'Lesson Complete!'}</h2>
           <p className="text-white/60 mb-6">You've finished <strong className="text-white">{module?.title}</strong></p>
           <div className="bg-white/[0.03] border border-white/10 backdrop-blur-sm rounded-2xl p-6 mb-6 shadow-[0_0_40px_-10px_rgba(46,160,253,0.3)]">
             <div className="flex items-center justify-center gap-2 text-3xl font-display font-extrabold text-[#2EA0FD]">
               <Coins className="w-8 h-8" />
-              +{xpEarned} Base Coins
+              {xpEarned > 0 ? `+${xpEarned} Base Coins` : 'Coins already earned'}
             </div>
-            <p className="text-sm text-white/60 mt-1">added to your profile</p>
+            <p className="text-sm text-white/60 mt-1">{xpEarned > 0 ? 'added to your wallet' : 'Each lesson pays out once'}</p>
           </div>
+          {chapterLearned && chapter.move && (
+            <div className="text-left bg-[#2EFD7A]/[0.06] border border-[#2EFD7A]/30 rounded-2xl p-5 mb-6">
+              <p className="text-[11px] tracking-widest uppercase font-semibold text-[#2EFD7A] mb-1">Money move unlocked</p>
+              <p className="text-white font-semibold">{chapter.move.title}</p>
+              <p className="text-white/60 text-sm mt-1">{chapter.move.detail}</p>
+            </div>
+          )}
           <button
             onClick={() => navigate('/dashboard')}
             className="w-full py-4 bg-[#2EFD7A] text-black rounded-2xl font-bold text-lg hover:bg-[#2EFD7A]/90 hover:scale-[1.02] active:scale-95 transition-all duration-200"
@@ -278,12 +304,11 @@ export default function LessonView() {
                 })}
               </div>
             ) : (
-              /* multiple_choice — treat correct_answer as one of the options; generate plausible distractors from explanation */
+              /* multiple_choice — answer choices come from the curriculum */
               <div className="space-y-3">
                 {(() => {
                   const correct = currentLesson.correct_answer || '';
-                  // Build options: correct answer + "False" / "I don't know" as distractors for single-answer questions
-                  const opts = correct ? [correct, 'I\'m not sure', 'None of the above'] : [];
+                  const opts = currentLesson.options?.length ? currentLesson.options : correct ? [correct] : [];
                   return opts.map((opt) => {
                     let buttonClass = 'border-white/10 bg-white/[0.03] text-white hover:border-[#2EA0FD]/60 hover:bg-white/[0.06]';
                     if (answered) {
@@ -333,7 +358,7 @@ export default function LessonView() {
         >
           {isCompleted(currentLesson.id) || (isAdmin && currentLesson.content_type === 'question' && !answered)
             ? (currentIndex < lessons.length - 1 ? 'Next' : 'Finish Review')
-            : (currentIndex < lessons.length - 1 ? currentLesson.text_cta || 'Continue' : 'Complete Module')}
+            : (currentIndex < lessons.length - 1 ? currentLesson.text_cta || 'Continue' : 'Complete Lesson')}
           <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
         </button>
       </motion.div>

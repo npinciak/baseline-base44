@@ -7,7 +7,7 @@ export default function ScenarioSlider({ change, setChange }) {
   const pct = ((change - MIN) / (MAX - MIN)) * 100;
   const left = Math.min(pct, 50);
   const width = Math.abs(pct - 50);
-  const color = change < 0 ? '#2EFD7A' : '#2EA0FD';
+  const color = change < 0 ? '#2EFD7A' : '#2EFD7A';
 
   return (
     <div>

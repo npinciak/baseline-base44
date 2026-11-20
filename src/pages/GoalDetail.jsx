@@ -164,7 +164,7 @@ export default function GoalDetail() {
   const handleDelete = async () => {
     if (!confirm(`Delete "${goal.name}"? This cannot be undone.`)) return;
     await base44.functions.invoke('deleteSupabaseGoal', { supabaseGoalId: goalId }).catch(() => {});
-    navigate('/goals');
+    navigate('/money#goals');
   };
 
   const handleMarkComplete = async () => {
@@ -201,7 +201,7 @@ export default function GoalDetail() {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen gap-4">
         <p className="text-white/60">Goal not found.</p>
-        <button onClick={() => navigate('/goals')} className="text-[#2EFD7A] text-sm font-semibold hover:underline">Back to Goals</button>
+        <button onClick={() => navigate('/money#goals')} className="text-[#2EFD7A] text-sm font-semibold hover:underline">Back to Money</button>
       </div>
     );
   }
@@ -216,10 +216,10 @@ export default function GoalDetail() {
     <div className="max-w-5xl mx-auto px-4 py-6">
       {/* Back */}
       <button
-        onClick={() => navigate('/goals')}
+        onClick={() => navigate('/money#goals')}
         className="flex items-center gap-1.5 text-white/60 hover:text-white text-sm font-medium mb-5 transition-colors"
       >
-        <ArrowLeft className="w-4 h-4" /> Back to Goals
+        <ArrowLeft className="w-4 h-4" /> Back to Money
       </button>
 
       {/* Two-column layout */}

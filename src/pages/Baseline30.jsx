@@ -117,7 +117,7 @@ const BaseScoreMockup = () => {
               <p className="text-white/40 text-[8px]">of 500</p>
             </div>
           </div>
-          <span className="mt-1 text-[9px] font-bold px-3 py-1 rounded-full bg-teal-400/20 text-teal-400">Good Standing</span>
+          <span className="mt-1 text-[9px] font-bold px-3 py-1 rounded-full bg-[#2EFD7A]/20 text-[#2EFD7A]">Good Standing</span>
         </div>
         {/* Tenets */}
         <div className="space-y-2 flex-1">
@@ -134,7 +134,7 @@ const BaseScoreMockup = () => {
           ))}
         </div>
         {/* CTA */}
-        <div className="mt-3 bg-teal-400 rounded-2xl py-2.5 text-center">
+        <div className="mt-3 bg-[#2EFD7A] rounded-2xl py-2.5 text-center">
           <span className="text-black font-bold text-xs">Improve My Score</span>
         </div>
       </div>
@@ -154,7 +154,7 @@ const ParentsMockup = () => (
       <div className="flex items-center gap-2 mb-4">
         <div className="flex -space-x-2">
           <div className="w-8 h-8 rounded-full bg-purple-400 border-2 border-[#0a0e1a] flex items-center justify-center text-[10px] font-bold text-black">P</div>
-          <div className="w-8 h-8 rounded-full bg-teal-400 border-2 border-[#0a0e1a] flex items-center justify-center text-[10px] font-bold text-black">K</div>
+          <div className="w-8 h-8 rounded-full bg-[#2EFD7A] border-2 border-[#0a0e1a] flex items-center justify-center text-[10px] font-bold text-black">K</div>
         </div>
         <div>
           <p className="text-white text-xs font-bold">The Johnson Family</p>
@@ -162,17 +162,17 @@ const ParentsMockup = () => (
         </div>
       </div>
       {/* Child progress card */}
-      <div className="bg-teal-400/10 border border-teal-400/30 rounded-xl p-3 mb-3">
+      <div className="bg-[#2EFD7A]/10 border border-[#2EFD7A]/30 rounded-xl p-3 mb-3">
         <div className="flex items-center gap-2 mb-2">
-          <div className="w-6 h-6 rounded-full bg-teal-400 flex items-center justify-center text-[9px] font-bold text-black">K</div>
+          <div className="w-6 h-6 rounded-full bg-[#2EFD7A] flex items-center justify-center text-[9px] font-bold text-black">K</div>
           <div>
             <p className="text-white text-xs font-bold">Kyle's Progress</p>
-            <p className="text-teal-400 text-[9px]">3 lessons this week 🔥</p>
+            <p className="text-[#2EFD7A] text-[9px]">3 lessons this week 🔥</p>
           </div>
         </div>
         <div className="flex gap-1">
           {['Budget', 'Saving', 'Credit'].map((tag, i) => (
-            <span key={tag} className={`text-[8px] px-1.5 py-0.5 rounded-full font-bold ${i === 0 ? 'bg-teal-400 text-black' : 'bg-white/10 text-white/50'}`}>{tag}</span>
+            <span key={tag} className={`text-[8px] px-1.5 py-0.5 rounded-full font-bold ${i === 0 ? 'bg-[#2EFD7A] text-black' : 'bg-white/10 text-white/50'}`}>{tag}</span>
           ))}
         </div>
       </div>
@@ -181,7 +181,7 @@ const ParentsMockup = () => (
         <p className="text-white/60 text-[9px] uppercase tracking-widest mb-1">Parent Nudge</p>
         <p className="text-white text-xs font-semibold mb-2">"Great job finishing Budgeting Basics! 🎉"</p>
         <div className="flex gap-2">
-          <div className="flex-1 text-center py-1.5 rounded-lg bg-teal-400/20 text-teal-400 text-[9px] font-bold">Send Message</div>
+          <div className="flex-1 text-center py-1.5 rounded-lg bg-[#2EFD7A]/20 text-[#2EFD7A] text-[9px] font-bold">Send Message</div>
           <div className="flex-1 text-center py-1.5 rounded-lg bg-white/10 text-white/50 text-[9px] font-bold">Add Goal</div>
         </div>
       </div>
@@ -189,10 +189,10 @@ const ParentsMockup = () => (
       <div className="bg-white/5 border border-white/10 rounded-xl p-3">
         <div className="flex justify-between items-center mb-1">
           <p className="text-white text-xs font-semibold">🎓 College Fund</p>
-          <span className="text-teal-400 text-[9px] font-bold">21%</span>
+          <span className="text-[#2EFD7A] text-[9px] font-bold">21%</span>
         </div>
         <div className="h-1.5 bg-white/10 rounded-full">
-          <div className="h-full bg-teal-400 rounded-full w-[21%]" />
+          <div className="h-full bg-[#2EFD7A] rounded-full w-[21%]" />
         </div>
         <p className="text-white/40 text-[8px] mt-1">$4,200 of $20,000</p>
       </div>
@@ -230,7 +230,7 @@ const KidsMockup = () => (
         </div>
       </div>
       {/* Active goal */}
-      <div className="bg-teal-400/10 border border-teal-400/30 rounded-xl p-3 mb-3">
+      <div className="bg-[#2EFD7A]/10 border border-[#2EFD7A]/30 rounded-xl p-3 mb-3">
         <p className="text-white/50 text-[9px] uppercase tracking-widest mb-1">Active Goal</p>
         <div className="flex items-center gap-2 mb-2">
           <span className="text-lg">🎓</span>
@@ -238,10 +238,10 @@ const KidsMockup = () => (
             <p className="text-white text-xs font-bold">College Fund</p>
             <p className="text-white/40 text-[9px]">$4,200 of $20,000</p>
           </div>
-          <span className="text-teal-400 font-bold text-xs">21%</span>
+          <span className="text-[#2EFD7A] font-bold text-xs">21%</span>
         </div>
         <div className="h-1.5 bg-white/10 rounded-full">
-          <div className="h-full bg-teal-400 rounded-full w-[21%]" />
+          <div className="h-full bg-[#2EFD7A] rounded-full w-[21%]" />
         </div>
       </div>
       {/* Badges earned */}
@@ -268,7 +268,7 @@ const KidsMockup = () => (
       </div>
     </div>
     <div className="px-5 pb-5 pt-3">
-      <div className="bg-teal-400 rounded-2xl py-2.5 text-center">
+      <div className="bg-[#2EFD7A] rounded-2xl py-2.5 text-center">
         <span className="text-black font-bold text-xs">Continue Learning</span>
       </div>
     </div>
@@ -546,10 +546,10 @@ export default function Baseline30() {
             Start <span className="font-extrabold">Saving</span>
           </h2>
           <button
-            onClick={() => handleNav("/onboarding")}
-            className="px-[41px] py-[13.6px] bg-teal-400 text-black font-semibold text-[15px] rounded-full hover:bg-teal-300 transition-all"
+            onClick={() => handleNav("/basescore-quiz")}
+            className="px-[41px] py-[13.6px] bg-[#2EFD7A] text-black font-semibold text-[15px] rounded-full hover:bg-[#2EFD7A]/90 transition-all"
           >
-            Let's Go
+            Start now
           </button>
         </motion.div>
       </section>

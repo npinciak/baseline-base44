@@ -8,7 +8,7 @@ export default function SpendingDonut({ categoryList, total }) {
   return (
     <div className="rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-sm p-5 h-full">
       <h3 className="flex items-center gap-2 text-white font-heading font-bold mb-3">
-        <PieIcon className="w-5 h-5 text-[#2EA0FD]" /> Where it goes
+        <PieIcon className="w-5 h-5 text-[#2EFD7A]" /> Where it goes
       </h3>
       {categoryList.length === 0 ? (
         <p className="text-white/50 text-sm py-12 text-center">No spending yet</p>
@@ -28,7 +28,7 @@ export default function SpendingDonut({ categoryList, total }) {
               <span className="text-xl font-display font-extrabold text-white">{money(total)}</span>
             </div>
           </div>
-          <ul className="flex-1 w-full space-y-2.5">
+          <ul className="min-w-0 flex-1 w-full space-y-2.5">
             {top.map(c => (
               <li key={c.cat} className="flex items-center gap-2 text-sm">
                 <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: c.color }} />
