@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
 import { ArrowRight, CheckCircle, Coins, X } from 'lucide-react';
@@ -7,6 +7,8 @@ import AmbientBackdrop from '@/components/dashboard/AmbientBackdrop';
 
 export default function LessonView() {
   const { moduleId } = useParams();
+  const [searchParams] = useSearchParams();
+  const requestedLessonId = searchParams.get('lesson');
   const navigate = useNavigate();
   const [module, setModule] = useState(null);
   const [lessons, setLessons] = useState([]);
@@ -30,13 +32,32 @@ export default function LessonView() {
       ]);
       const allModules = modulesRes?.data?.modules || [];
       const mod = allModules.find(m => m.id === moduleId);
+      const modLessons = mod?.lessons || [];
       setModule(mod || null);
-      setLessons(mod?.lessons || []);
+      setLessons(modLessons);
       setProgress(prog);
+
+      let initialIndex = 0;
+      if (requestedLessonId && modLessons.length > 0) {
+        const idx = modLessons.findIndex(l => String(l.id) === String(requestedLessonId));
+        if (idx >= 0) {
+          const completedIds = new Set(prog.filter(p => p.completed).map(p => String(p.lesson_id)));
+          const canJump =
+            u?.role === 'admin' ||
+            idx === 0 ||
+            completedIds.has(String(modLessons[idx - 1]?.id)) ||
+            completedIds.has(String(modLessons[idx]?.id));
+          if (canJump) {
+            initialIndex = idx;
+          }
+        }
+      }
+      setCurrentIndex(initialIndex);
+      setShowCompletion(false);
       setLoading(false);
     };
     init().catch(() => setLoading(false));
-  }, [moduleId]);
+  }, [moduleId, requestedLessonId]);
 
   useEffect(() => {
     // For PayloadCMS question content, options come from the correct_answer field
@@ -45,10 +66,20 @@ export default function LessonView() {
   }, [currentIndex, lessons]);
 
   const currentLesson = lessons[currentIndex];
+  const isAdmin = user?.role === 'admin';
   const isCompleted = (lessonId) => progress.some(p => p.lesson_id === lessonId && p.completed);
 
   const handleComplete = async () => {
     if (!currentLesson || !user) return;
+
+    if (isAdmin && currentLesson.content_type === 'question' && !answered) {
+      if (currentIndex < lessons.length - 1) {
+        setCurrentIndex(currentIndex + 1);
+      } else {
+        navigate('/dashboard');
+      }
+      return;
+    }
 
     const xp = currentLesson.xp_reward || 20;
     const alreadyCompleted = isCompleted(currentLesson.id);
@@ -297,10 +328,10 @@ export default function LessonView() {
         {/* Action */}
         <button
           onClick={handleComplete}
-          disabled={currentLesson.content_type === 'question' && !answered}
+          disabled={!isAdmin && currentLesson.content_type === 'question' && !answered}
           className="w-full py-4 bg-[#2EFD7A] text-black rounded-2xl font-bold text-lg hover:bg-[#2EFD7A]/90 hover:scale-[1.01] active:scale-[0.98] shadow-[0_0_24px_rgba(46,253,122,0.3)] transition-all duration-200 disabled:opacity-40 disabled:shadow-none flex items-center justify-center gap-2 group"
         >
-          {isCompleted(currentLesson.id)
+          {isCompleted(currentLesson.id) || (isAdmin && currentLesson.content_type === 'question' && !answered)
             ? (currentIndex < lessons.length - 1 ? 'Next' : 'Finish Review')
             : (currentIndex < lessons.length - 1 ? currentLesson.text_cta || 'Continue' : 'Complete Module')}
           <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />

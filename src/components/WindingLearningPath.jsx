@@ -7,6 +7,7 @@ import {
   Wallet, TrendingUp, CreditCard, FileText, Unlock, Umbrella, Shield, PiggyBank
 } from 'lucide-react';
 import RingGauge from '@/components/dashboard/RingGauge';
+import { useAuth } from '@/lib/AuthContext';
 
 const TOPIC_META = {
   budgeting:   { Icon: Wallet,      from: '#2EFD7A', to: '#17C964' },
@@ -47,7 +48,7 @@ function buildPath(count) {
   return d;
 }
 
-function ModuleSection({ module, moduleIndex, isUnlocked, completedLessonIds, onNavigate }) {
+function ModuleSection({ module, moduleIndex, isUnlocked, isAdmin, completedLessonIds, onNavigate }) {
   const [open, setOpen]       = useState(moduleIndex === 0);
   const [lessons, setLessons] = useState(null);
 
@@ -145,11 +146,12 @@ function ModuleSection({ module, moduleIndex, isUnlocked, completedLessonIds, on
 
               {/* Nodes */}
               {nodes.map((node, i) => {
-                const cx           = nodeX(i);
-                const cy           = nodeY(i);
-                const nodeUnlocked = i === 0 || nodes[i - 1]?.completed;
-                const isNextUp     = !node.completed && nodeUnlocked && !node.isTrophy;
-                const D            = NODE_R * 2;
+                const cx                  = nodeX(i);
+                const cy                  = nodeY(i);
+                const progressionUnlocked = i === 0 || nodes[i - 1]?.completed;
+                const nodeUnlocked        = progressionUnlocked || (isAdmin && node.isLesson);
+                const isNextUp            = !node.completed && progressionUnlocked && !node.isTrophy;
+                const D                   = NODE_R * 2;
 
                 // Pick icon for lesson nodes
                 const LessonIcon = node.isTrophy ? Trophy
@@ -172,7 +174,7 @@ function ModuleSection({ module, moduleIndex, isUnlocked, completedLessonIds, on
                     transition={{ type: 'spring', stiffness: 300, damping: 16, delay: i * 0.07 }}
                   >
                     <motion.button
-                      onClick={() => node.isLesson && nodeUnlocked && onNavigate(module.id)}
+                      onClick={() => node.isLesson && nodeUnlocked && onNavigate(module.id, node.id)}
                       disabled={!node.isLesson || !nodeUnlocked}
                       animate={isNextUp ? { scale: [1, 1.06, 1] } : { scale: 1 }}
                       transition={isNextUp ? { duration: 3.2, repeat: Infinity, ease: 'easeInOut' } : { duration: 0.2 }}
@@ -226,8 +228,10 @@ function ModuleSection({ module, moduleIndex, isUnlocked, completedLessonIds, on
   );
 }
 
-export default function WindingLearningPath({ modules, progress }) {
+export default function WindingLearningPath({ modules, progress, isAdmin }) {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const adminUnlocked = Boolean(isAdmin ?? (user?.role === 'admin'));
 
   const completedLessonIds = new Set(
     progress.filter(p => p.completed).map(p => p.lesson_id)
@@ -237,6 +241,7 @@ export default function WindingLearningPath({ modules, progress }) {
     progress.filter(p => p.module_id === moduleId && p.completed).length;
 
   const isModuleUnlocked = (index) => {
+    if (adminUnlocked) return true;
     if (index === 0) return true;
     return getModuleCompletedCount(modules[index - 1]?.id) > 0;
   };
@@ -258,8 +263,11 @@ export default function WindingLearningPath({ modules, progress }) {
           module={module}
           moduleIndex={index}
           isUnlocked={isModuleUnlocked(index)}
+          isAdmin={adminUnlocked}
           completedLessonIds={completedLessonIds}
-          onNavigate={(moduleId) => navigate(`/lesson/${moduleId}`)}
+          onNavigate={(moduleId, lessonId) =>
+            navigate(lessonId ? `/lesson/${moduleId}?lesson=${encodeURIComponent(lessonId)}` : `/lesson/${moduleId}`)
+          }
         />
       ))}
     </div>

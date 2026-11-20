@@ -1,0 +1,53 @@
+{
+  "name": "MoneyToolReview",
+  "type": "object",
+  "properties": {
+    "tool_key": {
+      "type": "string"
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "keep",
+        "review",
+        "planned",
+        "removed"
+      ],
+      "enumColors": [
+        "green",
+        "yellow",
+        "blue",
+        "red"
+      ]
+    },
+    "note": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "tool_key",
+    "decision"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

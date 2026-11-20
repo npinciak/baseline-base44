@@ -204,7 +204,7 @@ export default function Dashboard() {
                 <h2 className="text-white/60 text-xs font-light tracking-widest uppercase mb-1">Learning Path</h2>
                 <p className="text-white text-lg font-light">Master personal finance <span className="font-extrabold">one lesson at a time</span></p>
               </div>
-              <WindingLearningPath modules={modules} progress={progress} />
+              <WindingLearningPath modules={modules} progress={progress} isAdmin={user?.role === 'admin'} />
             </motion.section>
           </div>
 
