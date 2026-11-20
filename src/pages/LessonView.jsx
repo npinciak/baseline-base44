@@ -109,6 +109,13 @@ export default function LessonView() {
           last_activity_date: today,
         });
       }
+
+      if (lessonFinished) {
+        base44.analytics.track({
+          eventName: 'lesson_completed',
+          properties: { module_id: String(moduleId), xp_earned: xp },
+        });
+      }
     }
 
     if (currentIndex < lessons.length - 1) {

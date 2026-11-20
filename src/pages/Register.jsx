@@ -53,8 +53,15 @@ export default function Register() {
     setLoading(true);
     try {
       const result = await base44.auth.verifyOtp({ email, otpCode });
-      if (result.mfa_required) { setChallenge(result); return; }
+      if (result.mfa_required) {
+        base44.analytics.track({ eventName: "user_registered" });
+        setChallenge(result);
+        return;
+      }
       base44.auth.setToken(result.access_token);
+      await base44.auth.me().catch(() => null);
+      base44.analytics.track({ eventName: "user_registered" });
+      await new Promise((resolve) => setTimeout(resolve, 250));
       window.location.href = safeReturnTo();
     } catch (err) {
       setError(err.message || "Invalid code, please try again");

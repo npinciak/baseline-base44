@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, ArrowLeft, Check } from "lucide-react";
+import { base44 } from "@/api/base44Client";
 import BaseScoreResult from "@/components/BaseScoreResult";
 import BaselineWordmark from "@/components/BaselineWordmark";
 
@@ -154,7 +155,12 @@ export default function BaseScoreQuiz() {
       setCurrentStep((s) => s + 1);
     } else {
       sessionStorage.setItem("basescore_quiz", JSON.stringify(answers));
-      setScore(calculateScore(answers));
+      const finalScore = calculateScore(answers);
+      setScore(finalScore);
+      base44.analytics.track({
+        eventName: "basescore_quiz_completed",
+        properties: { score: finalScore },
+      });
       setShowResult(true);
     }
   };
