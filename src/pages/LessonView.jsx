@@ -6,6 +6,7 @@ import { ArrowRight, CheckCircle, Coins, X } from 'lucide-react';
 import AmbientBackdrop from '@/components/dashboard/AmbientBackdrop';
 import { CHAPTERS } from '@/lib/curriculum';
 import { getLevelInfo } from '@/lib/coinLevels';
+import useAdminViewMode, { getStoredAdminViewMode } from '@/hooks/useAdminViewMode';
 
 export default function LessonView() {
   const { moduleId } = useParams();
@@ -47,7 +48,7 @@ export default function LessonView() {
         if (idx >= 0) {
           const completedIds = new Set(prog.filter(p => p.completed).map(p => String(p.lesson_id)));
           const canJump =
-            u?.role === 'admin' ||
+            (u?.role === 'admin' && getStoredAdminViewMode() === 'admin') ||
             idx === 0 ||
             completedIds.has(String(modLessons[idx - 1]?.id)) ||
             completedIds.has(String(modLessons[idx]?.id));
@@ -69,7 +70,7 @@ export default function LessonView() {
   }, [currentIndex, lessons]);
 
   const currentLesson = lessons[currentIndex];
-  const isAdmin = user?.role === 'admin';
+  const { effectiveIsAdmin: isAdmin } = useAdminViewMode(user);
   const isCompleted = (lessonId) => progress.some(p => p.lesson_id === lessonId && p.completed);
 
   const handleComplete = async () => {

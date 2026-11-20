@@ -4,6 +4,7 @@ import { User, Flame, Coins, LogOut, Shield, LayoutDashboard, Wallet, ShoppingBa
 import { useEffect, useState } from 'react';
 import { getDisplayName, getInitial } from '@/lib/displayName';
 import { getLevelInfo, getLifetimeCoins } from '@/lib/coinLevels';
+import useAdminViewMode from '@/hooks/useAdminViewMode';
 
 export default function Layout() {
   const [user, setUser] = useState(null);
@@ -47,9 +48,10 @@ export default function Layout() {
     base44.functions.invoke('curriculumReview', { mode: 'check' }).then(r => setIsOwner(!!r?.data?.allowed)).catch(() => {});
   }, [user]);
 
+  const { effectiveIsAdmin, isLearnerView } = useAdminViewMode(user);
   const levelInfo = getLevelInfo(getLifetimeCoins(stats));
   const xpProgress = levelInfo.progressPct;
-  const canAccessDevTools = user?.role === 'admin' || isOwner;
+  const canAccessDevTools = !isLearnerView && (effectiveIsAdmin || isOwner);
 
   const navItems = [
     { to: '/dashboard', icon: LayoutDashboard, label: 'Home', iconColor: 'text-[#2EA0FD]' },
@@ -125,7 +127,7 @@ export default function Layout() {
               {label}
             </NavLink>
           ))}
-          {user?.role === 'admin' && (
+          {effectiveIsAdmin && (
             <NavLink
               to="/admin"
               className={({ isActive }) =>
@@ -213,7 +215,7 @@ export default function Layout() {
             {label}
           </NavLink>
         ))}
-        {user?.role === 'admin' && (
+        {effectiveIsAdmin && (
           <NavLink
             to="/admin"
             className={({ isActive }) =>

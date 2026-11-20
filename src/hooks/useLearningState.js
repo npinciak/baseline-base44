@@ -1,10 +1,12 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
 import { buildChapters } from '@/lib/curriculum';
+import useAdminViewMode from '@/hooks/useAdminViewMode';
 
 /** Loads lessons, lesson progress and money-move completions, and derives chapter status. */
 export default function useLearningState() {
   const [state, setState] = useState({ loading: true, user: null, modules: [], progress: [], moves: [] });
+  const { effectiveIsAdmin } = useAdminViewMode(state.user);
 
   useEffect(() => {
     const load = async () => {
@@ -24,7 +26,7 @@ export default function useLearningState() {
     [state.modules, state.progress, state.moves]
   );
 
-  const isAdmin = state.user?.role === 'admin';
+  const isAdmin = effectiveIsAdmin;
 
   const completeMove = useCallback(async (chapter) => {
     if (!chapter?.move || (!isAdmin && (!chapter?.unlocked || !chapter?.learned))) {

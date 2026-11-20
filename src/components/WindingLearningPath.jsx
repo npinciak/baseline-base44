@@ -1,6 +1,7 @@
 import { BookOpen, Wallet, TrendingUp, CreditCard, FileText, Unlock, Umbrella, Shield, PiggyBank } from 'lucide-react';
 import ChapterSection from '@/components/path/ChapterSection';
 import { useAuth } from '@/lib/AuthContext';
+import useAdminViewMode from '@/hooks/useAdminViewMode';
 
 const TOPIC_META = {
   budgeting:  { Icon: Wallet },
@@ -27,7 +28,8 @@ function hslToHex(h, s, l) {
 
 export default function WindingLearningPath({ chapters, onCompleteMove, isAdmin }) {
   const { user } = useAuth();
-  const adminUnlocked = Boolean(isAdmin ?? (user?.role === 'admin'));
+  const { effectiveIsAdmin } = useAdminViewMode(user);
+  const adminUnlocked = Boolean(isAdmin ?? effectiveIsAdmin);
 
   if (!chapters.some((c) => !c.comingSoon)) {
     return (

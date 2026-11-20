@@ -5,6 +5,7 @@ import ScenarioSlider from '@/components/money/ScenarioSlider';
 import { Telescope, TrendingUp, TrendingDown, Sparkles, Lock } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { getLifetimeCoins } from '@/lib/coinLevels';
+import { getStoredAdminViewMode } from '@/hooks/useAdminViewMode';
 
 const SANDBOX_PRESETS = [
   { id: 'trim-wants', label: 'Trim Wants -15%', spendPct: -15, extraDailyIncome: 0 },
@@ -41,7 +42,7 @@ export default function ForecastChart({ startBalance, dailyIncome, dailySpend, i
     }
     base44.auth.me()
       .then((u) => {
-        if (u?.role === 'admin') {
+        if (u?.role === 'admin' && getStoredAdminViewMode() === 'admin') {
           setPresetsUnlocked(true);
           return null;
         }
