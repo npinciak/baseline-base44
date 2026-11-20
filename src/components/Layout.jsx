@@ -49,12 +49,12 @@ export default function Layout() {
 
   const levelInfo = getLevelInfo(getLifetimeCoins(stats));
   const xpProgress = levelInfo.progressPct;
+  const canAccessDevTools = user?.role === 'admin' || isOwner;
 
   const navItems = [
     { to: '/dashboard', icon: LayoutDashboard, label: 'Home', iconColor: 'text-[#2EA0FD]' },
     { to: '/money', icon: Wallet, label: 'Money', iconColor: 'text-[#2EFD7A]' },
     { to: '/basecamp', icon: ShoppingBag, label: 'Basecamp', iconColor: 'text-[#2EA0FD]' },
-    { to: '/roadmap', icon: Compass, label: 'Roadmap', iconColor: 'text-[#2EFD7A]' },
     { to: '/profile', icon: User, label: 'Profile', iconColor: 'text-[#2EA0FD]' },
   ];
 
@@ -140,18 +140,31 @@ export default function Layout() {
               Admin
             </NavLink>
           )}
-          {isOwner && (
-            <NavLink
-              to="/curriculum-review"
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 border ${
-                  isActive ? 'bg-white/10 text-white border-white/50' : 'text-white/50 border-transparent hover:text-white hover:bg-white/5'
-                }`
-              }
-            >
-              <BookOpen className="w-5 h-5 text-[#2EA0FD]" />
-              Curriculum
-            </NavLink>
+          {canAccessDevTools && (
+            <>
+              <NavLink
+                to="/roadmap"
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 border ${
+                    isActive ? 'bg-white/10 text-white border-white/50' : 'text-white/50 border-transparent hover:text-white hover:bg-white/5'
+                  }`
+                }
+              >
+                <Compass className="w-5 h-5 text-[#2EFD7A]" />
+                Roadmap
+              </NavLink>
+              <NavLink
+                to="/curriculum-review"
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 border ${
+                    isActive ? 'bg-white/10 text-white border-white/50' : 'text-white/50 border-transparent hover:text-white hover:bg-white/5'
+                  }`
+                }
+              >
+                <BookOpen className="w-5 h-5 text-[#2EA0FD]" />
+                Curriculum
+              </NavLink>
+            </>
           )}
         </nav>
 

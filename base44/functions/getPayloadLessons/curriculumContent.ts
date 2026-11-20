@@ -119,4 +119,124 @@ export const NEW_UNITS = [
     q: "You get a text saying your bank account is locked and to tap a link to log in. What should you do?", choices: ["Tap it quickly before it expires", "Reply with your password", "*Skip the link and contact your bank through its official app or number", "Forward it to friends"], e: "Real banks don't rush you through text links. Go straight to the source instead.",
     k: "Real banks don't rush you. Freeze your credit, guard your codes, and when in doubt, go to the source.",
   },
+  // Ch 20 · Taxes & Filing
+  {
+    id: "bl-tax-brackets", title: "How Tax Brackets Work",
+    text: ["Tax brackets are like buckets, not an all-or-nothing cliff. Moving into the 22% bracket only taxes the dollars inside that top bucket at 22%, never your whole paycheck.", "Your marginal rate is the rate on your very next dollar. Your effective rate is the average share of your total income paid in tax, which is always lower.", "Getting a raise or picking up extra shifts always leaves you with more take-home pay."],
+    q: "You get a raise that pushes your last $1,000 of pay into the 22% tax bracket. Which dollars are taxed at 22%?", choices: ["Every dollar you earned all year", "*Only the $1,000 inside the 22% bracket", "None until next year", "Half of your salary"], e: "Progressive brackets only apply the higher rate to the slice of income above the cutoff.",
+    k: "A raise never makes you take home less. Only the dollars inside a higher bracket pay the higher rate.",
+  },
+  {
+    id: "bl-tax-forms", title: "W-2s, 1099s & Side Income",
+    text: ["Regular jobs send a W-2 and withhold taxes from every paycheck. Side gigs, tutoring, delivery apps, and freelance work send a 1099 and withhold $0.", "On 1099 income, you cover both halves of Social Security and Medicare (15.3% self-employment tax) plus income tax.", "Simple habit: move 25% of every 1099 payout straight into a separate savings bucket so tax season never catches you off guard."],
+    q: "You make $400 driving or freelancing on a 1099. How much tax was taken out before it hit your bank?", choices: ["About 25%", "7.65% for FICA", "*$0 — you have to set taxes aside yourself", "10% flat"], e: "1099 payers don't withhold taxes. Setting aside ~25% as you get paid prevents a surprise bill.",
+    k: "W-2 jobs withhold taxes for you. On 1099 side income, stash 25% of every payout right away.",
+  },
+  {
+    id: "bl-deductions-credits", title: "Deductions vs. Tax Credits",
+    text: ["A tax deduction lowers the income you get taxed on. Most students and young adults take the standard deduction, an automatic tax-free slice of income.", "A tax credit is even stronger: it cuts your final tax bill dollar for dollar. A $1,000 credit saves a full $1,000.", "College tuition (Form 1098-T) and student loan interest (Form 1098-E) can unlock valuable credits or deductions."],
+    q: "You owe $1,500 in taxes and qualify for a $1,000 tax credit. What happens to your bill?", choices: ["It drops by $100", "*It drops dollar-for-dollar to $500", "Only your taxable income drops by $1,000", "Nothing unless you itemize"], e: "Tax credits subtract directly from the tax you owe, dollar for dollar.",
+    k: "Deductions shrink taxable income. Credits cut your actual tax bill dollar for dollar.",
+  },
+  {
+    id: "bl-filing-free", title: "Filing Free & On Time",
+    text: ["Federal tax returns are due April 15. Even if your income was low at a summer or campus job, filing is how you claim back extra tax withheld from your paychecks.", "Most students and young earners qualify to file federal taxes for $0 through IRS Free File or VITA campus clinics. Watch out for paid 'deluxe' upgrade prompts.", "Getting a giant refund isn't free bonus cash — it just means too much came out of each paycheck."],
+    q: "You worked a summer job and had $350 of federal tax withheld, even though you earned less than the standard deduction. How do you get that $350 back?", choices: ["The IRS mails it automatically", "Ask your employer for it", "*File a free tax return to claim your refund", "You can't get it back"], e: "Filing a return is the only way to get over-withheld paycheck taxes refunded.",
+    k: "File free before April 15, skip paid upsells, and claim back any extra taxes withheld.",
+  },
+  // Ch 21 · First Job & Benefits
+  {
+    id: "bl-total-comp", title: "Total Pay Beyond Salary",
+    text: ["A job offer is more than base salary. Employer 401(k) matching, health insurance subsidies, signing bonuses, and transit perks add real dollars.", "Check the 401(k) vesting schedule: 'vested' means you keep the employer's match if you switch jobs in a year or two.", "Compare offers by total annual value and local rent, not just the headline number."],
+    q: "Job A pays $60,000 with no 401(k) match. Job B pays $58,500 with a 5% instant match ($2,925) and cheaper health insurance. Which pays more overall?", choices: ["Job A, higher base always wins", "*Job B, total compensation is higher", "They pay the exact same", "Neither matters until age 30"], e: "$58,500 + $2,925 match = $61,425 before counting the health savings.",
+    k: "Judge every job offer by total compensation and cost of living, never base salary alone.",
+  },
+  {
+    id: "bl-health-plans", title: "Picking a Health Plan",
+    text: ["Under age 26, staying on a parent's health plan is often your lowest-cost option — compare it against your employer's plan during open enrollment.", "HMO plans cost less monthly but require in-network doctors and referrals. PPO plans cost more for wider flexibility. High-Deductible (HDHP) plans pair low monthly premiums with an HSA.", "Always check the out-of-pocket maximum: the absolute cap you'd pay in a worst-case medical year."],
+    q: "Which number on a health plan caps the most you could pay for covered in-network care in one year?", choices: ["Monthly premium", "Copay", "Deductible", "*Out-of-pocket maximum"], e: "Once you hit your out-of-pocket maximum, the plan pays 100% of covered in-network care for the rest of the year.",
+    k: "Compare 12 months of premiums plus the out-of-pocket max so a worst-case year fits your safety net.",
+  },
+  {
+    id: "bl-hsa-fsa", title: "HSAs vs. FSAs",
+    text: ["An HSA (Health Savings Account) comes with qualifying high-deductible health plans. Money goes in tax-free, can be invested tax-free, and comes out tax-free for medical costs — and the balance is yours forever.", "An FSA (Flexible Spending Account) also uses pre-tax dollars for medical costs, but most of the balance expires at year-end ('use it or lose it').", "Only contribute to an FSA what you know you'll spend on glasses, dental, prescriptions, or copays this year."],
+    q: "What is the biggest difference between an HSA and an FSA at the end of the year?", choices: ["FSAs can be invested for retirement", "*HSA money rolls over forever; most FSA money expires if unused", "HSAs disappear when you change jobs", "They work identically"], e: "An HSA stays with you for life, while an FSA mostly resets each plan year.",
+    k: "HSAs roll over and can grow for decades. FSAs save tax too, so size them to costs you're sure you'll have.",
+  },
+  // Ch 22 · Student Loans
+  {
+    id: "bl-loan-types", title: "Subsidized vs. Unsubsidized",
+    text: ["Federal Direct Subsidized loans pause interest while you're in school at least half-time. Unsubsidized loans start charging interest from day one.", "Federal loans include income-driven payment safety nets and deferment options. Private loans usually require a cosigner and lack federal protections.", "Refinancing a federal loan into a private loan permanently gives up federal protections, so weigh the rate drop carefully."],
+    q: "Which student loan does NOT charge you interest while you're enrolled in school at least half-time?", choices: ["Private bank loan", "Federal Unsubsidized loan", "*Federal Direct Subsidized loan", "Parent PLUS loan"], e: "The government covers the interest on Direct Subsidized loans while you're in school.",
+    k: "Accept Subsidized federal loans first, borrow only what you need, and guard federal protections.",
+  },
+  {
+    id: "bl-grace-interest", title: "Grace Periods & Interest",
+    text: ["Most federal student loans give you a 6-month grace period after graduation before your first required bill.", "On unsubsidized loans, interest keeps building during school and grace. If unpaid when repayment starts, that interest can capitalize — getting added onto your principal balance.", "Paying even $20–$30 a month toward accrued interest before the grace period ends keeps your starting balance smaller."],
+    q: "What does 'interest capitalization' mean when your student loan enters repayment?", choices: ["Your interest rate drops to 0%", "*Unpaid interest gets added to your loan balance, so future interest is charged on a bigger number", "The government forgives the interest", "Your monthly payment pauses"], e: "Capitalization turns unpaid interest into principal, which makes future interest grow faster.",
+    k: "Use your 6-month grace period to line up autopay — and chip away at unpaid interest before it capitalizes.",
+  },
+  {
+    id: "bl-repayment-plans", title: "Smart Repayment Plans",
+    text: ["The Standard 10-Year plan pays equal monthly amounts and usually costs the least total interest.", "Income-Driven Repayment (IDR) caps monthly bills as a small percentage of your income — helpful when starting out on an entry-level paycheck.", "Many lenders cut your rate by 0.25% just for turning on autopay, and you can direct any extra payment to your highest-rate loan group."],
+    q: "How can you usually get an automatic 0.25% interest rate discount on student loans?", choices: ["Paying by paper check", "*Enrolling in autopay with your loan servicer", "Skipping your grace period", "Switching servicers"], e: "Federal and most private servicers trim 0.25% off your interest rate while autopay is active.",
+    k: "Turn on autopay for the 0.25% rate cut and aim extra dollars at your highest-interest loan.",
+  },
+  // Ch 23 · Renting Your Place
+  {
+    id: "bl-move-in-math", title: "Upfront Move-In Costs",
+    text: ["Signing your first apartment lease takes more than one month's rent. Landlords usually collect first month's rent plus a security deposit (often equal to one month's rent).", "Factor in utility setup, internet, basic furniture, and renters insurance — which usually costs $12–$20/month and covers your laptop, bike, and clothes against theft or fire.", "Your landlord's insurance covers the building, never your belongings."],
+    q: "Rent is $1,200/month and the security deposit is one month's rent. Roughly how much cash do you need just to get the keys?", choices: ["$600", "$1,200", "*At least $2,400 before utilities and moving costs", "$12,000"], e: "First month ($1,200) + security deposit ($1,200) = $2,400 upfront.",
+    k: "Save at least two months of rent plus a small setup buffer before signing a lease, and grab renters insurance.",
+  },
+  {
+    id: "bl-lease-clauses", title: "Reading Your Lease",
+    text: ["Three clauses matter most on any lease: notice to vacate (often 30 or 60 days before the lease ends), early-termination fees, and subletting rules.", "Most roommate leases are 'joint and several' — meaning if one roommate stops paying their share, the landlord can legally collect the full rent from the others.", "Pick reliable roommates and put shared bill rules in writing before move-in day."],
+    q: "Your lease has a '60-day notice' clause and ends August 31. If you plan to move out, when must you tell your landlord in writing?", choices: ["August 30", "August 1", "*By early July (at least 60 days before August 31)", "The day you hand back keys"], e: "Missing the notice window can automatically roll you into another month of rent.",
+    k: "Check notice deadlines, break-lease rules, and roommate liability before you sign.",
+  },
+  {
+    id: "bl-deposit-back", title: "Protecting Your Deposit",
+    text: ["Before unpacking a single box, take timestamped photos and a quick walkthrough video of every wall, floor, appliance, and scratch.", "Email the move-in checklist to your landlord on day one so pre-existing wear is documented.", "When moving out, clean thoroughly, patch tiny nail holes if required, and give a forwarding address — state laws set strict deadlines for returning your deposit."],
+    q: "When is the smartest time to photograph scuffs or carpet stains in a rental?", choices: ["The week you move out", "*On move-in day before unpacking, then email a copy to the landlord", "Only if something breaks", "Never, landlords track it"], e: "Timestamped day-one photos prove you didn't cause pre-existing damage.",
+    k: "Ten minutes of move-in photos can save your entire security deposit when you move out.",
+  },
+  // Ch 24 · Payoff & Trap Defense
+  {
+    id: "bl-snowball-avalanche", title: "Snowball vs. Avalanche",
+    text: ["Juggling more than one debt? Always pay the minimum on every account first so your credit stays clean, then focus all extra cash on ONE target.", "Debt Avalanche attacks the highest APR first — mathematically saving you the most interest.", "Debt Snowball attacks the smallest balance first — knocking out whole bills fast for momentum. The best method is the one you stick with every month."],
+    q: "You have a $500 card at 18% APR and a $2,000 card at 26% APR. Which debt does the Avalanche method target first with extra cash?", choices: ["The $500 card at 18%", "*The $2,000 card at 26% APR", "Split extra cash 50/50", "Skip minimums on the smaller card"], e: "Avalanche pays every minimum, then sends all extra money to the highest interest rate (26%).",
+    k: "Pay every minimum on time, then aim all extra cash at either your highest APR (Avalanche) or smallest balance (Snowball).",
+  },
+  {
+    id: "bl-bnpl-traps", title: "Buy Now, Pay Later Traps",
+    text: ["Splitting a $80 hoodie into four $20 payments feels painless — until four stacked 'Pay-in-4' plans quietly pull $80 every two weeks and trigger bank overdrafts.", "Watch out for store cards advertising 'No Interest if Paid in 12 Months.' That's often deferred interest: leave even $5 unpaid on month 12 and they charge retroactive ~29% interest from day one.", "Rule of thumb: if you wouldn't buy it in cash today, don't split it into installments."],
+    q: "You buy a $1,000 laptop on a 'No Interest if Paid in 12 Months' store promo and still owe $40 after 12 months. What often happens?", choices: ["You pay interest only on the remaining $40", "*Retroactive interest from day one on the full $1,000 gets added to your bill", "Nothing for another 6 months", "The store cancels the $40"], e: "Deferred-interest promos charge back-interest from the purchase date if you miss paying in full by a single dollar.",
+    k: "Stacked Pay-in-4 plans drain cashflow fast, and deferred-interest promos punish late payoff.",
+  },
+  {
+    id: "bl-chargebacks", title: "Disputes & Scam Defense",
+    text: ["If an online order never arrives or a merchant double-charges you, a credit card lets you file a chargeback while keeping your own checking cash untouched.", "Peer-to-peer apps (Zelle, Venmo, Cash App) work like handing over cash: once you tap send to a scammer, banks rarely reverse it.", "Protect your logins by switching from text-message (SMS) codes to a free authenticator app so scammers can't hijack your phone number."],
+    q: "A stranger selling concert tickets online asks you to pay via Zelle or 'friends & family' transfer. Why is that risky?", choices: ["It charges a 10% fee", "*Instant P2P transfers act like cash and usually have zero buyer protection if it's a scam", "It lowers your credit score", "Tickets can't be emailed"], e: "P2P apps are built for people you know and trust, not strangers — scam sends are rarely refunded.",
+    k: "Use credit cards (paid in full) for online shopping protection, treat P2P apps like cash, and use authenticator MFA.",
+  },
+  // Ch 25 · Smart Portfolios
+  {
+    id: "bl-fund-fees", title: "Why 1% Fees Cost Thousands",
+    text: ["Every index fund or ETF charges an annual 'expense ratio' — the tiny slice taken to run the fund.", "Broad market index funds often charge 0.03% to 0.10% ($3 to $10 per year on $10,000). Actively managed funds or high-fee advisors charging 1% ($100/year on $10,000) can quietly eat over 25% of your 30-year wealth through lost compounding.", "Always check the expense ratio before you buy a fund."],
+    q: "Fund A tracks the S&P 500 with a 0.03% expense ratio. Fund B tracks the same index with a 0.85% expense ratio. Which keeps more money compounding for you?", choices: ["Fund B, higher fee means higher quality", "*Fund A, identical index exposure at a fraction of the fee", "Fees under 1% don't compound", "They end with the same balance"], e: "When two funds hold the same market index, the lower fee leaves more of every return compounding in your account.",
+    k: "Keep broad index fund expense ratios under 0.15% so your compounding belongs to you, not fees.",
+  },
+  {
+    id: "bl-account-order", title: "Where Your Next Dollar Goes",
+    text: ["When you have extra cash each month, follow a simple priority order so you never leave free money or high-interest savings behind:", "1. Starter emergency cushion ($1,000 in high-yield savings). 2. Grab 100% of your employer's 401(k) match. 3. Crush high-interest debt (anything above ~8% APR). 4. Build 3–6 months of core expenses + fund a Roth IRA.", "And remember: after transferring cash into a Roth IRA or 401(k), make sure you actually pick an index fund — otherwise it just sits in cash!"],
+    q: "You just transferred $500 into a brand-new Roth IRA. What crucial second step ensures it actually grows with the market?", choices: ["Nothing, Roth IRAs invest automatically", "*Buy a diversified fund inside the Roth IRA so the cash isn't sitting uninvested", "Withdraw it after 30 days", "Mail a receipt to the IRS"], e: "A Roth IRA is just the tax-free container — you still choose the investment inside it.",
+    k: "Follow the next-dollar order: starter cushion, employer match, high-APR debt, full cushion + Roth IRA — and confirm your contributions are invested.",
+  },
+  {
+    id: "bl-staying-course", title: "Staying Calm in Market Drops",
+    text: ["Stock markets don't rise in a straight line — drops of 10% to 20% happen every few years and have recovered every time across broad US market history.", "Dollar-cost averaging (investing a set amount automatically each payday) buys more shares when prices dip and fewer when prices peak, without guessing market timing.", "Ignore viral 'get rich overnight' picks and never invest rent or emergency money you'll need within the next 3–5 years."],
+    q: "You invest $100 every month into a broad market index fund, and the market drops 15% this month. For a long-term investor, what does your $100 buy?", choices: ["Zero shares until the market recovers", "*More shares at a 15% lower price", "A guaranteed loss forever", "Only bonds"], e: "Automatic investing during a dip buys shares on sale for goals years away.",
+    k: "Keep short-term cash in savings, automate long-term index investing, and let market dips work in your favor.",
+  },
 ];

@@ -60,13 +60,22 @@ export default function WindingLearningPath({ chapters, onCompleteMove }) {
         };
         
         return (
-          <ChapterSection
-            key={chapter.id}
-            chapter={chapter}
-            meta={meta}
-            defaultOpen={chapter.id === current?.id}
-            onCompleteMove={onCompleteMove}
-          />
+          <div key={chapter.id}>
+            {chapter.section && (
+              <div className={`flex items-center gap-3 ${i === 0 ? 'mb-3' : 'mt-7 mb-3'}`}>
+                <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/45">
+                  {chapter.section}
+                </span>
+                <div className="h-px flex-1 bg-white/[0.08]" />
+              </div>
+            )}
+            <ChapterSection
+              chapter={chapter}
+              meta={meta}
+              defaultOpen={chapter.id === current?.id}
+              onCompleteMove={onCompleteMove}
+            />
+          </div>
         );
       })}
     </div>

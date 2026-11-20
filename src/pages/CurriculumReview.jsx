@@ -33,17 +33,17 @@ export default function CurriculumReview() {
   if (!state.allowed) return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-black text-center px-6">
       <Lock className="w-8 h-8 text-white/30 mb-3" />
-      <p className="text-white text-xl font-bold">Owner access only</p>
-      <p className="text-white/50 text-sm mt-1">Curriculum review is limited to the workspace owner.</p>
+      <p className="text-white text-xl font-bold">Owner & admin access only</p>
+      <p className="text-white/50 text-sm mt-1">Curriculum review is limited to the workspace owner and app admins.</p>
     </div>
   );
 
   return (
     <div className="min-h-screen bg-black px-4 md:px-10 py-10">
       <div className="max-w-6xl min-w-0 mx-auto">
-        <p className="text-[#2EA0FD] text-[11px] uppercase tracking-[0.25em] font-semibold mb-2">Owner tools</p>
-        <h1 className="text-3xl font-display font-extrabold text-white">Curriculum Review & 3x Roadmap</h1>
-        <p className="text-white/50 text-sm mt-1 mb-5">{chapters.length} live chapters · {state.modules.length} lessons · {screenCount} screens, plus the 38-chapter (142-lesson) 3x expansion roadmap.</p>
+        <p className="text-[#2EA0FD] text-[11px] uppercase tracking-[0.25em] font-semibold mb-2">Owner & admin tools</p>
+        <h1 className="text-3xl font-display font-extrabold text-white">Curriculum Review & Roadmap</h1>
+        <p className="text-white/50 text-sm mt-1 mb-5">{chapters.length} live chapters · {state.modules.length} lessons · {screenCount} screens live on BasePath, plus queued future tracks.</p>
 
         <div className="inline-flex rounded-2xl border border-white/10 bg-white/[0.04] p-1 mb-8">
           <button
@@ -51,7 +51,7 @@ export default function CurriculumReview() {
             onClick={() => setTab('roadmap')}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${tab === 'roadmap' ? 'bg-[#2EFD7A] text-black' : 'text-white/65 hover:text-white'}`}
           >
-            3x Expansion Roadmap (57 Ch · 213 Lessons)
+            Expansion Backlog
           </button>
           <button
             type="button"

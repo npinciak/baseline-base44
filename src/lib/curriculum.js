@@ -1,7 +1,7 @@
 // BasePath curriculum: chapters reference CMS lesson units by the id of their opening text card.
 // Each unit keeps its CMS point → question → takeaway cadence. Order here is the learning order.
 export const CHAPTERS = [
-  { id: 'money-in', title: 'Money In', topic: 'budgeting', units: [34, 40, 37, 'bl-paycheck'],
+  { id: 'money-in', section: 'Money Foundations', title: 'Money In', topic: 'budgeting', units: [34, 40, 37, 'bl-paycheck'],
     move: { key: 'create-emergency-fund', title: 'Set up your emergency fund', detail: 'Create a savings goal for unexpected expenses on Money. Choose a target and start building your cushion.', tool: 'goals' } },
   { id: 'money-out', title: 'Money Out', topic: 'budgeting', units: [43, 46, 49, 169],
     move: { key: 'list-fixed-bills', title: 'List your fixed bills', detail: 'Review your recurring charges and confirm which ones hit every month.', tool: 'recurring' } },
@@ -17,7 +17,7 @@ export const CHAPTERS = [
     move: { key: 'first-deposit', title: 'Make a deposit toward your goal', detail: 'Move any amount, even $5, into savings and log it on your goal.', tool: 'goals' } },
   { id: 'growth', title: 'Interest & Growth', topic: 'investing', units: [91, 97, 79, 'bl-retirement'],
     move: { key: 'try-scenario', title: 'Run a "what if" forecast', detail: 'Shift your spending in the forecast and see how your future balance changes.', tool: 'forecast' } },
-  { id: 'credit-101', title: 'Credit 101', topic: 'credit', units: [52, 58, 196, 208],
+  { id: 'credit-101', section: 'Credit & Investing', title: 'Credit 101', topic: 'credit', units: [52, 58, 196, 208],
     move: { key: 'credit-rules', title: 'Write your personal credit rules', detail: "Write down when you will, and won't, use credit." } },
   { id: 'debt', title: 'Interest & Debt', topic: 'debt', units: [55, 61, 160],
     move: { key: 'true-cost', title: 'Find the true cost of buying on credit', detail: 'Pick something you want and work out what it costs at 20% APR paid over a year.' } },
@@ -31,7 +31,7 @@ export const CHAPTERS = [
     move: { key: 'pick-a-company', title: 'Pick a company you would want to own', detail: 'Choose a company you use every week and look up whether it pays a dividend.' } },
   { id: 'investing-strategies', title: 'Investing Strategies', topic: 'investing', units: [82, 85, 88, 124],
     move: { key: 'choose-style', title: 'Choose your investing style', detail: 'Decide whether active or passive investing fits you better, and write down why.' } },
-  { id: 'buying-car', title: 'Buying a Car', topic: 'debt', units: [154, 157, 163, 166],
+  { id: 'buying-car', section: 'Big Milestones', title: 'Buying a Car', topic: 'debt', units: [154, 157, 163, 166],
     move: { key: 'price-a-car', title: 'Price a car by its total cost', detail: 'Pick a car and add up price, insurance, gas and interest for one year.' } },
   { id: 'home-basics', title: 'Home Basics', topic: 'saving', units: [127, 130, 133],
     move: { key: 'rent-vs-own', title: 'Compare renting and owning', detail: 'Look up rent and a home price near you and compare the monthly costs.' } },
@@ -39,6 +39,18 @@ export const CHAPTERS = [
     move: { key: 'home-budget', title: 'Estimate a home price you could afford', detail: 'Use the 28% rule on a future salary to estimate a price range.' } },
   { id: 'home-closing', title: 'Offer to Closing', topic: 'saving', units: [145, 148, 151],
     move: { key: 'closing-checklist', title: 'Make a closing-day checklist', detail: 'List every cost and step between making an offer and getting the keys.' } },
+  { id: 'taxes-filing', section: 'Student & Young Adult Playbook', title: 'Taxes & Filing', topic: 'taxes', units: ['bl-tax-brackets', 'bl-tax-forms', 'bl-deductions-credits', 'bl-filing-free'],
+    move: { key: 'prep-tax-folder', title: 'Create a simple tax folder', detail: 'Make one folder for W-2s, 1099s and school 1098 forms—and set aside 25% of any side-gig pay.' } },
+  { id: 'job-benefits', title: 'First Job & Benefits', topic: 'budgeting', units: ['bl-total-comp', 'bl-health-plans', 'bl-hsa-fsa'],
+    move: { key: 'score-job-benefits', title: 'Check your health & match options', detail: 'Compare staying on a parent plan vs. employer coverage, and confirm any 401(k) match percentage.' } },
+  { id: 'student-loans', title: 'Student Loans', topic: 'debt', units: ['bl-loan-types', 'bl-grace-interest', 'bl-repayment-plans'],
+    move: { key: 'list-student-loans', title: 'List your loans by rate & type', detail: 'Note each loan’s servicer, interest rate, and whether it is federal subsidized, unsubsidized, or private.' } },
+  { id: 'renting-smart', title: 'Renting Your Place', topic: 'budgeting', units: ['bl-move-in-math', 'bl-lease-clauses', 'bl-deposit-back'],
+    move: { key: 'lease-check', title: 'Check move-in costs & notice dates', detail: 'Add up deposit + first month’s rent + renters insurance, or calendar your current lease’s notice deadline.', tool: 'calendar' } },
+  { id: 'debt-traps', title: 'Payoff & Trap Defense', topic: 'credit', units: ['bl-snowball-avalanche', 'bl-bnpl-traps', 'bl-chargebacks'],
+    move: { key: 'audit-installments', title: 'Audit Pay-in-4 & card security', detail: 'Check for any active installment plans and switch your main money logins to authenticator-app MFA.' } },
+  { id: 'smart-portfolios', title: 'Smart Portfolios', topic: 'investing', units: ['bl-fund-fees', 'bl-account-order', 'bl-staying-course'],
+    move: { key: 'check-expense-ratio', title: 'Check one index fund’s fee', detail: 'Look up a broad index fund’s expense ratio (aim under 0.15%) and confirm any IRA cash is invested.' } },
 ];
 
 // Money tools: unlock once the chapter's money move is done (which requires its lessons).
@@ -93,8 +105,12 @@ export function buildChapters(modules, progress, moves) {
     ? [...CHAPTERS, { id: 'new-lessons', title: 'New Lessons', topic: 'saving', units: extra.map((m) => m.id), move: null }]
     : CHAPTERS;
 
+  const activeDefs = modules.length > 0
+    ? defs.filter((c) => c.units.some((u) => byId[String(u)]))
+    : defs;
+
   let prev = null;
-  return defs.map((c, i) => {
+  return activeDefs.map((c, i) => {
     const units = c.units.map((u) => byId[String(u)]).filter(Boolean).map((m) => ({
       ...m, topic_tag: c.topic, completed: m.lessons.length > 0 && m.lessons.every((l) => done.has(l.id)),
     }));

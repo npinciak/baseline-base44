@@ -1,11 +1,9 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Coins, Flame, Sparkles, Compass, CheckCircle2, Shield } from 'lucide-react';
+import { ArrowRight, Coins, Flame, Sparkles, CheckCircle2, Shield } from 'lucide-react';
 import { LESSON_REWARD } from '@/lib/coinEconomy';
 import { TOOL_LINKS, nextLesson } from '@/lib/curriculum';
 import { getLevelInfo, getLifetimeCoins } from '@/lib/coinLevels';
-
-const HERO_ART = 'https://media.base44.com/images/public/6a3542676f9044e70b439a84/a3d6b18e5_generated_image.png';
 
 function timeGreeting() {
   const h = new Date().getHours();
@@ -31,7 +29,7 @@ export default function DashboardWelcomeHero({ name, stats, chapters, onComplete
   const isAllCaughtUp = !upcomingMod && !isMoveStage;
 
   let eyebrow = activeChapter ? `Chapter ${activeChapter.number} · ${activeChapter.title}` : 'BasePath Complete';
-  let headline = `${timeGreeting()}, ${name}.`;
+  const headline = `${timeGreeting()}, ${name}.`;
   let promptCopy = '';
   let ctaLabel = 'Continue Lesson';
   let ctaTo = upcomingMod ? `/lesson/${upcomingMod.id}` : '/money';
@@ -39,25 +37,25 @@ export default function DashboardWelcomeHero({ name, stats, chapters, onComplete
   if (upcomingMod && activeChapter) {
     const remainingInChapter = activeChapter.modules.length - activeChapter.lessonsDone;
     if (doneLessons === 0) {
-      promptCopy = `Start strong with "${upcomingMod.title}" — a quick interactive lesson that earns your first +${LESSON_REWARD} BaseCoins and kicks off ${activeChapter.title}.`;
-      ctaLabel = `Start First Lesson`;
+      promptCopy = `Start with "${upcomingMod.title}" to earn your first +${LESSON_REWARD} BaseCoins and kick off ${activeChapter.title}.`;
+      ctaLabel = 'Start First Lesson';
     } else if (remainingInChapter === 1) {
-      promptCopy = `You're one lesson away from finishing ${activeChapter.title}! Jump into "${upcomingMod.title}" (+${LESSON_REWARD} BC) to unlock this chapter's Money Move.`;
+      promptCopy = `One lesson left in ${activeChapter.title}. Finish "${upcomingMod.title}" (+${LESSON_REWARD} BC) to unlock this chapter's Money Move.`;
       ctaLabel = `Finish ${activeChapter.title}`;
     } else {
-      promptCopy = `Pick up right where you left off with "${upcomingMod.title}". Complete it in a few minutes to bank +${LESSON_REWARD} BaseCoins${streak > 0 ? ` and protect your ${streak}-day streak` : ''}.`;
-      ctaLabel = `Continue Lesson`;
+      promptCopy = `Up next: "${upcomingMod.title}" (+${LESSON_REWARD} BC)${streak > 0 ? ` — keep your ${streak}-day streak rolling` : ''}.`;
+      ctaLabel = 'Continue Lesson';
     }
   } else if (isMoveStage) {
     eyebrow = `Chapter ${activeChapter.number} · Money Move Ready`;
-    promptCopy = `Every lesson in ${activeChapter.title} is done! Put it into action — "${activeChapter.move.title}" — to unlock the next chapter on your path.`;
+    promptCopy = `You finished every lesson in ${activeChapter.title}. Complete "${activeChapter.move.title}" to unlock the next chapter.`;
     ctaLabel = activeChapter.move.tool ? 'Open Tool & Complete Move' : 'Mark Money Move Done';
     ctaTo = activeChapter.move.tool ? (TOOL_LINKS[activeChapter.move.tool] || '/money') : null;
   } else if (isAllCaughtUp) {
     eyebrow = `${doneLessons} of ${totalLessons} Lessons Mastered`;
-    promptCopy = `You've completed every published lesson and Money Move on BasePath. Explore our 3x Curriculum Expansion Roadmap to preview what's coming next.`;
-    ctaLabel = 'Explore 3x Roadmap';
-    ctaTo = '/roadmap';
+    promptCopy = 'You’ve completed every available lesson and Money Move on BasePath. Put your tools to work on Money.';
+    ctaLabel = 'Open Money Tools';
+    ctaTo = '/money';
   }
 
   const handleMoveDone = async () => {
@@ -75,17 +73,15 @@ export default function DashboardWelcomeHero({ name, stats, chapters, onComplete
       aria-label="Personalized learning welcome"
       className="relative overflow-hidden rounded-3xl border border-white/10 bg-[#050912] p-6 sm:p-8 mb-8"
     >
-      {/* Subtle radial ambient glow inspired by the designed split hero */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -bottom-24 -left-16 h-72 w-96 rounded-full opacity-90"
         style={{
-          background: 'radial-gradient(ellipse at center, rgba(46,253,122,0.16) 0%, rgba(46,160,253,0.12) 45%, transparent 72%)',
+          background: 'radial-gradient(ellipse at center, rgba(46,253,122,0.14) 0%, rgba(46,160,253,0.1) 45%, transparent 72%)',
         }}
       />
 
       <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
-        {/* Left Stage: Headline + Encouraging Prompt + Primary CTA */}
         <div className="lg:col-span-7 flex flex-col justify-between gap-6">
           <div>
             <div className="flex flex-wrap items-center gap-2 mb-3">
@@ -151,71 +147,51 @@ export default function DashboardWelcomeHero({ name, stats, chapters, onComplete
                 {completingMove ? 'Marking...' : 'Mark Move Done'}
               </button>
             )}
-
-            <Link
-              to="/roadmap"
-              className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/[0.03] px-4 py-2.5 text-xs font-medium text-white/75 hover:text-white hover:border-white/30 transition-colors"
-            >
-              <Compass className="w-3.5 h-3.5 text-[#2EA0FD]" />
-              3x Curriculum Roadmap
-            </Link>
           </div>
         </div>
 
-        {/* Right Stage: Rounded Media Card with Live Next-Lesson & Level Benefit Overlay */}
-        <div className="lg:col-span-5 relative min-h-[210px] rounded-2xl overflow-hidden border border-white/10 bg-black flex flex-col justify-between p-5">
-          <img
-            src={HERO_ART}
-            alt="Glowing Baseline learning path"
-            className="absolute inset-0 h-full w-full object-cover opacity-75"
-          />
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-black/30"
-          />
-
-          {/* Top pill inside media card: Up Next card */}
-          <div className="relative z-10 flex items-center justify-between gap-2">
-            <span className="text-[11px] uppercase tracking-widest font-semibold text-white/75">
+        {/* Clean dark progress summary card (no roadmap image) */}
+        <div className="lg:col-span-5 relative rounded-2xl overflow-hidden border border-white/10 bg-white/[0.03] flex flex-col justify-between p-5">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-[11px] uppercase tracking-widest font-semibold text-white/55">
               {upcomingMod ? 'Up Next' : isMoveStage ? 'Action Step' : 'Path Mastery'}
             </span>
             {upcomingMod && (
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/65 backdrop-blur-md border border-[#2EA0FD]/40 text-xs font-bold text-[#2EA0FD]">
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#2EA0FD]/10 border border-[#2EA0FD]/35 text-xs font-bold text-[#2EA0FD]">
                 <Coins className="w-3.5 h-3.5" />
                 +{LESSON_REWARD} BC
               </span>
             )}
           </div>
 
-          {/* Bottom live lesson & level perk card */}
-          <div className="relative z-10 mt-8 rounded-xl bg-black/70 backdrop-blur-md border border-white/15 p-3.5 space-y-2.5">
+          <div className="mt-6 space-y-4">
             {upcomingMod ? (
               <div>
-                <p className="text-white font-bold text-sm truncate">{upcomingMod.title}</p>
-                <p className="text-xs text-white/60 mt-0.5">
+                <p className="text-white font-bold text-base leading-snug">{upcomingMod.title}</p>
+                <p className="text-xs text-white/55 mt-1">
                   {activeChapter?.lessonsDone || 0} of {activeChapter?.modules?.length || 0} lessons done in {activeChapter?.title}
                 </p>
               </div>
             ) : isMoveStage ? (
               <div>
-                <p className="text-white font-bold text-sm truncate">{activeChapter.move.title}</p>
-                <p className="text-xs text-white/60 mt-0.5 line-clamp-2">{activeChapter.move.detail}</p>
+                <p className="text-white font-bold text-base leading-snug">{activeChapter.move.title}</p>
+                <p className="text-xs text-white/55 mt-1 line-clamp-2">{activeChapter.move.detail}</p>
               </div>
             ) : (
               <div>
-                <p className="text-white font-bold text-sm">All {totalLessons} current lessons completed</p>
-                <p className="text-xs text-white/60 mt-0.5">142 new lessons planned across 4 roadmap stages</p>
+                <p className="text-white font-bold text-base">All {totalLessons} lessons completed</p>
+                <p className="text-xs text-white/55 mt-1">New chapters unlock automatically as they launch.</p>
               </div>
             )}
 
-            <div>
-              <div className="flex items-center justify-between text-[11px] text-white/65 mb-1">
-                <Link to="/profile#levels" className="hover:text-[#2EFD7A] transition-colors font-semibold">
+            <div className="pt-3 border-t border-white/10">
+              <div className="flex items-center justify-between text-xs text-white/65 mb-1.5">
+                <Link to="/profile#levels" className="hover:text-[#2EFD7A] transition-colors font-semibold text-white/85">
                   Lv {levelInfo.current.level} · {levelInfo.current.title} →
                 </Link>
                 <span>{doneLessons}/{totalLessons} lessons ({overallPct}%)</span>
               </div>
-              <div className="h-1.5 rounded-full bg-white/15 overflow-hidden">
+              <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
                 <div
                   className="h-full rounded-full bg-gradient-to-r from-[#2EFD7A] to-[#2EA0FD] transition-all duration-500"
                   style={{ width: `${Math.max(overallPct, 4)}%` }}

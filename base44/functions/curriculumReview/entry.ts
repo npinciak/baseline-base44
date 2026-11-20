@@ -1,5 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.54';
-import { isOwner } from '../../shared/ownerAccess.ts';
+import { isOwnerOrAdmin } from '../../shared/ownerAccess.ts';
 
 export default async function(req) {
   try {
@@ -7,9 +7,9 @@ export default async function(req) {
     const user = await base44.auth.me().catch((e) => (e.status === 401 ? null : Promise.reject(e)));
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
     const { mode, review, rows } = await req.json().catch(() => ({}));
-    const allowed = isOwner(user);
+    const allowed = isOwnerOrAdmin(user);
     if (mode === 'check') return Response.json({ allowed });
-    if (!allowed) return Response.json({ error: 'Owner access required' }, { status: 403 });
+    if (!allowed) return Response.json({ error: 'Owner or admin access required' }, { status: 403 });
     if (mode === 'save') {
       if (!review || typeof review.tool_key !== 'string' || !['keep','review','planned','removed'].includes(review.decision) || typeof review.note !== 'string' || review.note.length > 3000) return Response.json({error:'Invalid review'},{status:400});
       const existing = await base44.asServiceRole.entities.MoneyToolReview.filter({tool_key:review.tool_key},{limit:1});
