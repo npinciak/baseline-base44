@@ -117,7 +117,7 @@ export default function Money() {
     { key: 'calendar', node: (
       <div className="space-y-6">
         <FinancialCalendar balance={isSample || accounts.length ? balance : null} txs={txs} isSample={isSample} />
-        <ForecastChart startBalance={balance} dailyIncome={summary.dailyIncome} dailySpend={summary.dailySpend} />
+        <ForecastChart startBalance={balance} dailyIncome={summary.dailyIncome} dailySpend={summary.dailySpend} isAdmin={learning.isAdmin} />
       </div>
     ) },
     { key: 'networth', node: <AssetsBreakdown accounts={shownAccounts} /> },
@@ -125,7 +125,7 @@ export default function Money() {
     { key: 'knowledge', node: <KnowledgeTool chapters={learning.chapters} knowledgeScore={stats?.score_financial_knowledge ?? null} /> },
     { key: 'debt_ratio', node: <DebtRatioTool accounts={shownAccounts} summary={summary} recurring={recurring} /> },
     { key: 'credit_score', node: <CreditScoreTool accounts={shownAccounts} creditHealth={stats?.score_credit_health ?? null} /> },
-  ].map(t => ({ ...t, access: toolAccess(t.key, learning.chapters) }));
+  ].map(t => ({ ...t, access: toolAccess(t.key, learning.chapters, learning.isAdmin) }));
   const openTools = tools.filter(t => t.access.unlocked);
   const lockedTools = tools.filter(t => !t.access.unlocked);
 

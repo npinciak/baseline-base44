@@ -28,18 +28,30 @@ function ForecastTooltip({ active, payload }) {
   );
 }
 
-export default function ForecastChart({ startBalance, dailyIncome, dailySpend }) {
+export default function ForecastChart({ startBalance, dailyIncome, dailySpend, isAdmin = false }) {
   const [days, setDays] = useState(90);
   const [change, setChange] = useState(0); // % change in spending
   const [extraDailyIncome, setExtraDailyIncome] = useState(0);
-  const [presetsUnlocked, setPresetsUnlocked] = useState(false);
+  const [presetsUnlocked, setPresetsUnlocked] = useState(Boolean(isAdmin));
 
   useEffect(() => {
+    if (isAdmin) {
+      setPresetsUnlocked(true);
+      return;
+    }
     base44.auth.me()
-      .then((u) => base44.entities.UserStats.filter({ user_id: u.id }))
-      .then((arr) => setPresetsUnlocked(getLifetimeCoins(arr?.[0]) >= 1000))
+      .then((u) => {
+        if (u?.role === 'admin') {
+          setPresetsUnlocked(true);
+          return null;
+        }
+        return base44.entities.UserStats.filter({ user_id: u.id });
+      })
+      .then((arr) => {
+        if (arr) setPresetsUnlocked(getLifetimeCoins(arr?.[0]) >= 1000);
+      })
       .catch(() => {});
-  }, []);
+  }, [isAdmin]);
 
   const { data, end, baseEnd, low } = useMemo(() => {
     const spend = dailySpend * (1 + change / 100);

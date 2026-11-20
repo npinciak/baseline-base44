@@ -24,8 +24,12 @@ export default function useLearningState() {
     [state.modules, state.progress, state.moves]
   );
 
+  const isAdmin = state.user?.role === 'admin';
+
   const completeMove = useCallback(async (chapter) => {
-    if (!chapter?.unlocked || !chapter?.learned || !chapter?.move) throw new Error('Complete every lesson in this chapter first.');
+    if (!chapter?.move || (!isAdmin && (!chapter?.unlocked || !chapter?.learned))) {
+      throw new Error('Complete every lesson in this chapter first.');
+    }
     if (chapter.moveDone) return;
     const rec = await base44.entities.MoneyMoveCompletion.create({
       user_id: state.user.id,
@@ -34,7 +38,7 @@ export default function useLearningState() {
       completed_at: new Date().toISOString(),
     });
     setState((s) => ({ ...s, moves: [...s.moves, rec] }));
-  }, [state.user]);
+  }, [state.user, isAdmin]);
 
-  return { ...state, chapters, completeMove };
+  return { ...state, isAdmin, chapters, completeMove };
 }

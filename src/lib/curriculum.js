@@ -130,9 +130,14 @@ export function buildChapters(modules, progress, moves) {
 
 export const orderedModules = (chapters) => chapters.flatMap((c) => c.modules);
 
-export function toolAccess(key, chapters) {
+export function toolAccess(key, chapters, isAdmin = false) {
   const tool = MONEY_TOOLS[key];
   if (!tool.chapter) return { ...tool, chapter: null, unlocked: true };
   const chapter = chapters.find((c) => c.id === tool.chapter);
-  return { ...tool, chapter, unlocked: tool.decision !== 'removed' && tool.decision !== 'planned' && !!chapter && chapter.unlocked && chapter.learned && chapter.moveDone };
+  const activeTool = tool.decision !== 'removed' && tool.decision !== 'planned';
+  return {
+    ...tool,
+    chapter,
+    unlocked: activeTool && (Boolean(isAdmin) || (!!chapter && chapter.unlocked && chapter.learned && chapter.moveDone)),
+  };
 }

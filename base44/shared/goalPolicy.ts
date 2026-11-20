@@ -1,9 +1,11 @@
 export async function goalSubscription(base44, user) {
+  if (user?.role === 'admin') return { paid: true, freeGoalLimit: 1 };
   const result = await base44.asServiceRole.entities.SubscriptionEntitlement.filter({user_id:user.id,status:'active',expires_at:{$gt:new Date().toISOString()}},{limit:1});
   return { paid:result.items.length > 0, freeGoalLimit:1 };
 }
 
 export async function requireGoalLessons(base44, user) {
+  if (user?.role === 'admin') return true;
   const [content, progress] = await Promise.all([
     base44.functions.invoke('getPayloadLessons',{}),
     base44.entities.UserProgress.filter({user_id:user.id,completed:true,module_id:{$in:['34','40','37','bl-paycheck']}},{limit:200})
