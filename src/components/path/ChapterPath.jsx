@@ -17,7 +17,7 @@ function buildPath(count) {
 }
 
 /** Winding S-curve of lesson nodes for one chapter. */
-export default function ChapterPath({ units, meta, onOpen }) {
+export default function ChapterPath({ units, meta, unlocked = true, onOpen }) {
   const svgH = nodeY(units.length - 1) + NODE_R + 52;
   return (
     <div className="relative mx-auto" style={{ width: W, height: svgH }}>
@@ -25,12 +25,12 @@ export default function ChapterPath({ units, meta, onOpen }) {
         <path d={buildPath(units.length)} fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="4" strokeLinecap="round" strokeDasharray="10 8" />
       </svg>
       {units.map((u, i) => {
-        const open = i === 0 || units[i - 1].completed;
+        const open = unlocked && (i === 0 || units[i - 1].completed);
         const nextUp = open && !u.completed;
         const Icon = u.completed ? CheckCircle : open ? meta.Icon : Lock;
         const bg = open
           ? { background: `linear-gradient(135deg, ${meta.from}, ${meta.to})`, boxShadow: `0 8px 18px -4px ${meta.from}66, 0 3px 8px rgba(0,0,0,0.5)` }
-          : { background: 'rgba(255,255,255,0.08)' };
+          : { background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)' };
         return (
           <motion.div key={u.id} className="absolute flex flex-col items-center"
             style={{ left: nodeX(i) - NODE_R, top: nodeY(i) - NODE_R, width: NODE_R * 2 }}
@@ -45,7 +45,7 @@ export default function ChapterPath({ units, meta, onOpen }) {
             </motion.button>
             <div className="mt-2 text-center" style={{ width: 96, marginLeft: -(48 - NODE_R) }}>
               <p className={`font-medium leading-tight ${open ? 'text-white' : 'text-white/50'}`} style={{ fontSize: 11 }}>{u.title}</p>
-              <p className="font-semibold text-[#2EFD7A]" style={{ fontSize: 10 }}>+{u.xp_reward} BC</p>
+              <p className={`font-semibold ${open ? 'text-[#2EFD7A]' : 'text-[#2EFD7A]/55'}`} style={{ fontSize: 10 }}>+{u.xp_reward} BC</p>
             </div>
           </motion.div>
         );

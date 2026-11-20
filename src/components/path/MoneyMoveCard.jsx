@@ -18,10 +18,15 @@ export default function MoneyMoveCard({ chapter, onComplete }) {
     <div className={`mx-4 mt-2 rounded-2xl border p-5 transition-colors ${chapter.moveDone ? 'border-[#2EFD7A]/40 bg-[#2EFD7A]/[0.06]' : 'border-white/10 bg-white/[0.03]'}`}>
       <div className="flex items-center gap-2 mb-2">
         {chapter.moveDone ? <Check className="w-4 h-4 text-[#2EFD7A]" /> : ready ? <Zap className="w-4 h-4 text-[#2EFD7A]" /> : <Lock className="w-4 h-4 text-white/40" />}
-        <span className="text-[11px] tracking-widest uppercase font-semibold text-[#2EFD7A]">Money move</span>
+        <span className={`text-[11px] tracking-widest uppercase font-semibold ${ready || chapter.moveDone ? 'text-[#2EFD7A]' : 'text-white/55'}`}>Money move</span>
       </div>
-      <p className="text-white font-semibold leading-snug">{move.title}</p>
-      <p className="text-white/60 text-sm mt-1">{ready ? move.detail : 'Finish this chapter’s lessons to unlock this move.'}</p>
+      <p className={`font-semibold leading-snug ${ready || chapter.moveDone ? 'text-white' : 'text-white/80'}`}>{move.title}</p>
+      <p className="text-white/60 text-sm mt-1">{move.detail}</p>
+      {!ready && !chapter.moveDone && (
+        <p className="text-white/40 text-xs mt-2">
+          {chapter.unlocked ? 'Finish this chapter’s lessons to unlock this move.' : 'Unlocks after you complete this chapter’s lessons.'}
+        </p>
+      )}
       {ready && !chapter.moveDone && move.key !== 'create-emergency-fund' && <p className="text-white/60 text-xs mt-2">Use your bank statement, a calculator or your own notes for this practice step. The full tool opens after you complete the move.</p>}
       {unlocks.length > 0 && (
         <p className="flex items-center gap-1.5 text-xs text-[#2EA0FD] mt-3">

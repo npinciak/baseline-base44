@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronUp, ChevronDown, Lock, Clock } from 'lucide-react';
-import LockedChapterPreview from '@/components/path/LockedChapterPreview';
 import RingGauge from '@/components/dashboard/RingGauge';
 import ChapterPath from '@/components/path/ChapterPath';
 import MoneyMoveCard from '@/components/path/MoneyMoveCard';
@@ -47,11 +46,20 @@ export default function ChapterSection({ chapter, meta, defaultOpen, onCompleteM
               <Clock className="w-6 h-6" />
               <p className="text-xs text-white/60">Lessons for this chapter are on the way.</p>
             </div>
-          ) : !chapter.unlocked ? (
-            <LockedChapterPreview units={chapter.modules} />
           ) : (
             <>
-              <ChapterPath units={chapter.modules} meta={meta} onOpen={(id) => navigate(`/lesson/${id}`)} />
+              {!chapter.unlocked && (
+                <div className="mx-5 mb-2 flex items-center justify-center gap-1.5 text-xs text-white/50">
+                  <Lock className="w-3.5 h-3.5 shrink-0" />
+                  <span>Complete the previous chapter and its Money Move to unlock.</span>
+                </div>
+              )}
+              <ChapterPath
+                units={chapter.modules}
+                meta={meta}
+                unlocked={chapter.unlocked}
+                onOpen={(id) => chapter.unlocked && navigate(`/lesson/${id}`)}
+              />
               <MoneyMoveCard chapter={chapter} onComplete={onCompleteMove} />
             </>
           )}
