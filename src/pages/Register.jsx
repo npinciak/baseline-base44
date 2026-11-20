@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
+import { useAuth } from "@/lib/AuthContext";
+import AuthLoadingScreen from "@/components/AuthLoadingScreen";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,6 +26,11 @@ export default function Register() {
   const [resending, setResending] = useState(false);
 
   const [challenge, setChallenge] = useState(null);
+  const { isAuthenticated, isLoadingAuth } = useAuth();
+
+  if (isLoadingAuth) return <AuthLoadingScreen />;
+  if (isAuthenticated) return <Navigate to={postAuthDestination()} replace />;
+
   const handleGoogle = () => {
     setError("");
     signInWithProvider("google", postAuthDestination()).catch(err => setError(err.message || "Unable to continue with Google"));
