@@ -1,5 +1,6 @@
 import { BookOpen, Wallet, TrendingUp, CreditCard, FileText, Unlock, Umbrella, Shield, PiggyBank } from 'lucide-react';
 import ChapterSection from '@/components/path/ChapterSection';
+import { useAuth } from '@/lib/AuthContext';
 
 const TOPIC_META = {
   budgeting:  { Icon: Wallet },
@@ -24,7 +25,10 @@ function hslToHex(h, s, l) {
   return `#${f(0)}${f(8)}${f(4)}`;
 }
 
-export default function WindingLearningPath({ chapters, onCompleteMove }) {
+export default function WindingLearningPath({ chapters, onCompleteMove, isAdmin }) {
+  const { user } = useAuth();
+  const adminUnlocked = Boolean(isAdmin ?? (user?.role === 'admin'));
+
   if (!chapters.some((c) => !c.comingSoon)) {
     return (
       <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-8 text-center">
@@ -58,7 +62,7 @@ export default function WindingLearningPath({ chapters, onCompleteMove }) {
           to: toColor,
           index: i,
         };
-        
+
         return (
           <div key={chapter.id}>
             {chapter.section && (
@@ -73,6 +77,7 @@ export default function WindingLearningPath({ chapters, onCompleteMove }) {
               chapter={chapter}
               meta={meta}
               defaultOpen={chapter.id === current?.id}
+              isAdmin={adminUnlocked}
               onCompleteMove={onCompleteMove}
             />
           </div>

@@ -17,7 +17,7 @@ function buildPath(count) {
 }
 
 /** Winding S-curve of lesson nodes for one chapter. */
-export default function ChapterPath({ units, meta, unlocked = true, onOpen }) {
+export default function ChapterPath({ units, meta, unlocked = true, isAdmin = false, onOpen }) {
   const svgH = nodeY(units.length - 1) + NODE_R + 52;
   return (
     <div className="relative mx-auto" style={{ width: W, height: svgH }}>
@@ -25,8 +25,9 @@ export default function ChapterPath({ units, meta, unlocked = true, onOpen }) {
         <path d={buildPath(units.length)} fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="4" strokeLinecap="round" strokeDasharray="10 8" />
       </svg>
       {units.map((u, i) => {
-        const open = unlocked && (i === 0 || units[i - 1].completed);
-        const nextUp = open && !u.completed;
+        const progressionOpen = unlocked && (i === 0 || units[i - 1].completed);
+        const open = isAdmin || progressionOpen;
+        const nextUp = progressionOpen && !u.completed;
         const Icon = u.completed ? CheckCircle : open ? meta.Icon : Lock;
         const bg = open
           ? { background: `linear-gradient(135deg, ${meta.from}, ${meta.to})`, boxShadow: `0 8px 18px -4px ${meta.from}66, 0 3px 8px rgba(0,0,0,0.5)` }

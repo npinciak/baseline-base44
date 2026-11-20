@@ -5,12 +5,13 @@ import RingGauge from '@/components/dashboard/RingGauge';
 import ChapterPath from '@/components/path/ChapterPath';
 import MoneyMoveCard from '@/components/path/MoneyMoveCard';
 
-export default function ChapterSection({ chapter, meta, defaultOpen, onCompleteMove }) {
+export default function ChapterSection({ chapter, meta, defaultOpen, isAdmin = false, onCompleteMove }) {
   const [open, setOpen] = useState(defaultOpen);
   const navigate = useNavigate();
   const total = chapter.modules.length;
   const pct = total ? (chapter.lessonsDone / total) * 100 : 0;
   const sub = chapter.comingSoon ? 'Coming soon' : `${chapter.lessonsDone} of ${total} lessons${chapter.moveDone ? ' · move done' : ''}`;
+  const canOpenLessons = chapter.unlocked || isAdmin;
 
   return (
     <div className={`rounded-2xl overflow-hidden border border-white/10 bg-white/[0.03] backdrop-blur-sm mb-4 ${chapter.comingSoon ? 'opacity-60' : ''}`}>
@@ -48,7 +49,7 @@ export default function ChapterSection({ chapter, meta, defaultOpen, onCompleteM
             </div>
           ) : (
             <>
-              {!chapter.unlocked && (
+              {!canOpenLessons && (
                 <div className="mx-5 mb-2 flex items-center justify-center gap-1.5 text-xs text-white/50">
                   <Lock className="w-3.5 h-3.5 shrink-0" />
                   <span>Complete the previous chapter and its Money Move to unlock.</span>
@@ -58,7 +59,8 @@ export default function ChapterSection({ chapter, meta, defaultOpen, onCompleteM
                 units={chapter.modules}
                 meta={meta}
                 unlocked={chapter.unlocked}
-                onOpen={(id) => chapter.unlocked && navigate(`/lesson/${id}`)}
+                isAdmin={isAdmin}
+                onOpen={(id) => canOpenLessons && navigate(`/lesson/${id}`)}
               />
               <MoneyMoveCard chapter={chapter} onComplete={onCompleteMove} />
             </>

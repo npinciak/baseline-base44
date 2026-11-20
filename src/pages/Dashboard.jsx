@@ -71,7 +71,11 @@ export default function Dashboard() {
               {learning.chapters.filter((c) => c.learned).length} of {learning.chapters.length} chapters mastered
             </span>
           </div>
-          <WindingLearningPath chapters={learning.chapters} onCompleteMove={learning.completeMove} />
+          <WindingLearningPath
+            chapters={learning.chapters}
+            onCompleteMove={learning.completeMove}
+            isAdmin={user?.role === 'admin'}
+          />
         </motion.section>
       </motion.div>
     </div>
