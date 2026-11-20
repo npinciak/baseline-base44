@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { getDisplayName, getInitial } from '@/lib/displayName';
 import { getLevelInfo, getLifetimeCoins } from '@/lib/coinLevels';
 import useAdminViewMode from '@/hooks/useAdminViewMode';
+import AdminViewToggle from '@/components/dashboard/AdminViewToggle';
 
 export default function Layout() {
   const [user, setUser] = useState(null);
@@ -48,7 +49,7 @@ export default function Layout() {
     base44.functions.invoke('curriculumReview', { mode: 'check' }).then(r => setIsOwner(!!r?.data?.allowed)).catch(() => {});
   }, [user]);
 
-  const { effectiveIsAdmin, isLearnerView } = useAdminViewMode(user);
+  const { viewMode, setViewMode, isRealAdmin, effectiveIsAdmin, isLearnerView } = useAdminViewMode(user);
   const levelInfo = getLevelInfo(getLifetimeCoins(stats));
   const xpProgress = levelInfo.progressPct;
   const canAccessDevTools = !isLearnerView && (effectiveIsAdmin || isOwner);
@@ -198,6 +199,14 @@ export default function Layout() {
       <main className="min-w-0 flex-1 md:ml-64 pb-20 md:pb-0 bg-black">
         <Outlet />
       </main>
+
+      {!location.pathname.startsWith('/admin') && (
+        <AdminViewToggle
+          viewMode={viewMode}
+          onChange={setViewMode}
+          isRealAdmin={isRealAdmin}
+        />
+      )}
 
       {/* Mobile bottom nav */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-black/70 backdrop-blur-xl border-t border-white/10 flex z-50">

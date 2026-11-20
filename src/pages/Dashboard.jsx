@@ -5,7 +5,6 @@ import { base44 } from '@/api/base44Client';
 import WindingLearningPath from '@/components/WindingLearningPath';
 import AmbientBackdrop from '@/components/dashboard/AmbientBackdrop';
 import DashboardWelcomeHero from '@/components/dashboard/DashboardWelcomeHero';
-import AdminViewToggle from '@/components/dashboard/AdminViewToggle';
 import useLearningState from '@/hooks/useLearningState';
 import useAdminViewMode from '@/hooks/useAdminViewMode';
 import { getGreetingName } from '@/lib/displayName';
@@ -22,7 +21,7 @@ export default function Dashboard() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const learning = useLearningState();
-  const { viewMode, setViewMode, isRealAdmin, effectiveIsAdmin } = useAdminViewMode(user);
+  const { effectiveIsAdmin } = useAdminViewMode(user);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -59,11 +58,6 @@ export default function Dashboard() {
         className="relative z-10 max-w-5xl mx-auto"
       >
         <motion.div variants={itemVariants}>
-          <AdminViewToggle
-            viewMode={viewMode}
-            onChange={setViewMode}
-            isRealAdmin={isRealAdmin}
-          />
           <DashboardWelcomeHero
             name={getGreetingName(user, profile)}
             stats={stats}
