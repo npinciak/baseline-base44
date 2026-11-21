@@ -59,7 +59,7 @@ export default function MountainHero({ balance, camps }) {
         <polygon points="545,38 520,62 536,58 548,70 560,58 575,64" fill="#e8f4ff" opacity="0.9" />
         <path ref={pathRef} d={TRAIL} fill="none" stroke="rgba(255,255,255,0.25)" strokeWidth="3" strokeDasharray="2 8" strokeLinecap="round" />
         <motion.path d={TRAIL} fill="none" stroke="url(#trail)" strokeWidth="4" strokeLinecap="round" initial={{ pathLength: 0 }} animate={{ pathLength: progress }} transition={{ duration: 1.4, ease: 'easeOut' }} style={{ filter: 'drop-shadow(0 0 6px rgba(43,249,233,0.8))' }} />
-        {pts?.camps.map((c, i) => (
+        {pts?.camps.map((c, i) => c.cost > 0 && (
           <g key={c.cost} transform={`translate(${c.x},${c.y})`}>
             <circle r="7" fill={balance >= c.cost ? '#2BF9E9' : '#0b1b33'} stroke="#fff" strokeWidth="2" />
             <text y="-14" textAnchor="middle" fill="#fff" fontSize="12" fontWeight="700">Camp {ROMAN[i]}</text>
