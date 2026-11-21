@@ -61,7 +61,8 @@ export const MONEY_TOOLS = {
   spending: { label: 'Spending Breakdown', group: 'track', chapter: 'needs-wants', decision: 'keep', blurb: 'Understand where your money goes, category by category.', audit: 'Apply Needs vs. Wants. Categorization needs review; a spending chart is not a budget.' },
   calendar: { label: 'Financial Calendar', group: 'plan', chapter: 'renting-smart', decision: 'keep', blurb: 'Plan bill dates, paydays and savings day by day.', audit: 'Unlock after Renting Your Place and its lease-dates money move.' },
   forecast: { label: 'Future View', group: 'plan', chapter: 'growth', decision: 'keep', blurb: 'See where your balance could be and test "what if" spending changes.', audit: 'Unlock after Interest & Growth and its "what if" money move. Forecasts are sandbox estimates, never changes to bank history.' },
-  cashflow: { label: 'Cashflow', group: 'track', chapter: 'job-benefits', decision: 'review', blurb: 'Compare money coming in and going out over time.', audit: 'Owner decision pending: retain the income-versus-outgo time view, or combine it with Calendar. Category flow overlaps Spending Breakdown.' },
+  cashflow: { label: 'Weekly Cash Flow', group: 'track', chapter: 'build-budget', decision: 'keep', blurb: 'Compare money coming in and going out week by week.', audit: 'Unlock after Build Your Budget. Weekly income-versus-outgo time view.' },
+  money_flow: { label: 'Money Flow', group: 'track', chapter: 'job-benefits', decision: 'keep', blurb: 'Follow where each paycheck goes, from income to spending.', audit: 'Unlock after First Job & Benefits. Category flow overlaps Spending Breakdown.' },
   networth: { label: 'Net Worth', group: 'grow', chapter: 'investing-basics', decision: 'review', blurb: 'Compare assets and liabilities across your accounts.', audit: 'Owner decision pending: improve or retire. It is not a credit-utilization destination.' },
   knowledge: { label: 'Financial Knowledge', group: 'score', chapter: null, decision: 'keep', blurb: 'Track learning progress and return to your next lesson.', audit: 'Informational learning summary, not a gated financial tool.' },
   debt_ratio: { label: 'Income-to-Debt Ratio', group: 'score', chapter: 'debt', decision: 'review', blurb: 'Compare monthly debt payments with income.', audit: 'Owner decision pending: improve or include this supporting metric in Debt Payoff Planner.' },
@@ -81,7 +82,7 @@ export const TOOL_GROUPS = [
 
 export const TOOL_LINKS = {
   overview: '/money#overview', recurring: '/money#recurring', spending: '/money#spending',
-  networth: '/money#networth', forecast: '/money#forecast', calendar: '/money#calendar',
+  networth: '/money#networth', cashflow: '/money#cashflow', money_flow: '/money#money_flow', forecast: '/money#forecast', calendar: '/money#calendar',
   goals: '/money#goals', profile: '/basescore', credit_score: '/money#credit_score',
   debt_ratio: '/money#debt_ratio', risk: '/money#risk', knowledge: '/money#knowledge',
 };

@@ -28,7 +28,7 @@ import {
   summarize, weeklyCashflow, buildSampleTransactions, SAMPLE_BALANCE,
 } from '@/lib/moneyData';
 
-const WIDE_TOOLS = ['spending', 'calendar', 'cashflow'];
+const WIDE_TOOLS = ['spending', 'calendar', 'cashflow', 'money_flow'];
 
 const LIABILITIES = ['credit_card', 'loan', 'mortgage', 'line_of_credit'];
 
@@ -110,12 +110,8 @@ export default function Money() {
         <CategoryList categoryList={categoryList} grandTotal={grandTotal} expenses={expenses} />
       </div>
     ) },
-    { key: 'cashflow', node: (
-      <div className="space-y-6">
-        <CashflowBars weeks={weeks} />
-        <SankeyCashflow txs={txs} />
-      </div>
-    ) },
+    { key: 'cashflow', node: <CashflowBars weeks={weeks} /> },
+    { key: 'money_flow', node: <SankeyCashflow txs={txs} /> },
     { key: 'calendar', node: (
       <FinancialCalendar balance={isSample || accounts.length ? balance : null} txs={txs} isSample={isSample} />
     ) },

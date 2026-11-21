@@ -31,12 +31,8 @@ export default function LockedToolPreview({ toolKey }) {
         <CategoryList categoryList={categories} grandTotal={grandTotal} expenses={expenses} />
       </div>
     );
-    case 'cashflow': return (
-      <div className="space-y-6">
-        <CashflowBars weeks={weeklyCashflow(sample)} />
-        <SankeyCashflow txs={sample} />
-      </div>
-    );
+    case 'cashflow': return <CashflowBars weeks={weeklyCashflow(sample)} />;
+    case 'money_flow': return <SankeyCashflow txs={sample} />;
     case 'calendar': return <FinancialCalendar balance={SAMPLE_BALANCE} txs={sample} isSample readOnlyPreview />;
     case 'forecast': return <ForecastChart startBalance={SAMPLE_BALANCE} dailyIncome={summary.dailyIncome} dailySpend={summary.dailySpend} />;
     case 'networth': return <AssetsBreakdown accounts={SAMPLE_ACCOUNTS} />;
