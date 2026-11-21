@@ -6,7 +6,7 @@ import { buildQuestionContext } from '@/lib/coachInsights';
 
 const STARTERS = ['Where did most of my money go last month?', 'Why is my food spending higher?', 'Which subscriptions could I cut?', 'How can I save $50 this month?'];
 
-export default function CoachAsk({ txs, isSample, focus, clearFocus, thread, setThread }) {
+export default function CoachAsk({ txs, isSample, focus, clearFocus, thread, setThread, pending, clearPending }) {
   const [question, setQuestion] = useState('');
   const [loading, setLoading] = useState(false);
   const endRef = useRef(null);
@@ -41,6 +41,10 @@ Question: ${q}`,
     setThread(t => [...t, { role: 'coach', text: res.answer, followUps: (res.follow_ups || []).slice(0, 2), used: context.transactions.length }]);
     setLoading(false);
   };
+
+  useEffect(() => {
+    if (pending) { clearPending(); ask(pending); }
+  }, [pending]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const last = thread[thread.length - 1];
   const chips = thread.length === 0 ? (focus ? ['Explain this', 'Is this normal for me?'] : STARTERS) : (!loading && last?.followUps) || [];

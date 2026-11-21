@@ -18,6 +18,7 @@ export default function MoneyCoach({ txs, isSample, overrides }) {
   const [tab, setTab] = useState('ask');
   const [focus, setFocus] = useState(null);
   const [thread, setThread] = useState([]);
+  const [pending, setPending] = useState(null);
   const data = useMemo(() => (isSample ? addSampleMess(txs) : txs), [txs, isSample]);
   const cleanups = useMemo(() => suggestCleanups(data), [data]);
   const trends = useMemo(() => findTrends(data), [data]);
@@ -26,11 +27,13 @@ export default function MoneyCoach({ txs, isSample, overrides }) {
 
   return (
     <div className="overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#04170d] via-black to-[#06142a]">
-      <CoachSummaryRow open={open} onToggle={() => setOpen(o => !o)} cleanupCount={cleanups.length} trendCount={trends.length} />
+      <CoachSummaryRow open={open} onToggle={() => setOpen(o => !o)} cleanupCount={cleanups.length} trendCount={trends.length}
+        onOpenTab={(t) => { setTab(t); setOpen(true); }}
+        onQuickAsk={(q) => { setTab('ask'); setPending(q); setOpen(true); }} />
       <AnimatePresence initial={false}>
         {open && (
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }} className="overflow-hidden">
-            <div className="border-t border-white/10 p-4 space-y-3">
+            <div className="border-t border-white/10 p-5 sm:p-6 space-y-3">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex gap-1 bg-white/[0.05] rounded-xl p-1">
                   {TABS.map(({ key, label, Icon }) => (
@@ -52,7 +55,7 @@ export default function MoneyCoach({ txs, isSample, overrides }) {
               <div className={tab === 'ask' ? '' : 'max-h-80 overflow-y-auto pr-1'}>
                 {tab === 'cleanup' && <CoachCleanup items={cleanups} isSample={isSample} overrides={overrides} onAsk={askAbout} />}
                 {tab === 'trends' && <CoachTrends trends={trends} onAsk={askAbout} />}
-                {tab === 'ask' && <CoachAsk txs={data} isSample={isSample} focus={focus} clearFocus={() => setFocus(null)} thread={thread} setThread={setThread} />}
+                {tab === 'ask' && <CoachAsk txs={data} isSample={isSample} focus={focus} clearFocus={() => setFocus(null)} thread={thread} setThread={setThread} pending={pending} clearPending={() => setPending(null)} />}
               </div>
             </div>
           </motion.div>
