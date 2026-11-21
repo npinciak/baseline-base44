@@ -98,11 +98,12 @@ export default function Basecamp() {
               </p>
               <p className="text-xs text-white/60">
                 {lifetimeCoins >= 5600
-                  ? 'Summit Perks active: -100 BC on $10 cards & -300 BC on $25 cards. Spending coins never lowers your level.'
+                  ? 'Summit Perks active: -200 BC on $10 cards & -500 BC on $25 cards. Spending coins never lowers your level.'
                   : lifetimeCoins >= 2000
-                    ? 'Camp I Member Perks active: -100 BC on all $10 cards! Reach Level 6 (5,600 BC) for -300 BC on $25 cards.'
-                    : 'Reach Level 4 (2,000 Lifetime BC) for -100 BC on $10 cards, and Level 6 (5,600 BC) for -300 BC on $25 cards.'}
+                    ? 'Camp I Member Perks active: -200 BC on all $10 cards! Reach Level 6 for -500 BC on $25 cards.'
+                    : 'Reach Level 4 (20 lessons) for -200 BC on $10 cards, and Level 6 (56 lessons) for -500 BC on $25 cards.'}
               </p>
+              <p className="text-xs text-white/45 mt-1">Free accounts earn 50 BC per lesson. Plus members earn 100 BC. Levels count lessons, so they rise at the same pace for everyone.</p>
             </div>
           </div>
           <Link to="/profile#levels" className="text-xs font-semibold text-[#2EFD7A] hover:underline shrink-0">

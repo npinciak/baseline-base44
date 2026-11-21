@@ -19,7 +19,7 @@ export default function MountainHero({ balance, camps }) {
     if (!p) return;
     const len = p.getTotalLength();
     const at = (f) => p.getPointAtLength(len * f);
-    setPts({ me: at(progress), camps: camps.map(c => ({ cost: c, ...at(c / top) })) });
+    setPts({ me: at(progress), camps: camps.map(c => { const pt = at(c / top); return { cost: c, x: pt.x, y: pt.y }; }) });
   }, [progress, camps, top]);
 
   return (

@@ -4,6 +4,7 @@ import FamilySwitchCard from '@/components/profile/FamilySwitchCard';
 import FamilyInviteForm from '@/components/profile/FamilyInviteForm';
 import FamilyMemberRow from '@/components/profile/FamilyMemberRow';
 import PendingInvites from '@/components/profile/PendingInvites';
+import ProfileSection from '@/components/profile/ProfileSection';
 
 export default function FamilySection({ profile, user }) {
   const fam = useFamily();
@@ -12,11 +13,7 @@ export default function FamilySection({ profile, user }) {
   const leave = () => window.confirm(isParent ? 'Leave this family account? If you are the only parent, the family will be closed.' : 'Leave this family account?') && fam.run({ action: 'remove', member_id: fam.members.find(m => m.is_me)?.id });
 
   return (
-    <div className="bg-white/[0.03] border border-white/10 backdrop-blur-sm rounded-3xl p-6 md:p-8">
-      <div className="flex items-center justify-between mb-5">
-        <h3 className="text-white/60 text-xs font-light tracking-widest uppercase">{fam.family ? 'Family Account' : 'Account Type'}</h3>
-        <Users className="w-4 h-4 text-white/30" />
-      </div>
+    <ProfileSection icon={Users} title={fam.family ? 'Family account' : 'Account type'}>
       {fam.loading ? <p role="status" className="text-white/40 text-sm">Loading…</p> : <>
         <PendingInvites pending={fam.pending} busy={fam.busy} onRespond={(action, id) => fam.run({ action, member_id: id })} />
         {!fam.family ? (
@@ -36,6 +33,6 @@ export default function FamilySection({ profile, user }) {
         )}
         {fam.error && <p role="alert" className="text-red-400 text-xs mt-3">{fam.error}</p>}
       </>}
-    </div>
+    </ProfileSection>
   );
 }

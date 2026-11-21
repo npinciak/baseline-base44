@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import { ArrowRight, ArrowLeft, PiggyBank, Unlock, TrendingUp, Award, BookOpen, Sprout, GraduationCap, BarChart2 } from 'lucide-react';
 import BaselineWordmark from '@/components/BaselineWordmark';
+import { readPendingBaseScore, clearPendingBaseScore } from '@/lib/saveBaseScore';
 
 const GOALS = [
   { value: 'save_money', label: 'Save More Money', icon: PiggyBank },
@@ -33,14 +34,18 @@ export default function Onboarding() {
     setSaving(true);
     const user = await base44.auth.me();
     const existing = await base44.entities.UserStats.filter({ user_id: user.id });
+    // A BaseScore taken before sign-up is stored with the first stats record.
+    const pendingScore = readPendingBaseScore() || {};
     if (existing.length > 0) {
       await base44.entities.UserStats.update(existing[0].id, {
+        ...pendingScore,
         financial_goal: goal,
         experience_level: level,
         onboarding_completed: true,
       });
     } else {
       await base44.entities.UserStats.create({
+        ...pendingScore,
         user_id: user.id,
         financial_goal: goal,
         experience_level: level,
@@ -51,6 +56,7 @@ export default function Onboarding() {
         onboarding_completed: true,
       });
     }
+    clearPendingBaseScore();
     navigate('/dashboard');
   };
 

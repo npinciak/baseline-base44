@@ -5,6 +5,7 @@ import { ArrowRight, ArrowLeft, Check } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import BaseScoreResult from "@/components/BaseScoreResult";
 import BaselineWordmark from "@/components/BaselineWordmark";
+import { saveBaseScore } from "@/lib/saveBaseScore";
 
 const MAX_SCORE = 500;
 const RESULT_CAP_PCT = 0.6; // preliminary score is capped at 60% of the max
@@ -21,6 +22,29 @@ function calculateScore(answers) {
   });
   const avg = count > 0 ? totalFraction / count : 0;
   return Math.round(avg * MAX_SCORE * RESULT_CAP_PCT);
+}
+
+const CATEGORY_FIELDS = {
+  "Preparedness": "score_preparedness",
+  "Credit Health": "score_credit_health",
+  "Risk Appetite": "score_risk_appetite",
+  "Financial Knowledge": "score_financial_knowledge",
+};
+
+// Per-category scores out of 100, using the same preliminary cap as the overall score.
+function calculateCategories(answers) {
+  const sums = {};
+  STEPS.forEach((step) => {
+    const field = CATEGORY_FIELDS[step.section];
+    const answer = answers[step.key];
+    if (!field || !answer) return;
+    sums[field] = sums[field] || { total: 0, count: 0 };
+    sums[field].total += step.scores[step.options.indexOf(answer)];
+    sums[field].count += 1;
+  });
+  return Object.fromEntries(
+    Object.entries(sums).map(([field, s]) => [field, Math.round((s.total / s.count) * 100 * RESULT_CAP_PCT)])
+  );
 }
 
 const STEPS = [
@@ -136,31 +160,63 @@ export default function BaseScoreQuiz() {
   const [direction, setDirection] = useState(1);
   const [showResult, setShowResult] = useState(false);
   const [score, setScore] = useState(0);
+  const [signedIn, setSignedIn] = useState(false);
+  const [pending, setPending] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState("");
+  const [lastResult, setLastResult] = useState(null);
 
   const step = STEPS[currentStep];
   const selected = answers[step.key];
   const total = STEPS.length;
 
   if (showResult) {
-    return <BaseScoreResult score={score} onContinue={() => navigate("/register")} />;
+    return (
+      <BaseScoreResult
+        score={score}
+        pending={pending}
+        saving={saving}
+        saveError={saveError}
+        onRetry={() => persist(lastResult)}
+        onContinue={() => navigate(signedIn ? "/basescore" : "/register")}
+      />
+    );
   }
 
   const handleSelect = (option) => {
     setAnswers((prev) => ({ ...prev, [step.key]: option }));
   };
 
-  const handleNext = () => {
+  const persist = async (result) => {
+    setSaving(true);
+    setSaveError("");
+    try {
+      const res = await saveBaseScore(result);
+      setSignedIn(!res.pending);
+      setPending(res.pending);
+    } catch (err) {
+      console.error("BaseScore save failed", err);
+      setSaveError("We couldn't save your score to your account. It's kept on this device and will save the next time you open Baseline.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleNext = async () => {
     if (currentStep < total - 1) {
       setDirection(1);
       setCurrentStep((s) => s + 1);
     } else {
       sessionStorage.setItem("basescore_quiz", JSON.stringify(answers));
       const finalScore = calculateScore(answers);
+      const result = { base_score: finalScore, ...calculateCategories(answers) };
       setScore(finalScore);
+      setLastResult(result);
       base44.analytics.track({
         eventName: "basescore_quiz_completed",
         properties: { score: finalScore },
       });
+      await persist(result);
       setShowResult(true);
     }
   };
@@ -306,10 +362,10 @@ export default function BaseScoreQuiz() {
 
                 <button
                   onClick={handleNext}
-                  disabled={!selected}
+                  disabled={!selected || saving}
                   className="flex items-center gap-2.5 px-8 py-3.5 rounded-full bg-[#2EFD7A] text-black text-sm font-semibold tracking-wide hover:bg-[#2EFD7A]/90 transition-all duration-200 disabled:opacity-25 disabled:cursor-not-allowed"
                 >
-                  {currentStep === total - 1 ? "See My Score" : "Next"}
+                  {currentStep === total - 1 ? (saving ? "Saving..." : "See My Score") : "Next"}
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>

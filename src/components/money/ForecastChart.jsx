@@ -1,102 +1,102 @@
 import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceDot, CartesianGrid } from 'recharts';
-import ScenarioSlider from '@/components/money/ScenarioSlider';
-import { Telescope, TrendingUp, TrendingDown, Sparkles, Lock } from 'lucide-react';
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine, CartesianGrid } from 'recharts';
+import { Telescope, Zap, RotateCcw } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
-import { getLifetimeCoins } from '@/lib/coinLevels';
-import { getStoredAdminViewMode } from '@/hooks/useAdminViewMode';
+import FeaturePanel from '@/components/money/FeaturePanel';
+import GoalSlider from '@/components/money/GoalSlider';
+import ScenarioChips from '@/components/money/ScenarioChips';
+import { money } from '@/lib/goalPlan';
+import { monthlyFromPlan, monthsToTarget, balanceSeries, monthLabel, fullDate } from '@/lib/goalForecast';
 
-const SANDBOX_PRESETS = [
-  { id: 'trim-wants', label: 'Trim Wants -15%', spendPct: -15, extraDailyIncome: 0 },
-  { id: 'lean-month', label: 'Lean Month -25%', spendPct: -25, extraDailyIncome: 0 },
-  { id: 'side-income', label: '+$200/mo Side Income', spendPct: 0, extraDailyIncome: 200 / 30 },
-];
-
-const HORIZONS = [{ d: 30, l: '1M' }, { d: 90, l: '3M' }, { d: 180, l: '6M' }, { d: 365, l: '1Y' }];
-const fmt = (n) => `${n < 0 ? '-' : ''}$${Math.abs(Math.round(n)).toLocaleString()}`;
-const dayLabel = (i) => new Date(Date.now() + i * 86400000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+const SAMPLE_GOAL = { id: 'sample', name: 'Emergency Fund', target_amount: 3000, current_amount: 600, sample: true };
+const isEmergency = (g) => g.goal_type === 'emergency' || /emergency/i.test(g.name || '');
 
 function ForecastTooltip({ active, payload }) {
   if (!active || !payload?.length) return null;
   const p = payload[0].payload;
   return (
     <div className="rounded-xl border border-white/15 bg-black/90 backdrop-blur px-3 py-2 text-xs shadow-xl">
-      <p className="text-white/60 mb-1">{dayLabel(p.i)}</p>
-      <p className="text-white font-bold text-sm">{fmt(p.scenario)}</p>
-      {p.base !== p.scenario && <p className="text-white/50">Current pace: {fmt(p.base)}</p>}
+      <p className="text-white/60 mb-1">{monthLabel(p.m)}</p>
+      <p className="text-white font-bold text-sm">{money(p.scenario)}</p>
+      {p.base !== p.scenario && <p className="text-white/50">Current plan: {money(p.base)}</p>}
     </div>
   );
 }
 
-export default function ForecastChart({ startBalance, dailyIncome, dailySpend, isAdmin = false }) {
-  const [days, setDays] = useState(90);
-  const [change, setChange] = useState(0); // % change in spending
-  const [extraDailyIncome, setExtraDailyIncome] = useState(0);
-  const [presetsUnlocked, setPresetsUnlocked] = useState(Boolean(isAdmin));
+export default function ForecastChart({ live = false }) {
+  const [goals, setGoals] = useState(live ? null : [SAMPLE_GOAL]);
+  const [goalId, setGoalId] = useState(null);
+  const [baseMonthly, setBaseMonthly] = useState(100);
+  const [monthly, setMonthly] = useState(100);
+  const [rate, setRate] = useState(0);
 
   useEffect(() => {
-    if (isAdmin) {
-      setPresetsUnlocked(true);
-      return;
-    }
-    base44.auth.me()
-      .then((u) => {
-        if (u?.role === 'admin' && getStoredAdminViewMode() === 'admin') {
-          setPresetsUnlocked(true);
-          return null;
-        }
-        return base44.entities.UserStats.filter({ user_id: u.id });
+    if (!live) return;
+    base44.functions.invoke('getSupabaseGoals', {})
+      .then(res => {
+        const active = (res.data?.goals || []).filter(g => !g.archived && Number(g.target_amount) > 0);
+        setGoals(active.length ? active : [SAMPLE_GOAL]);
       })
-      .then((arr) => {
-        if (arr) setPresetsUnlocked(getLifetimeCoins(arr?.[0]) >= 1000);
-      })
-      .catch(() => {});
-  }, [isAdmin]);
+      .catch(() => setGoals([SAMPLE_GOAL]));
+  }, [live]);
 
-  const { data, end, baseEnd, low } = useMemo(() => {
-    const spend = dailySpend * (1 + change / 100);
-    const inc = dailyIncome + extraDailyIncome;
-    const rows = Array.from({ length: days + 1 }, (_, i) => ({
-      i,
-      base: startBalance + i * (dailyIncome - dailySpend),
-      scenario: startBalance + i * (inc - spend),
-    }));
-    const lowest = rows.reduce((m, r) => (r.scenario < m.scenario ? r : m), rows[0]);
-    return { data: rows, end: rows[days].scenario, baseEnd: rows[days].base, low: lowest };
-  }, [days, change, extraDailyIncome, startBalance, dailyIncome, dailySpend]);
+  const goal = goals && (goals.find(g => g.id === goalId) || goals.find(isEmergency) || goals[0]);
 
-  const gain = end - startBalance;
-  const diff = end - baseEnd;
-  const up = gain >= 0;
+  useEffect(() => {
+    if (!goal) return;
+    const apply = (amt) => { const v = Math.round(amt) || 100; setBaseMonthly(v); setMonthly(v); setRate(0); };
+    if (goal.sample) { apply(100); return; }
+    base44.entities.GoalPlan.filter({ supabase_goal_id: goal.id })
+      .then(rows => apply(monthlyFromPlan(rows[0])))
+      .catch(() => apply(100));
+  }, [goal?.id]);
+
+  const calc = useMemo(() => {
+    if (!goal) return null;
+    const saved = Number(goal.current_amount) || 0;
+    const target = Number(goal.target_amount);
+    const baseM = monthsToTarget({ saved, target, monthly: baseMonthly, rate: 0 });
+    const scenM = monthsToTarget({ saved, target, monthly, rate });
+    const horizon = Math.max(6, Math.min(120, Math.max(baseM ?? 120, scenM ?? 120)));
+    const base = balanceSeries({ saved, monthly: baseMonthly, rate: 0, months: horizon });
+    const scen = balanceSeries({ saved, monthly, rate, months: horizon });
+    const data = base.map((b, m) => ({ m, base: Math.min(b, target * 1.15), scenario: Math.min(scen[m], target * 1.15) }));
+    return { saved, target, baseM, scenM, horizon, data };
+  }, [goal, baseMonthly, monthly, rate]);
+
+  if (!calc) {
+    return <FeaturePanel icon={Telescope} kicker="Future view"><div className="h-80 flex items-center justify-center"><div className="w-7 h-7 border-4 border-white/10 border-t-[#2EFD7A] rounded-full animate-spin" /></div></FeaturePanel>;
+  }
+
+  const { saved, target, baseM, scenM, horizon, data } = calc;
+  const changed = monthly !== baseMonthly || rate !== 0;
+  const sooner = baseM !== null && scenM !== null ? baseM - scenM : null;
+  const pct = Math.min(100, Math.round((saved / target) * 100));
+  const contribMax = Math.max(1000, Math.ceil((baseMonthly * 3) / 50) * 50);
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-[#06142a] via-black to-black p-5 sm:p-7 shadow-[0_0_60px_-15px_rgba(46,253,122,0.35)]">
-      <div className="flex flex-wrap items-start justify-between gap-4 mb-2">
+    <FeaturePanel icon={Telescope} kicker="Future view" action={goals.length > 1 && (
+      <div className="flex flex-wrap gap-1 bg-white/[0.05] rounded-xl p-1">
+        {goals.map(g => (
+          <button key={g.id} onClick={() => setGoalId(g.id)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${goal.id === g.id ? 'bg-[#2EFD7A] text-black' : 'text-white/60 hover:text-white'}`}>
+            {g.name}
+          </button>
+        ))}
+      </div>
+    )}>
+      <div className="flex flex-wrap items-end justify-between gap-4 mb-2">
         <div>
-          <p className="flex items-center gap-2 text-[11px] uppercase tracking-[0.25em] text-[#2EFD7A] font-semibold mb-2">
-            <Telescope className="w-4 h-4" /> Future view
-          </p>
-          <p className="text-white/60 text-sm">Where you could be on {dayLabel(days)}</p>
-          <motion.p key={`${days}-${Math.round(end)}`} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="text-4xl sm:text-6xl font-display font-extrabold text-white leading-tight">
-            {fmt(end)}
+          <p className="text-white/60 text-sm">At this pace, you could reach <span className="text-white font-semibold">{goal.name}</span> by</p>
+          <motion.p key={scenM} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="text-4xl sm:text-6xl font-display font-extrabold text-white leading-tight">
+            {scenM === null ? 'Not yet' : scenM === 0 ? 'Today' : fullDate(scenM)}
           </motion.p>
-          <p className={`flex items-center gap-1.5 text-sm font-semibold ${up ? 'text-[#2EFD7A]' : 'text-red-400'}`}>
-            {up ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
-            {up ? '+' : ''}{fmt(gain)} from today
-            {change !== 0 && <span className="text-white/50 font-normal">· {diff >= 0 ? '+' : ''}{fmt(diff)} vs. current pace</span>}
+          <p className="flex items-center gap-1.5 text-sm font-semibold text-[#2EFD7A]">
+            {changed && sooner > 0 ? <><Zap className="w-4 h-4" />{sooner} month{sooner === 1 ? '' : 's'} sooner than your current plan</>
+              : scenM === null ? <span className="text-white/60 font-normal">Add a monthly amount to see a date.</span>
+              : <span className="text-white/60 font-normal">{scenM} month{scenM === 1 ? '' : 's'} at your current plan</span>}
           </p>
-        </div>
-        <div className="flex gap-1 bg-white/[0.05] rounded-xl p-1">
-          {HORIZONS.map(h => (
-            <button
-              key={h.d}
-              onClick={() => setDays(h.d)}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${days === h.d ? 'bg-[#2EFD7A] text-black' : 'text-white/60 hover:text-white'}`}
-            >
-              {h.l}
-            </button>
-          ))}
         </div>
       </div>
 
@@ -108,72 +108,43 @@ export default function ForecastChart({ startBalance, dailyIncome, dailySpend, i
                 <stop offset="0%" stopColor="#2EFD7A" stopOpacity={0.55} />
                 <stop offset="100%" stopColor="#2EFD7A" stopOpacity={0} />
               </linearGradient>
-              <linearGradient id="fcStroke" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stopColor="#2EFD7A" />
-                <stop offset="100%" stopColor="#2EFD7A" />
-              </linearGradient>
             </defs>
             <CartesianGrid stroke="rgba(255,255,255,0.06)" vertical={false} />
-            <XAxis dataKey="i" type="number" domain={[0, days]} tickCount={6} tickFormatter={dayLabel} stroke="rgba(255,255,255,0.35)" fontSize={11} tickLine={false} axisLine={false} />
-            <YAxis tickFormatter={(v) => `$${Math.round(v / 1000)}k`} stroke="rgba(255,255,255,0.35)" fontSize={11} tickLine={false} axisLine={false} width={44} domain={['auto', 'auto']} />
+            <XAxis dataKey="m" type="number" domain={[0, horizon]} tickCount={6} tickFormatter={monthLabel} stroke="rgba(255,255,255,0.35)" fontSize={11} tickLine={false} axisLine={false} />
+            <YAxis tickFormatter={(v) => (v >= 1000 ? `$${Math.round(v / 100) / 10}k` : `$${Math.round(v)}`)} stroke="rgba(255,255,255,0.35)" fontSize={11} tickLine={false} axisLine={false} width={48} domain={[0, 'auto']} />
             <Tooltip content={<ForecastTooltip />} cursor={{ stroke: 'rgba(255,255,255,0.3)', strokeDasharray: '4 4' }} />
-            {change !== 0 && <Area type="monotone" dataKey="base" stroke="rgba(255,255,255,0.4)" strokeDasharray="5 5" strokeWidth={1.5} fill="none" dot={false} isAnimationActive={false} />}
-            <Area type="monotone" dataKey="scenario" stroke="url(#fcStroke)" strokeWidth={3} fill="url(#fcFill)" dot={false} animationDuration={700} />
-            <ReferenceDot x={days} y={end} r={6} fill="#2EFD7A" stroke="#fff" strokeWidth={2} />
-            {low.i !== days && low.i !== 0 && <ReferenceDot x={low.i} y={low.scenario} r={5} fill="#F5A623" stroke="#fff" strokeWidth={2} />}
+            <ReferenceLine y={target} stroke="#F5A623" strokeDasharray="6 4" label={{ value: `Goal ${money(target)}`, position: 'insideTopLeft', fill: '#F5A623', fontSize: 11 }} />
+            {changed && <Area type="monotone" dataKey="base" stroke="rgba(255,255,255,0.4)" strokeDasharray="5 5" strokeWidth={1.5} fill="none" dot={false} isAnimationActive={false} />}
+            <Area type="monotone" dataKey="scenario" stroke="#2EFD7A" strokeWidth={3} fill="url(#fcFill)" dot={false} animationDuration={600} />
+            {scenM !== null && <ReferenceLine x={scenM} stroke="#2EFD7A" strokeOpacity={0.6} />}
+            {changed && baseM !== null && baseM !== scenM && <ReferenceLine x={baseM} stroke="rgba(255,255,255,0.35)" strokeDasharray="4 4" />}
           </AreaChart>
         </ResponsiveContainer>
       </div>
 
-      <div className="mt-4 rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-        <div className="flex items-center justify-between text-sm mb-3">
-          <span className="text-white font-semibold">
-            What if I spend {change === 0 ? 'the same' : `${Math.abs(change)}% ${change < 0 ? 'less' : 'more'}`}
-            {extraDailyIncome > 0 ? ' + $200/mo side income' : ''}?
-          </span>
-          {(change !== 0 || extraDailyIncome !== 0) && (
-            <button onClick={() => { setChange(0); setExtraDailyIncome(0); }} className="text-xs text-[#2EFD7A] hover:underline">
-              Reset
+      <div className="mt-4 rounded-2xl border border-white/10 bg-white/[0.04] p-4 space-y-5">
+        <div>
+          <p className="text-white font-semibold text-sm mb-2">Try a hopeful scenario</p>
+          <ScenarioChips saved={saved} target={target} baseMonthly={baseMonthly} baseMonths={baseM} monthly={monthly} rate={rate}
+            onPick={(s) => { setMonthly(Math.min(s.monthly, contribMax)); setRate(s.rate); }} />
+        </div>
+        <div className="grid md:grid-cols-2 gap-6">
+          <GoalSlider label="What if my growth rate changes?" valueLabel={`${rate.toFixed(1)}% / yr`} value={rate} onChange={setRate}
+            min={0} max={12} step={0.5} minLabel="0% (cash)" maxLabel="12%" />
+          <GoalSlider label="What if I saved more?" valueLabel={`${money(monthly)} / mo`} value={monthly} onChange={setMonthly}
+            min={0} max={contribMax} step={10} minLabel="$0" maxLabel={money(contribMax)} />
+        </div>
+        <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-white/10">
+          <p className="text-[11px] text-white/60 max-w-2xl">
+            {goal.sample ? 'Sample goal shown. ' : ''}Growth rates are illustrative, not guaranteed. Real returns change over time and can be lower. Nothing here changes your saved goal.
+          </p>
+          {changed && (
+            <button onClick={() => { setMonthly(baseMonthly); setRate(0); }} className="flex items-center gap-1 text-xs text-[#2EFD7A] hover:underline">
+              <RotateCcw className="w-3 h-3" /> Back to current plan
             </button>
           )}
         </div>
-        <ScenarioSlider change={change} setChange={setChange} />
-
-        <div className="mt-4 pt-3 border-t border-white/10 flex flex-wrap items-center gap-2">
-          <span className="text-[11px] font-semibold text-white/65 flex items-center gap-1 mr-1">
-            {presetsUnlocked ? <Sparkles className="w-3.5 h-3.5 text-[#2EFD7A]" /> : <Lock className="w-3.5 h-3.5 text-white/40" />}
-            Level 3 Presets:
-          </span>
-          {SANDBOX_PRESETS.map((p) => {
-            const active = change === p.spendPct && Math.abs(extraDailyIncome - p.extraDailyIncome) < 0.01;
-            return (
-              <button
-                key={p.id}
-                type="button"
-                disabled={!presetsUnlocked}
-                onClick={() => {
-                  setChange(p.spendPct);
-                  setExtraDailyIncome(p.extraDailyIncome);
-                }}
-                className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-colors ${
-                  !presetsUnlocked
-                    ? 'border-white/10 bg-white/[0.02] text-white/35 cursor-not-allowed'
-                    : active
-                      ? 'border-[#2EFD7A] bg-[#2EFD7A]/20 text-[#2EFD7A]'
-                      : 'border-white/15 bg-white/[0.04] text-white/80 hover:border-white/30'
-                }`}
-              >
-                {p.label}
-              </button>
-            );
-          })}
-          {!presetsUnlocked && (
-            <span className="text-[11px] text-white/45">Unlocks at 1,000 Lifetime BC (10 lessons)</span>
-          )}
-        </div>
-
-        <p className="text-[11px] text-white/60 mt-3">A sandbox projection from your recent income and spending. Nothing here changes your real transactions.</p>
       </div>
-    </div>
+    </FeaturePanel>
   );
 }

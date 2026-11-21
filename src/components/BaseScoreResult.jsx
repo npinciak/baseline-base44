@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 
 const MAX_POSSIBLE = 500;
 
-export default function BaseScoreResult({ score, onContinue }) {
+export default function BaseScoreResult({ score, onContinue, pending = false, saving = false, saveError = "", onRetry }) {
   const pct = Math.min(1, score / MAX_POSSIBLE);
   const circumference = 2 * Math.PI * 64;
 
@@ -40,9 +40,21 @@ export default function BaseScoreResult({ score, onContinue }) {
         <p className="text-white/60 text-sm leading-relaxed mb-2">
           Based on your answers, this is a preliminary look at your financial health.
         </p>
-        <p className="text-white/30 text-xs leading-relaxed mb-10">
-          This score is capped since we've only asked a handful of questions — create an account to unlock your full BaseScore™.
+        <p className="text-white/30 text-xs leading-relaxed mb-6">
+          This score is capped since we've only asked a handful of questions. It grows as you finish lessons and Money Moves on your BasePath.
         </p>
+        {saveError ? (
+          <div role="alert" className="mb-8 rounded-xl border border-red-400/30 bg-red-400/10 px-4 py-3 text-xs text-red-300">
+            <p className="mb-2">{saveError}</p>
+            <button onClick={onRetry} disabled={saving} className="font-semibold text-white underline disabled:opacity-50">
+              {saving ? "Trying again..." : "Try again"}
+            </button>
+          </div>
+        ) : (
+          <p className="mb-8 text-xs text-[#2EFD7A]/80">
+            {pending ? "Saved on this device. Create an account to keep it." : "Saved to your account."}
+          </p>
+        )}
 
         <button
           onClick={onContinue}

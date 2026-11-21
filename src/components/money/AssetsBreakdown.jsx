@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, Landmark } from 'lucide-react';
+import FeaturePanel from '@/components/money/FeaturePanel';
 
 const GROUPS = [
   { key: 'cash', label: 'Cash', color: '#2EFD7A', types: ['checking', 'savings', 'cash', 'money_market'] },
@@ -35,10 +36,8 @@ export default function AssetsBreakdown({ accounts }) {
   if (!total) return null;
 
   return (
-    <div className="bg-white/[0.03] border border-white/10 backdrop-blur-sm rounded-2xl p-5">
-      <h3 className="text-white font-semibold mb-4">
-        Assets <span className="text-white/50 font-normal">· {fmt(total)}</span>
-      </h3>
+    <FeaturePanel icon={Landmark} kicker="Net worth">
+      <p className="text-white/60 text-sm -mt-2 mb-4">Assets <span className="text-white font-semibold">· {fmt(total)}</span></p>
       <div className="flex gap-1 h-2 rounded-full overflow-hidden mb-3">
         {groups.map(g => <div key={g.key} style={{ width: `${(g.total / total) * 100}%`, background: g.color }} />)}
       </div>
@@ -73,6 +72,6 @@ export default function AssetsBreakdown({ accounts }) {
           );
         })}
       </div>
-    </div>
+    </FeaturePanel>
   );
 }

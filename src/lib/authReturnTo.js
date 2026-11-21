@@ -8,20 +8,24 @@
 // /\evil.com parses same-origin but normalizes to a protocol-relative
 // //evil.com when assigned to location.href — an open redirect. So require the
 // resolved path to be exactly one leading slash (no "//" prefix, no backslash).
+// Signed-in users land on the dashboard, not the public marketing page at "/".
+const DEFAULT_DESTINATION = "/dashboard";
+
 // Where a finished sign-in or sign-up should land: the page that asked for it,
-// else the learner's home. Without this, a bare /login falls back to "/" (the
-// public marketing homepage) and the signed-in user never reaches the app.
+// else the learner's home. safeReturnTo already falls back to the dashboard, so
+// a bare /login never drops the signed-in user on the marketing homepage.
 export function postAuthDestination() {
-  const target = safeReturnTo();
-  return target === "/" ? "/dashboard" : target;
+  return safeReturnTo();
 }
 
 export function safeReturnTo() {
-  const raw = new URLSearchParams(window.location.search).get("returnTo");
-  if (!raw) return "/";
+  const params = new URLSearchParams(window.location.search);
+  // ProtectedRoute's redirectToLogin sends the destination as from_url.
+  const raw = params.get("returnTo") || params.get("from_url");
+  if (!raw) return DEFAULT_DESTINATION;
   try {
     const url = new URL(raw, window.location.origin);
-    if (url.origin !== window.location.origin) return "/";
+    if (url.origin !== window.location.origin) return DEFAULT_DESTINATION;
     // Strip app-bootstrap params: app-params.js persists these from the URL into
     // localStorage before the SDK initializes, so a crafted returnTo could
     // otherwise poison the freshly issued session — repointing the app at an
@@ -33,9 +37,10 @@ export function safeReturnTo() {
       url.searchParams.delete(p);
     }
     const path = url.pathname + url.search;
-    if (!path.startsWith("/") || path.startsWith("//") || path.includes("\\")) return "/";
+    if (!path.startsWith("/") || path.startsWith("//") || path.includes("\\")) return DEFAULT_DESTINATION;
+    if (path === "/" || path.startsWith("/login") || path.startsWith("/register")) return DEFAULT_DESTINATION;
     return path;
   } catch {
-    return "/";
+    return DEFAULT_DESTINATION;
   }
 }

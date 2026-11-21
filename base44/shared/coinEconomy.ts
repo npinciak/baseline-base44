@@ -1,25 +1,30 @@
 // Single source of truth for the BaseCoin economy and level benefit thresholds on the server.
-// Earning: a flat reward per completed lesson (unit), credited once per lesson.
-// Level progression uses server-verified cumulative Lifetime Earned BaseCoins and never drops on spending.
+// Earning: spendable BaseCoins per completed lesson (unit), credited once per lesson. Plus members earn 2x.
+// Levels count completed lessons (LESSON_REWARD level points each) for everyone, so paying never buys progress.
 export const LESSON_REWARD = 100;
+export const FREE_LESSON_COINS = 50;
+export const PLUS_LESSON_COINS = 100;
+export const lessonCoins = (paid: boolean) => (paid ? PLUS_LESSON_COINS : FREE_LESSON_COINS);
 export const STREAK_SHIELD_COST = 200;
 export const LEVEL_2_MIN_COINS = 400;
 export const LEVEL_4_MIN_COINS = 2000;
 export const LEVEL_6_MIN_COINS = 5600;
-export const CAMP_I_REBATE = 100;
-export const SUMMIT_REBATE = 300;
+export const CAMP_I_REBATE = 200;
+export const SUMMIT_REBATE = 500;
 
+const TEN = 3000;
+const TWENTY_FIVE = 7000;
 export const GIFT_CARD_PRICES = {
-  'amazon-10': { brand: 'Amazon', amount: 10, coinsCost: 2000 },
-  'amazon-25': { brand: 'Amazon', amount: 25, coinsCost: 4500 },
-  'starbucks-10': { brand: 'Starbucks', amount: 10, coinsCost: 2000 },
-  'starbucks-25': { brand: 'Starbucks', amount: 25, coinsCost: 4500 },
-  'netflix-10': { brand: 'Netflix', amount: 10, coinsCost: 2000 },
-  'netflix-25': { brand: 'Netflix', amount: 25, coinsCost: 4500 },
-  'spotify-10': { brand: 'Spotify', amount: 10, coinsCost: 2000 },
-  'target-10': { brand: 'Target', amount: 10, coinsCost: 2000 },
-  'target-25': { brand: 'Target', amount: 25, coinsCost: 4500 },
-  'doordash-10': { brand: 'DoorDash', amount: 10, coinsCost: 2000 },
+  'amazon-10': { brand: 'Amazon', amount: 10, coinsCost: TEN },
+  'amazon-25': { brand: 'Amazon', amount: 25, coinsCost: TWENTY_FIVE },
+  'starbucks-10': { brand: 'Starbucks', amount: 10, coinsCost: TEN },
+  'starbucks-25': { brand: 'Starbucks', amount: 25, coinsCost: TWENTY_FIVE },
+  'netflix-10': { brand: 'Netflix', amount: 10, coinsCost: TEN },
+  'netflix-25': { brand: 'Netflix', amount: 25, coinsCost: TWENTY_FIVE },
+  'spotify-10': { brand: 'Spotify', amount: 10, coinsCost: TEN },
+  'target-10': { brand: 'Target', amount: 10, coinsCost: TEN },
+  'target-25': { brand: 'Target', amount: 25, coinsCost: TWENTY_FIVE },
+  'doordash-10': { brand: 'DoorDash', amount: 10, coinsCost: TEN },
 };
 
 export function isUuid(value) {
@@ -67,7 +72,8 @@ export async function getVerifiedLifetimeCoins(base44, userId, userProfileId, su
         ).then((r) => r.json()).catch(() => [])
       : Promise.resolve([]),
   ]);
-  const awardSum = (Array.isArray(awards) ? awards : []).reduce((s, a) => s + Number(a.amount || 0), 0);
+  // Level points come from the number of lessons completed, not the plan-dependent coin amount.
+  const awardSum = (Array.isArray(awards) ? awards.length : 0) * LESSON_REWARD;
   const spentSum = (Array.isArray(redemptionsRes) ? redemptionsRes : []).reduce(
     (s, r) => s + Number(r.coins_spent || 0),
     0

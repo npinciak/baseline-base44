@@ -3,23 +3,27 @@
 export const CHAPTERS = [
   { id: 'money-in', section: 'Money Foundations', title: 'Money In', topic: 'budgeting', units: [34, 40, 37, 'bl-paycheck'],
     move: { key: 'create-emergency-fund', title: 'Set up your emergency fund', detail: 'Create a savings goal for unexpected expenses on Money. Choose a target and start building your cushion.', tool: 'goals' } },
+  { id: 'banking', title: 'Banking Basics', topic: 'saving', units: [100, 103, 106, 94],
+    move: { key: 'connect-bank', title: 'Connect your bank account', detail: 'Link your checking or savings account on Money Hub so your real numbers show up.', tool: 'overview', unlocks: 'Bank account linking' } },
+  { id: 'goals', title: 'Setting Goals', topic: 'saving', units: [19, 22, 16, 'bl-goals-checkpoint'],
+    move: { key: 'create-goal', title: 'Create your first savings goal', detail: 'Pick something you want and give it a target amount and date.', tool: 'goals' } },
+  { id: 'saving-smart', title: 'Saving Smart', topic: 'saving', units: [178, 'bl-insurance', 181, 184],
+    move: { key: 'first-deposit', title: 'Make a deposit toward your goal', detail: 'Move any amount, even $5, into savings and log it on your goal.', tool: 'goals' } },
+  { id: 'growth', title: 'Interest & Growth', topic: 'investing', units: [91, 97, 79, 'bl-retirement'],
+    move: { key: 'try-scenario', title: 'Run a "what if" forecast', detail: 'Shift your spending in the forecast and see how your future balance changes.', tool: 'forecast' } },
   { id: 'money-out', title: 'Money Out', topic: 'budgeting', units: [43, 46, 49, 169],
     move: { key: 'list-fixed-bills', title: 'List your fixed bills', detail: 'Review your recurring charges and confirm which ones hit every month.', tool: 'recurring' } },
   { id: 'needs-wants', title: 'Needs vs. Wants', topic: 'budgeting', units: [187, 28, 190, 193],
     move: { key: 'spot-a-want', title: "Spot one want in last month's spending", detail: 'Open your spending breakdown and pick one purchase that was a want, not a need.', tool: 'spending' } },
   { id: 'build-budget', title: 'Build Your Budget', topic: 'budgeting', units: [25, 31, 172, 175],
     move: { key: 'sort-50-30-20', title: 'Sort your spending into 50/30/20', detail: 'Compare your needs, wants and savings against the 50/30/20 split.', tool: 'spending' } },
-  { id: 'banking', title: 'Banking Basics', topic: 'saving', units: [100, 103, 106, 94],
-    move: { key: 'connect-bank', title: 'Connect your bank account', detail: 'Link your checking or savings account so your real numbers show up.', tool: 'overview' } },
-  { id: 'goals', title: 'Setting Goals', topic: 'saving', units: [19, 22, 16],
-    move: { key: 'create-goal', title: 'Create your first savings goal', detail: 'Pick something you want and give it a target amount and date.', tool: 'goals' } },
-  { id: 'saving-smart', title: 'Saving Smart', topic: 'saving', units: [178, 'bl-insurance', 181, 184],
-    move: { key: 'first-deposit', title: 'Make a deposit toward your goal', detail: 'Move any amount, even $5, into savings and log it on your goal.', tool: 'goals' } },
-  { id: 'growth', title: 'Interest & Growth', topic: 'investing', units: [91, 97, 79, 'bl-retirement'],
-    move: { key: 'try-scenario', title: 'Run a "what if" forecast', detail: 'Shift your spending in the forecast and see how your future balance changes.', tool: 'forecast' } },
-  { id: 'credit-101', section: 'Credit & Investing', title: 'Credit 101', topic: 'credit', units: [52, 58, 196, 208],
+  { id: 'investing-basics', section: 'Investing & Credit', title: 'Investing Basics', topic: 'investing', units: [73, 76, 118, 121],
+    move: { key: 'pick-a-company', title: 'Pick a company you would want to own', detail: 'Choose a company you use every week and look up whether it pays a dividend.' } },
+  { id: 'investing-strategies', title: 'Investing Strategies', topic: 'investing', units: [82, 85, 88, 124],
+    move: { key: 'choose-style', title: 'Choose your investing style', detail: 'Decide whether active or passive investing fits you better, and write down why.' } },
+  { id: 'credit-101', title: 'Credit 101', topic: 'credit', units: [52, 58, 196, 208],
     move: { key: 'credit-rules', title: 'Write your personal credit rules', detail: "Write down when you will, and won't, use credit." } },
-  { id: 'debt', title: 'Interest & Debt', topic: 'debt', units: [55, 61, 160],
+  { id: 'debt', title: 'Interest & Debt', topic: 'debt', units: [55, 61, 160, 'bl-debt-checkpoint'],
     move: { key: 'true-cost', title: 'Find the true cost of buying on credit', detail: 'Pick something you want and work out what it costs at 20% APR paid over a year.' } },
   { id: 'credit-score', title: 'Credit Scores', topic: 'credit', units: [64, 67, 70, 115],
     move: { key: 'check-basescore', title: 'Check your BaseScore', detail: 'See where you stand today and which area to work on first.', tool: 'profile' } },
@@ -27,48 +31,57 @@ export const CHAPTERS = [
     move: { key: 'check-utilization', title: 'Check your credit utilization', detail: 'If you have a card, divide the balance by the limit. Aim for under 30%.', tool: 'credit_score' } },
   { id: 'building-credit', title: 'Building Credit', topic: 'credit', units: [205, 211, 214, 'bl-identity'],
     move: { key: 'starter-credit-plan', title: 'Choose a starter credit plan', detail: 'Decide which first step fits you: authorized user, secured card, or student card.' } },
-  { id: 'investing-basics', title: 'Investing Basics', topic: 'investing', units: [73, 76, 118, 121],
-    move: { key: 'pick-a-company', title: 'Pick a company you would want to own', detail: 'Choose a company you use every week and look up whether it pays a dividend.' } },
-  { id: 'investing-strategies', title: 'Investing Strategies', topic: 'investing', units: [82, 85, 88, 124],
-    move: { key: 'choose-style', title: 'Choose your investing style', detail: 'Decide whether active or passive investing fits you better, and write down why.' } },
   { id: 'buying-car', section: 'Big Milestones', title: 'Buying a Car', topic: 'debt', units: [154, 157, 163, 166],
     move: { key: 'price-a-car', title: 'Price a car by its total cost', detail: 'Pick a car and add up price, insurance, gas and interest for one year.' } },
-  { id: 'home-basics', title: 'Home Basics', topic: 'saving', units: [127, 130, 133],
+  { id: 'home-basics', title: 'Home Basics', topic: 'saving', units: [127, 130, 133, 'bl-home-checkpoint'],
     move: { key: 'rent-vs-own', title: 'Compare renting and owning', detail: 'Look up rent and a home price near you and compare the monthly costs.' } },
-  { id: 'home-budget', title: 'Home Buying Budget', topic: 'saving', units: [136, 139, 142],
+  { id: 'home-budget', title: 'Home Buying Budget', topic: 'saving', units: [136, 139, 142, 'bl-home-budget-checkpoint'],
     move: { key: 'home-budget', title: 'Estimate a home price you could afford', detail: 'Use the 28% rule on a future salary to estimate a price range.' } },
-  { id: 'home-closing', title: 'Offer to Closing', topic: 'saving', units: [145, 148, 151],
+  { id: 'home-closing', title: 'Offer to Closing', topic: 'saving', units: [145, 148, 151, 'bl-closing-checkpoint'],
     move: { key: 'closing-checklist', title: 'Make a closing-day checklist', detail: 'List every cost and step between making an offer and getting the keys.' } },
   { id: 'taxes-filing', section: 'Student & Young Adult Playbook', title: 'Taxes & Filing', topic: 'taxes', units: ['bl-tax-brackets', 'bl-tax-forms', 'bl-deductions-credits', 'bl-filing-free'],
     move: { key: 'prep-tax-folder', title: 'Create a simple tax folder', detail: 'Make one folder for W-2s, 1099s and school 1098 forms—and set aside 25% of any side-gig pay.' } },
-  { id: 'job-benefits', title: 'First Job & Benefits', topic: 'budgeting', units: ['bl-total-comp', 'bl-health-plans', 'bl-hsa-fsa'],
+  { id: 'job-benefits', title: 'First Job & Benefits', topic: 'budgeting', units: ['bl-total-comp', 'bl-health-plans', 'bl-hsa-fsa', 'bl-benefits-checkpoint'],
     move: { key: 'score-job-benefits', title: 'Check your health & match options', detail: 'Compare staying on a parent plan vs. employer coverage, and confirm any 401(k) match percentage.' } },
-  { id: 'student-loans', title: 'Student Loans', topic: 'debt', units: ['bl-loan-types', 'bl-grace-interest', 'bl-repayment-plans'],
+  { id: 'student-loans', title: 'Student Loans', topic: 'debt', units: ['bl-loan-types', 'bl-grace-interest', 'bl-repayment-plans', 'bl-loans-checkpoint'],
     move: { key: 'list-student-loans', title: 'List your loans by rate & type', detail: 'Note each loan’s servicer, interest rate, and whether it is federal subsidized, unsubsidized, or private.' } },
-  { id: 'renting-smart', title: 'Renting Your Place', topic: 'budgeting', units: ['bl-move-in-math', 'bl-lease-clauses', 'bl-deposit-back'],
+  { id: 'renting-smart', title: 'Renting Your Place', topic: 'budgeting', units: ['bl-move-in-math', 'bl-lease-clauses', 'bl-deposit-back', 'bl-renting-checkpoint'],
     move: { key: 'lease-check', title: 'Check move-in costs & notice dates', detail: 'Add up deposit + first month’s rent + renters insurance, or calendar your current lease’s notice deadline.', tool: 'calendar' } },
-  { id: 'debt-traps', title: 'Payoff & Trap Defense', topic: 'credit', units: ['bl-snowball-avalanche', 'bl-bnpl-traps', 'bl-chargebacks'],
+  { id: 'debt-traps', title: 'Payoff & Trap Defense', topic: 'credit', units: ['bl-snowball-avalanche', 'bl-bnpl-traps', 'bl-chargebacks', 'bl-payoff-checkpoint'],
     move: { key: 'audit-installments', title: 'Audit Pay-in-4 & card security', detail: 'Check for any active installment plans and switch your main money logins to authenticator-app MFA.' } },
-  { id: 'smart-portfolios', title: 'Smart Portfolios', topic: 'investing', units: ['bl-fund-fees', 'bl-account-order', 'bl-staying-course'],
+  { id: 'smart-portfolios', title: 'Smart Portfolios', topic: 'investing', units: ['bl-fund-fees', 'bl-account-order', 'bl-staying-course', 'bl-portfolio-checkpoint'],
     move: { key: 'check-expense-ratio', title: 'Check one index fund’s fee', detail: 'Look up a broad index fund’s expense ratio (aim under 0.15%) and confirm any IRA cash is invested.' } },
 ];
+
+// Resolves a tool's unlock chapter from the curriculum instead of a fixed id, so the gate
+// moves automatically as chapters are added or reordered. `last` = deepest chapter on that topic.
+export function chapterFor({ topic, position = 'last' }) {
+  const matches = CHAPTERS.filter((c) => c.topic === topic);
+  return (position === 'first' ? matches[0] : matches[matches.length - 1])?.id ?? null;
+}
 
 // Money tools: unlock once the chapter's money move is done (which requires its lessons).
 // Tools without a chapter are always available. `group` drives the inventory on the Money page.
 export const MONEY_TOOLS = {
   goals: { label: 'Savings Goals', group: 'plan', chapter: 'money-in', decision: 'keep', blurb: 'Build your emergency fund. Additional goals require a subscription.', audit: 'Free: one emergency fund. Paid: additional goals. Initial setup is the chapter money move, not an early tool unlock.' },
+  balance: { label: 'Total Balance', group: 'track', chapter: 'banking', decision: 'keep', blurb: 'See your combined balance across linked accounts.', audit: 'Unlock after Banking Basics and its connect-your-bank money move.' },
+  transactions: { label: 'Recent Transactions', group: 'track', chapter: 'goals', decision: 'keep', blurb: 'Review every purchase and deposit, filtered by money in or out.', audit: 'Unlock after Setting Goals. Read-only view of bank history.' },
   recurring: { label: 'Recurring Bills', group: 'track', chapter: 'money-out', decision: 'keep', blurb: 'Spot the charges that repeat every month.', audit: 'Confirm repeating charges against bank statements. Detection is an estimate, not a confirmed bill schedule.' },
   spending: { label: 'Spending Breakdown', group: 'track', chapter: 'needs-wants', decision: 'keep', blurb: 'Understand where your money goes, category by category.', audit: 'Apply Needs vs. Wants. Categorization needs review; a spending chart is not a budget.' },
-  calendar: { label: 'Calendar & Forecast', group: 'plan', chapter: 'saving-smart', decision: 'keep', blurb: 'Plan bill dates, paydays and savings, then explore your future balance.', audit: 'Unlock after Saving Smart and its deposit money move. Forecasts are sandbox estimates, never changes to bank history.' },
-  cashflow: { label: 'Cashflow', group: 'track', chapter: 'build-budget', decision: 'review', blurb: 'Compare money coming in and going out over time.', audit: 'Owner decision pending: retain the income-versus-outgo time view, or combine it with Calendar. Category flow overlaps Spending Breakdown.' },
-  networth: { label: 'Net Worth', group: 'grow', chapter: 'banking', decision: 'review', blurb: 'Compare assets and liabilities across your accounts.', audit: 'Owner decision pending: improve or retire. It is not a credit-utilization destination.' },
+  calendar: { label: 'Financial Calendar', group: 'plan', chapter: 'renting-smart', decision: 'keep', blurb: 'Plan bill dates, paydays and savings day by day.', audit: 'Unlock after Renting Your Place and its lease-dates money move.' },
+  forecast: { label: 'Future View', group: 'plan', chapter: 'growth', decision: 'keep', blurb: 'See where your balance could be and test "what if" spending changes.', audit: 'Unlock after Interest & Growth and its "what if" money move. Forecasts are sandbox estimates, never changes to bank history.' },
+  cashflow: { label: 'Weekly Cash Flow', group: 'track', chapter: 'build-budget', decision: 'keep', blurb: 'Compare money coming in and going out week by week.', audit: 'Unlock after Build Your Budget. Weekly income-versus-outgo time view.' },
+  money_flow: { label: 'Money Flow', group: 'track', chapter: 'job-benefits', decision: 'keep', blurb: 'Follow where each paycheck goes, from income to spending.', audit: 'Unlock after First Job & Benefits. Category flow overlaps Spending Breakdown.' },
+  networth: { label: 'Net Worth', group: 'grow', chapter: 'investing-basics', decision: 'review', blurb: 'Compare assets and liabilities across your accounts.', audit: 'Owner decision pending: improve or retire. It is not a credit-utilization destination.' },
   knowledge: { label: 'Financial Knowledge', group: 'score', chapter: null, decision: 'keep', blurb: 'Track learning progress and return to your next lesson.', audit: 'Informational learning summary, not a gated financial tool.' },
-  debt_ratio: { label: 'Income-to-Debt Ratio', group: 'score', chapter: 'debt', decision: 'review', blurb: 'Compare monthly debt payments with income.', audit: 'Owner decision pending: improve or include this supporting metric in Debt Payoff Planner.' },
-  credit_score: { label: 'Credit Score', group: 'score', chapter: 'credit-score', decision: 'keep', blurb: 'Understand credit health, utilization and score factors.', audit: 'Keep separate from BaseScore. No bureau score should be implied without an actual credit-report source.' },
+  debt_ratio: { label: 'Income-to-Debt Ratio', group: 'score', chapter: 'debt', decision: 'removed', blurb: 'Removed from Money tools.', audit: 'Removed by owner. No standalone Income-to-Debt Ratio tool.' },
+  credit_score: { label: 'Credit Score', group: 'score', chapter: 'score-deep-dive', decision: 'keep', blurb: 'Understand credit health, utilization and score factors.', audit: 'Keep separate from BaseScore. No bureau score should be implied without an actual credit-report source.' },
   risk: { label: 'Risk Appetite', group: 'grow', chapter: 'investing-basics', decision: 'removed', blurb: 'Removed from Money tools.', audit: 'Rejected by owner. Historical assessment data is preserved; no standalone Risk Appetite tool.' },
   budget_builder: { label: 'Budget Builder', group: 'plan', chapter: 'build-budget', decision: 'planned', blurb: 'Turn needs, wants and savings lessons into a spending plan.', audit: 'Candidate only: set category limits, compare planned versus actual, and choose a realistic savings amount. Not implemented.' },
-  debt_payoff: { label: 'Debt Payoff Planner', group: 'plan', chapter: 'debt', decision: 'planned', blurb: 'Apply interest lessons to a debt repayment plan.', audit: 'Candidate only: balances, APRs, minimum payments, snowball versus avalanche, payoff date and total interest. Not implemented.' },
-  investment_planning: { label: 'Investment Planning', group: 'grow', chapter: 'investing-strategies', decision: 'planned', blurb: 'Apply compounding and diversification to a long-term plan.', audit: 'Candidate only: contribution, horizon and return scenarios, with clear uncertainty. No trading or personalized investment advice. Not implemented.' },
+  debt_payoff: { label: 'Debt Payoff Planner', group: 'plan', chapter: 'debt-traps', decision: 'planned', blurb: 'Apply interest lessons to a debt repayment plan.', audit: 'Candidate only: balances, APRs, minimum payments, snowball versus avalanche, payoff date and total interest. Not implemented.' },
+  coach: { label: 'Money Coach', group: 'plan', chapter: 'smart-portfolios', decision: 'keep', final: true, blurb: 'Your personal money assistant: cleans up transactions, spots trends and answers questions.', audit: 'Final unlock after Smart Portfolios. Suggestions only; never changes bank history or moves money.' },
+  strategies: { label: 'Smart Saving Strategies', group: 'grow', chapter: chapterFor({ topic: 'investing' }), unlockRule: 'After your final investing chapter', decision: 'keep', blurb: 'Explore partner accounts and tools that can help you reach goals faster.', audit: 'Partner referrals. Unlocks after the last investing chapter, resolved from the curriculum so it follows new investing content automatically. Educational, not a recommendation.' },
+  investment_planning: { label: 'Investment Planning', group: 'grow', chapter: 'smart-portfolios', decision: 'planned', blurb: 'Apply compounding and diversification to a long-term plan.', audit: 'Candidate only: contribution, horizon and return scenarios, with clear uncertainty. No trading or personalized investment advice. Not implemented.' },
 };
 
 export const TOOL_GROUPS = [
@@ -79,8 +92,8 @@ export const TOOL_GROUPS = [
 ];
 
 export const TOOL_LINKS = {
-  overview: '/money#overview', recurring: '/money#recurring', spending: '/money#spending',
-  networth: '/money#networth', forecast: '/money#calendar', calendar: '/money#calendar',
+  overview: '/money#balance', balance: '/money#balance', transactions: '/money#transactions', recurring: '/money#recurring', spending: '/money#spending',
+  networth: '/money#networth', cashflow: '/money#cashflow', coach: '/money#coach', strategies: '/money#strategies', money_flow: '/money#money_flow', forecast: '/money#forecast', calendar: '/money#calendar',
   goals: '/money#goals', profile: '/basescore', credit_score: '/money#credit_score',
   debt_ratio: '/money#debt_ratio', risk: '/money#risk', knowledge: '/money#knowledge',
 };
@@ -94,6 +107,8 @@ export function nextLesson(chapters) {
   }
   return null;
 }
+
+export const isCheckpoint = (unitId) => String(unitId).endsWith('-checkpoint');
 
 export function buildChapters(modules, progress, moves) {
   const byId = Object.fromEntries(modules.map((m) => [m.id, m]));
@@ -115,10 +130,14 @@ export function buildChapters(modules, progress, moves) {
       ...m, topic_tag: c.topic, completed: m.lessons.length > 0 && m.lessons.every((l) => done.has(l.id)),
     }));
     const lessonsDone = units.filter((u) => u.completed).length;
-    const allUnitsPresent = units.length === c.units.length;
+    // Checkpoints were added after launch, so unlocking still depends on the core lessons only.
+    // That way learners who already finished a chapter are never locked out again.
+    const coreIds = c.units.filter((u) => !isCheckpoint(u)).map(String);
+    const coreDone = coreIds.every((id) => units.some((u) => u.id === id && u.completed));
     const chapter = {
       ...c, number: i + 1, modules: units, lessonsDone, comingSoon: units.length === 0,
-      learned: allUnitsPresent && units.length > 0 && lessonsDone === units.length,
+      learned: coreIds.length > 0 && coreDone,
+      mastered: units.length === c.units.length && lessonsDone === units.length,
       moveDone: !!c.move && moveSet.has(c.move.key),
       legacyTakeHomeDone: c.id === 'money-in' && moveSet.has('find-take-home'),
       unlocked: prev ? prev.unlocked && prev.learned && (!prev.move || prev.moveDone) : true,

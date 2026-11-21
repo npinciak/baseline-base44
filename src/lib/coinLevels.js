@@ -1,8 +1,8 @@
 import { LESSON_REWARD } from '@/lib/coinEconomy';
 
 export const STREAK_SHIELD_COST = 200;
-export const CAMP_I_REBATE = 100;
-export const SUMMIT_REBATE = 300;
+export const CAMP_I_REBATE = 200;
+export const SUMMIT_REBATE = 500;
 
 /**
  * BaseCoin Levels are driven by cumulative Lifetime Earned BaseCoins (100 BC per lesson).
@@ -19,8 +19,8 @@ export const COIN_LEVELS = [
     benefitTitle: 'Starter Wallet & BasePath Access',
     costLabel: 'Included (0 BC)',
     costType: 'passive',
-    summary: 'Earn 100 BaseCoins once per completed lesson unit and track progress toward Basecamp gift cards.',
-    whenUsed: 'Active automatically on every lesson you finish. Coins land in your spendable wallet while adding to your permanent level total.',
+    summary: 'Earn 50 BaseCoins per completed lesson (100 with Baseline Plus) and track progress toward Basecamp gift cards.',
+    whenUsed: 'Active automatically on every lesson you finish. Coins land in your spendable wallet. Levels count lessons, so they rise at the same pace on every plan.',
     actionType: 'dashboard',
     actionLabel: 'Continue BasePath',
   },
@@ -59,8 +59,8 @@ export const COIN_LEVELS = [
     benefitTitle: `Camp I Member Pricing (-${CAMP_I_REBATE} BC on $10 Cards)`,
     costLabel: 'Automatic member rebate',
     costType: 'rebate',
-    summary: `Saves ${CAMP_I_REBATE} BC on every $10 gift card in Basecamp (1,900 BC instead of 2,000 BC).`,
-    whenUsed: 'Verified on the server at redemption: only 1,900 Spendable BC is deducted, leaving 100 BC in your wallet toward your next reward.',
+    summary: `Saves ${CAMP_I_REBATE} BC on every $10 gift card in Basecamp (2,800 BC instead of 3,000 BC).`,
+    whenUsed: 'Verified on the server at redemption: only 2,800 Spendable BC is deducted, leaving 200 BC in your wallet toward your next reward.',
     actionType: 'basecamp',
     actionLabel: 'View $10 Rewards',
   },
@@ -85,8 +85,8 @@ export const COIN_LEVELS = [
     benefitTitle: `Summit Perks (-${SUMMIT_REBATE} BC on $25 Cards)`,
     costLabel: 'Automatic summit rebate',
     costType: 'rebate',
-    summary: `Saves ${SUMMIT_REBATE} BC on every $25 gift card in Basecamp (4,200 BC instead of 4,500 BC), saving 3 full lessons of coins.`,
-    whenUsed: 'Verified on the server at redemption: $25 gift cards deduct 4,200 Spendable BC while keeping your Summit level permanent.',
+    summary: `Saves ${SUMMIT_REBATE} BC on every $25 gift card in Basecamp (6,500 BC instead of 7,000 BC).`,
+    whenUsed: 'Verified on the server at redemption: $25 gift cards deduct 6,500 Spendable BC while keeping your Summit level permanent.',
     actionType: 'basecamp',
     actionLabel: 'View $25 Summit Rewards',
   },
@@ -141,6 +141,6 @@ export function getEffectiveCardCost(card, lifetimeCoins = 0) {
   return {
     effectiveCost: baseCost,
     rebate: 0,
-    unlockHint: amount === 25 ? 'Level 6 (-300 BC)' : amount === 10 ? 'Level 4 (-100 BC)' : null,
+    unlockHint: amount === 25 ? `Level 6 (-${SUMMIT_REBATE} BC)` : amount === 10 ? `Level 4 (-${CAMP_I_REBATE} BC)` : null,
   };
 }

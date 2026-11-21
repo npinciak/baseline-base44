@@ -8,7 +8,11 @@ export default function MoneyMoveCard({ chapter, onComplete }) {
   const [saving, setSaving] = useState(false);
   const { move } = chapter;
   if (!move) return null;
-  const unlocks = Object.values(MONEY_TOOLS).filter((t) => t.chapter === chapter.id && !['removed', 'planned'].includes(t.decision));
+  const unlocks = [
+    ...(move.unlocks ? [{ label: move.unlocks }] : []),
+    ...Object.values(MONEY_TOOLS).filter((t) => t.chapter === chapter.id && !['removed', 'planned'].includes(t.decision)),
+  ];
+  const opensTool = move.key === 'create-emergency-fund' || move.key === 'connect-bank';
   const link = move.tool && TOOL_LINKS[move.tool];
   const ready = chapter.unlocked && chapter.learned;
 
@@ -27,7 +31,7 @@ export default function MoneyMoveCard({ chapter, onComplete }) {
           {chapter.unlocked ? 'Finish this chapter’s lessons to unlock this move.' : 'Unlocks after you complete this chapter’s lessons.'}
         </p>
       )}
-      {ready && !chapter.moveDone && move.key !== 'create-emergency-fund' && <p className="text-white/60 text-xs mt-2">Use your bank statement, a calculator or your own notes for this practice step. The full tool opens after you complete the move.</p>}
+      {ready && !chapter.moveDone && !opensTool && <p className="text-white/60 text-xs mt-2">Use your bank statement, a calculator or your own notes for this practice step. The full tool opens after you complete the move.</p>}
       {unlocks.length > 0 && (
         <p className="flex items-center gap-1.5 text-xs text-[#2EA0FD] mt-3">
           <Unlock className="w-3.5 h-3.5" /> Unlocks {unlocks.map((t) => t.label).join(', ')}
@@ -35,7 +39,7 @@ export default function MoneyMoveCard({ chapter, onComplete }) {
       )}
       {ready && !chapter.moveDone && (
         <div className="flex flex-wrap gap-2 mt-4">
-          {link && (move.key === 'create-emergency-fund' || chapter.moveDone) && (
+          {link && opensTool && (
             <Link to={link} className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-white/15 text-white text-sm hover:border-white/40 transition-colors">
               Open tool <ArrowRight className="w-3.5 h-3.5" />
             </Link>

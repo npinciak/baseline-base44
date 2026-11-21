@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Mail, MessageSquare, CheckCircle2, Send } from "lucide-react";
+import { MessageSquare, CheckCircle2, Send } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import PublicNav from "@/components/marketing/PublicNav";
 import PublicFooter from "@/components/marketing/PublicFooter";
@@ -45,7 +45,7 @@ export default function Contact() {
       setSubmitted(true);
       setForm({ name: "", email: "", topic: "general", description: "" });
     } catch (err) {
-      setError(err?.message || "Could not send your message right now. Please email us directly.");
+      setError(err?.message || "Could not send your message right now. Please try again in a moment.");
     } finally {
       setSubmitting(false);
     }
@@ -66,26 +66,10 @@ export default function Contact() {
                 Contact Baseline
               </h1>
               <p className="text-white/75 text-base sm:text-lg leading-relaxed">
-                Have a question about BaseScore™, family accounts, campus workshops, or your learning path? Send our team a note or reach out by email and we will get back to you promptly.
+                Have a question about BaseScore™, family accounts, campus workshops, or your learning path? Send our team a note and we will get back to you promptly.
               </p>
 
               <div className="space-y-4 pt-2">
-                <a
-                  href="mailto:support@baselinefi.com"
-                  className="flex items-start gap-4 rounded-2xl border border-white/10 bg-white/[0.03] p-5 hover:border-[#2EFD7A]/50 transition-colors"
-                >
-                  <div className="w-10 h-10 rounded-xl bg-[#2EFD7A]/15 border border-[#2EFD7A]/30 flex items-center justify-center shrink-0">
-                    <Mail className="w-5 h-5 text-[#2EFD7A]" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-white">Email Us Directly</p>
-                    <p className="text-sm text-[#2EFD7A] mt-0.5">support@baselinefi.com</p>
-                    <p className="text-xs text-white/50 mt-1">
-                      For learner support, parent inquiries, and campus partnerships
-                    </p>
-                  </div>
-                </a>
-
                 <div className="flex items-start gap-4 rounded-2xl border border-white/10 bg-white/[0.03] p-5">
                   <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
                     <MessageSquare className="w-5 h-5 text-white/80" />

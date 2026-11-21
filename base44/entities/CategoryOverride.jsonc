@@ -1,0 +1,98 @@
+{
+  "name": "CategoryOverride",
+  "type": "object",
+  "properties": {
+    "transaction_id": {
+      "type": "string",
+      "description": "Bank transaction id this change applies to"
+    },
+    "merchant": {
+      "type": "string"
+    },
+    "transaction_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "original_category": {
+      "type": "string",
+      "description": "Category from the bank, kept for traceability"
+    },
+    "new_category": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "coach_suggestion",
+        "manual"
+      ],
+      "enumColors": [
+        "purple",
+        "blue"
+      ],
+      "default": "coach_suggestion"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "reverted"
+      ],
+      "enumColors": [
+        "green",
+        "gray"
+      ],
+      "default": "active"
+    },
+    "reverted_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "transaction_id",
+    "original_category",
+    "new_category"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

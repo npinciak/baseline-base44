@@ -19,7 +19,7 @@ export default function LevelTierRow({
       return (
         <span className="inline-flex items-center gap-1.5 text-xs text-white/45 bg-white/[0.04] border border-white/10 px-3 py-1.5 rounded-xl">
           <Lock className="w-3.5 h-3.5" />
-          Unlocks at {tier.minLifetimeCoins.toLocaleString()} Lifetime BC ({tier.lessonsNeeded} lessons)
+          Level {tier.level} · {tier.lessonsNeeded} lessons
         </span>
       );
     }
@@ -82,43 +82,33 @@ export default function LevelTierRow({
 
   return (
     <div
-      className={`rounded-2xl border p-4 transition-all ${
+      className={`rounded-2xl border px-4 py-3 transition-all ${
         isCurrent
-          ? 'border-[#2EFD7A]/50 bg-[#2EFD7A]/[0.06] shadow-[0_0_24px_-8px_rgba(46,253,122,0.3)]'
+          ? 'border-[#2EFD7A]/50 bg-[#2EFD7A]/[0.06]'
           : unlocked
-            ? 'border-white/15 bg-white/[0.03]'
-            : 'border-white/10 bg-white/[0.015] opacity-75'
+            ? 'border-white/10 bg-white/[0.03]'
+            : 'border-white/5 bg-white/[0.015] opacity-70'
       }`}
     >
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="flex items-start gap-3 min-w-0 flex-1">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-3 min-w-0 flex-1">
           <div
-            className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 font-display font-extrabold text-sm ${
+            className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 font-display font-extrabold text-xs ${
               unlocked ? 'bg-gradient-to-br from-[#2EFD7A] to-[#2EA0FD] text-black' : 'bg-white/10 text-white/50'
             }`}
           >
-            {unlocked ? <Check className="w-5 h-5 stroke-[2.5]" /> : `L${tier.level}`}
+            {unlocked ? <Check className="w-4 h-4 stroke-[2.5]" /> : `L${tier.level}`}
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-[#2EA0FD]">
-                Level {tier.level} · {tier.title}
-              </span>
+              <h4 className="text-sm font-heading font-bold text-white">{tier.benefitTitle}</h4>
               {isCurrent && (
-                <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#2EFD7A] text-black">
-                  <Sparkles className="w-2.5 h-2.5" /> Current Level
+                <span className="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#2EFD7A] text-black">
+                  <Sparkles className="w-2.5 h-2.5" /> Current
                 </span>
               )}
-              <span className="text-xs text-white/45 flex items-center gap-1">
-                <Coins className="w-3 h-3 text-white/40" />
-                {tier.minLifetimeCoins.toLocaleString()} Lifetime BC
-              </span>
             </div>
-            <h4 className="text-base font-heading font-bold text-white mt-1">{tier.benefitTitle}</h4>
-            <p className="text-xs text-white/70 mt-1 leading-relaxed">{tier.summary}</p>
-            <p className="text-[11px] text-white/50 mt-1.5">
-              <strong className="text-white/75">Cost & when used:</strong> {tier.costLabel} — {tier.whenUsed}
-            </p>
+            <p className="text-xs text-white/55 mt-0.5 leading-relaxed" title={tier.whenUsed}>{tier.summary}</p>
           </div>
         </div>
         <div className="shrink-0">{renderAction()}</div>

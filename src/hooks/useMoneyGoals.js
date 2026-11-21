@@ -47,11 +47,21 @@ export default function useMoneyGoals(learning) {
       else setError(e.response?.data?.error || e.message || 'Could not save your goal. Please try again.');
     } finally { setSaving(false); }
   };
+  const [archivingId, setArchivingId] = useState(null);
+  const activeGoals = goals.filter(g => !g.archived);
+  const archive = async (goal) => {
+    setArchivingId(goal.id); setError('');
+    try {
+      await base44.functions.invoke('archiveSupabaseGoal', { supabaseGoalId: goal.id });
+      setGoals(prev => prev.map(g => (g.id === goal.id ? { ...g, archived: true } : g)));
+    } catch (e) { setError(e.response?.data?.error || 'Could not archive this goal. Please try again.'); }
+    finally { setArchivingId(null); }
+  };
   const confirmEmergency = async () => {
     setSaving(true); setError('');
     try { await learning.completeMove(chapter); }
     catch { setError('Your goal is saved, but the money move could not be completed. Please try again.'); }
     finally { setSaving(false); }
   };
-  return { goals, loading, error, saving, creating, setCreating, upgrade, setUpgrade, chapter, emergency, unlocked, toolUnlocked, paid, isAdmin, forceEmergency, load, open, save, confirmEmergency };
+  return { goals, activeGoals, archive, archivingId, loading, error, saving, creating, setCreating, upgrade, setUpgrade, chapter, emergency, unlocked, toolUnlocked, paid, isAdmin, forceEmergency, load, open, save, confirmEmergency };
 }

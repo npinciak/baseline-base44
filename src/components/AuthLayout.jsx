@@ -149,14 +149,14 @@ export default function AuthLayout({ icon: Icon, title, subtitle, footer, second
           {Icon && (
             <div
               className={`inline-flex items-center justify-center ${
-                compact ? "w-8 h-8 sm:w-9 sm:h-9 rounded-xl mt-1.5" : "w-10 h-10 rounded-2xl mt-3 mb-1"
+                compact ? "w-8 h-8 sm:w-9 sm:h-9 rounded-xl mt-1.5 mb-3" : "w-10 h-10 rounded-2xl mt-3 mb-3"
               } bg-auth-secondary/15 border border-auth-secondary/30 shadow-sm`}
             >
               <Icon className={`${compact ? "w-4 h-4" : "w-5 h-5"} text-auth-secondary`} aria-hidden="true" />
             </div>
           )}
 
-          {subtitle && <p className="text-white/50 mt-1 text-xs">{subtitle}</p>}
+          {subtitle && <p className="text-white/50 mt-3 text-xs">{subtitle}</p>}
         </motion.div>
 
         <motion.div

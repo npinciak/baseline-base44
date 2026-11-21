@@ -3,32 +3,35 @@ import { useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import { Sparkles } from 'lucide-react';
-import ConnectBankButton from '@/components/ConnectBankButton';
+import BankBalanceSection from '@/components/money/BankBalanceSection';
 import GoalsBanner from '@/components/money/GoalsBanner';
 import FinancialCalendar from '@/components/FinancialCalendar';
 import AmbientBackdrop from '@/components/dashboard/AmbientBackdrop';
 import ForecastChart from '@/components/money/ForecastChart';
-import SpendingDonut from '@/components/money/SpendingDonut';
+import SpendingTool from '@/components/money/SpendingTool';
 import CashflowBars from '@/components/money/CashflowBars';
-import MoneyKpis from '@/components/money/MoneyKpis';
+import BalanceTool from '@/components/money/BalanceTool';
+import TransactionList from '@/components/money/TransactionList';
+import ConnectedOverview from '@/components/money/ConnectedOverview';
 import SankeyCashflow from '@/components/money/SankeyCashflow';
 import AssetsBreakdown, { SAMPLE_ACCOUNTS } from '@/components/money/AssetsBreakdown';
-import CategoryList from '@/components/money/CategoryList';
 import RecurringList from '@/components/money/RecurringList';
-import TransactionList from '@/components/money/TransactionList';
 import LockedToolCard from '@/components/money/LockedToolCard';
 import { toolAccess } from '@/lib/curriculum';
 import MoneySection from '@/components/money/MoneySection';
+import ToolGrid from '@/components/money/ToolGrid';
 import useLearningState from '@/hooks/useLearningState';
 import useUserStats from '@/hooks/useUserStats';
-import KnowledgeTool from '@/components/money/KnowledgeTool';
-import DebtRatioTool from '@/components/money/DebtRatioTool';
 import CreditScoreTool from '@/components/money/CreditScoreTool';
+import MoneyCoach from '@/components/coach/MoneyCoach';
+import SmartSuggestions from '@/components/goal/SmartSuggestions';
+import useCategoryOverrides from '@/hooks/useCategoryOverrides';
 
 import {
   CATEGORY_COLORS, CATEGORY_LABELS, normalizeMxTransaction, detectRecurring,
   summarize, weeklyCashflow, buildSampleTransactions, SAMPLE_BALANCE,
 } from '@/lib/moneyData';
+
 
 const LIABILITIES = ['credit_card', 'loan', 'mortgage', 'line_of_credit'];
 
@@ -75,7 +78,12 @@ export default function Money() {
 
   const isSample = transactions.length === 0;
   const sample = useMemo(() => buildSampleTransactions(), []);
-  const txs = isSample ? sample : transactions;
+  const overrides = useCategoryOverrides();
+  const txs = useMemo(() => {
+    if (isSample) return sample;
+    const map = Object.fromEntries(overrides.active.map(o => [o.transaction_id, o.new_category]));
+    return transactions.map(t => (map[t.id] ? { ...t, category: map[t.id], original_category: t.category } : t));
+  }, [isSample, sample, transactions, overrides.active]);
   const balance = isSample ? SAMPLE_BALANCE : netBalance(accounts);
 
   const summary = useMemo(() => summarize(txs), [txs]);
@@ -99,35 +107,25 @@ export default function Money() {
     );
   }
 
+  const bankingChapter = learning.chapters.find(c => c.id === 'banking');
+  const bankUnlocked = Boolean(learning.isAdmin) || Boolean(bankingChapter?.learned);
   const shownAccounts = isSample ? SAMPLE_ACCOUNTS : accounts;
+  const balanceTool = { key: 'balance', node: <BalanceTool balance={balance} accountCount={shownAccounts.length} />, access: toolAccess('balance', learning.chapters, learning.isAdmin) };
+  const transactionsTool = { key: 'transactions', node: <TransactionList transactions={txs} />, access: toolAccess('transactions', learning.chapters, learning.isAdmin) };
   const tools = [
+    { key: 'forecast', node: <ForecastChart live /> },
+    { key: 'spending', node: <SpendingTool categoryList={categoryList} grandTotal={grandTotal} expenses={expenses} /> },
+    { key: 'cashflow', node: <CashflowBars weeks={weeks} /> },
+    { key: 'money_flow', node: <SankeyCashflow txs={txs} /> },
     { key: 'recurring', node: <RecurringList recurring={recurring} /> },
-    { key: 'spending', node: (
-      <div className="grid lg:grid-cols-2 gap-6">
-        <SpendingDonut categoryList={categoryList} total={grandTotal} />
-        <CategoryList categoryList={categoryList} grandTotal={grandTotal} expenses={expenses} />
-      </div>
-    ) },
-    { key: 'cashflow', node: (
-      <div className="space-y-6">
-        <CashflowBars weeks={weeks} />
-        <SankeyCashflow txs={txs} />
-      </div>
-    ) },
+    { key: 'credit_score', node: <CreditScoreTool accounts={shownAccounts} creditHealth={stats?.score_credit_health ?? null} /> },
     { key: 'calendar', node: (
-      <div className="space-y-6">
-        <FinancialCalendar balance={isSample || accounts.length ? balance : null} txs={txs} isSample={isSample} />
-        <ForecastChart startBalance={balance} dailyIncome={summary.dailyIncome} dailySpend={summary.dailySpend} isAdmin={learning.isAdmin} />
-      </div>
+      <FinancialCalendar balance={isSample || accounts.length ? balance : null} txs={txs} isSample={isSample} />
     ) },
     { key: 'networth', node: <AssetsBreakdown accounts={shownAccounts} /> },
-
-    { key: 'knowledge', node: <KnowledgeTool chapters={learning.chapters} knowledgeScore={stats?.score_financial_knowledge ?? null} /> },
-    { key: 'debt_ratio', node: <DebtRatioTool accounts={shownAccounts} summary={summary} recurring={recurring} /> },
-    { key: 'credit_score', node: <CreditScoreTool accounts={shownAccounts} creditHealth={stats?.score_credit_health ?? null} /> },
+    { key: 'coach', node: <MoneyCoach txs={txs} isSample={isSample} overrides={overrides} /> },
+    { key: 'strategies', node: <SmartSuggestions showFit={false} panel /> },
   ].map(t => ({ ...t, access: toolAccess(t.key, learning.chapters, learning.isAdmin) }));
-  const openTools = tools.filter(t => t.access.unlocked);
-  const lockedTools = tools.filter(t => !t.access.unlocked);
 
   return (
     <div className="relative min-h-screen bg-black px-4 py-8 overflow-hidden">
@@ -135,50 +133,44 @@ export default function Money() {
       <motion.div variants={containerVariants} initial="hidden" animate="show" className="relative z-10 w-full min-w-0 max-w-6xl mx-auto space-y-6">
         <motion.div variants={itemVariants} className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h1 className="text-3xl sm:text-4xl font-display font-extrabold text-white mb-1">Mission Control</h1>
+            <h1 className="text-3xl sm:text-4xl font-display font-extrabold text-white mb-1">Money Hub</h1>
             <p className="text-white/60">See where your money is going, and where it could take you.</p>
           </div>
-          {!isSample && <ConnectBankButton onConnected={load} />}
         </motion.div>
 
+        {isSample && <motion.div variants={itemVariants}>
+          <BankBalanceSection connected={false} balance={balance} accountCount={accounts.length} locked={!bankUnlocked} onConnected={load} />
+        </motion.div>}
+
         <GoalsBanner learning={learning} />
+
+        <motion.div variants={itemVariants}>
+          <ConnectedOverview balanceTool={balanceTool} transactionsTool={transactionsTool} onCompleteMove={learning.completeMove} />
+        </motion.div>
+
+
 
         {isSample && (
           <motion.div variants={itemVariants} className="flex flex-wrap items-center justify-between gap-4 px-5 py-4 bg-[#2EFD7A]/10 border border-[#2EFD7A]/30 rounded-2xl">
             <div className="flex items-center gap-3 text-sm text-white">
               <Sparkles className="w-5 h-5 text-[#2EFD7A] shrink-0" />
-              <span>You're exploring <strong>sample data</strong>. Link your bank to see your real numbers and future.</span>
+              <span>
+                You're exploring <strong>sample data</strong>.{' '}
+                {bankUnlocked
+                  ? 'Link your bank to see your real numbers and future.'
+                  : 'Finish the Banking Basics lessons on BasePath to unlock bank linking.'}
+              </span>
             </div>
-            <ConnectBankButton onConnected={load} />
           </motion.div>
         )}
+
 
         <motion.div variants={itemVariants}>
-          <MoneySection id="overview" kicker="Where you stand" title="Your money today">
-            <MoneyKpis balance={balance} income={summary.income} spent={summary.spent} days={summary.days} />
-            <TransactionList transactions={txs} />
-          </MoneySection>
+          <div id="tools" className="scroll-mt-6">
+            <ToolGrid tools={tools} render={t => (t.access.unlocked ? t.node
+              : <LockedToolCard toolKey={t.key} access={t.access} onCompleteMove={learning.completeMove} />)} />
+          </div>
         </motion.div>
-
-        {openTools.length > 0 && (
-          <motion.div variants={itemVariants}>
-            <MoneySection id="tools" kicker="Unlocked" title="Your tools">
-              {openTools.map(t => <div key={t.key} id={t.key} className="scroll-mt-6">{t.node}</div>)}
-            </MoneySection>
-          </motion.div>
-        )}
-
-        {lockedTools.length > 0 && (
-          <motion.div variants={itemVariants}>
-            <MoneySection id="locked" kicker="Coming up on your path" title="Tools to unlock">
-              {lockedTools.map(t => (
-                <div key={t.key} id={t.key} className="scroll-mt-6">
-                  <LockedToolCard toolKey={t.key} access={t.access} onCompleteMove={learning.completeMove} />
-                </div>
-              ))}
-            </MoneySection>
-          </motion.div>
-        )}
       </motion.div>
     </div>
   );

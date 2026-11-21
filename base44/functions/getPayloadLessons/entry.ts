@@ -1,6 +1,10 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
-import { EDITS, EXTRA_SCREENS, NEW_UNITS } from './curriculumContent.ts';
-import { LESSON_REWARD } from '../../shared/coinEconomy.ts';
+import { EDITS, EXTRA_SCREENS, NEW_UNITS as BASE_UNITS } from './curriculumContent.ts';
+import { CHECKPOINTS } from './checkpoints.ts';
+
+const NEW_UNITS = [...BASE_UNITS, ...CHECKPOINTS];
+import { lessonCoins } from '../../shared/coinEconomy.ts';
+import { goalSubscription } from '../../shared/goalPolicy.ts';
 
 // Convert a Lexical JSON string to plain HTML
 function lexicalToHtml(raw: string | null | undefined): string {
@@ -150,18 +154,22 @@ export default async function(req) {
     const newModules = NEW_UNITS.map(u => ({
       id: u.id,
       title: u.title,
-      lessons: [
-        fromSpec({ type: 'text', title: u.title, text: u.text }, `${u.id}-1`, u.id),
-        fromSpec({ type: 'question', title: `${u.title} Quiz`, q: u.q, choices: u.choices, e: u.e }, `${u.id}-2`, u.id),
-        fromSpec({ type: 'takeaway', title: `${u.title} - Key Takeaway`, k: u.k }, `${u.id}-3`, u.id),
-      ],
+      // Checkpoint units define their own screens (scenario → several questions → takeaway).
+      lessons: u.screens
+        ? u.screens.map((s, i) => fromSpec(s, `${u.id}-${i + 1}`, u.id))
+        : [
+          fromSpec({ type: 'text', title: u.title, text: u.text }, `${u.id}-1`, u.id),
+          fromSpec({ type: 'question', title: `${u.title} Quiz`, q: u.q, choices: u.choices, e: u.e }, `${u.id}-2`, u.id),
+          fromSpec({ type: 'takeaway', title: `${u.title} - Key Takeaway`, k: u.k }, `${u.id}-3`, u.id),
+        ],
     }));
 
+    const { paid } = await goalSubscription(base44, user);
     const modules = [...cmsModules, ...newModules].map((m, idx) => ({
       ...m,
       description: '',
       order_index: idx,
-      xp_reward: LESSON_REWARD,
+      xp_reward: lessonCoins(paid),
       is_published: true,
     }));
 

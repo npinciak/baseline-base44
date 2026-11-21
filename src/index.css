@@ -162,6 +162,12 @@
   animation: shimmer 2s linear infinite;
 }
 
+/* Goal detail entrance + ambient glow */
+@keyframes goal-rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+.goal-rise { position: relative; animation: goal-rise .7s cubic-bezier(.2,.7,.2,1) both; }
+@keyframes goal-drift { from { transform: translate(0,0); } to { transform: translate(120px,60px); } }
+.goal-glow { position: absolute; left: -200px; top: -160px; width: 700px; height: 700px; pointer-events: none; background: radial-gradient(circle, rgba(46,253,122,.12), transparent 65%); animation: goal-drift 14s ease-in-out infinite alternate; }
+
 /* Flowing chapter number badge gradient */
 @keyframes chapter-gradient-flow {
   0% { background-position: 0% 50%; }

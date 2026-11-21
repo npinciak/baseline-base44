@@ -1,18 +1,15 @@
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { BarChart3 } from 'lucide-react';
+import FeaturePanel from '@/components/money/FeaturePanel';
 
 export default function CashflowBars({ weeks }) {
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-sm p-5 h-full">
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="flex items-center gap-2 text-white font-heading font-bold">
-          <BarChart3 className="w-5 h-5 text-[#2EFD7A]" /> Weekly cash flow
-        </h3>
-        <div className="flex items-center gap-3 text-[11px] text-white/60">
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#2EFD7A]" />In</span>
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#F5A623]" />Out</span>
-        </div>
+    <FeaturePanel icon={BarChart3} kicker="Weekly cash flow" action={
+      <div className="flex items-center gap-3 text-[11px] text-white/60">
+        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#2EFD7A]" />In</span>
+        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#F5A623]" />Out</span>
       </div>
+    }>
       <div className="h-52">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={weeks} margin={{ top: 8, right: 4, left: -12, bottom: 0 }} barGap={3}>
@@ -25,6 +22,6 @@ export default function CashflowBars({ weeks }) {
           </BarChart>
         </ResponsiveContainer>
       </div>
-    </div>
+    </FeaturePanel>
   );
 }
