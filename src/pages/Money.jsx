@@ -158,12 +158,12 @@ export default function Money() {
           </motion.div>
         )}
 
-        <motion.div variants={itemVariants}>
+        {bankUnlocked && <motion.div variants={itemVariants}>
           <MoneySection id="overview" kicker="Where you stand" title="Your money today">
             <MoneyKpis balance={balance} income={summary.income} spent={summary.spent} days={summary.days} />
             <TransactionList transactions={txs} />
           </MoneySection>
-        </motion.div>
+        </motion.div>}
 
         {openTools.length > 0 && (
           <motion.div variants={itemVariants}>
