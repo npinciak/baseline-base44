@@ -25,11 +25,13 @@ export default function LockedToolCard({ access, onCompleteMove, toolKey }) {
   const markDone = async () => { setSaving(true); await onCompleteMove(chapter); setSaving(false); };
 
   return (
-    <div className="relative isolate overflow-hidden rounded-2xl border border-border bg-card p-6 sm:p-8 flex flex-col xl:flex-row xl:items-center gap-6">
-      <div aria-hidden="true" inert="" className="absolute inset-0 pointer-events-none select-none blur-sm opacity-50">
+    <div className="relative isolate overflow-hidden rounded-2xl border border-border bg-card min-h-[18rem]">
+      {/* Preview sits in normal flow so the locked card matches the unlocked tool's size */}
+      <div aria-hidden="true" inert="" className="pointer-events-none select-none blur-sm opacity-50">
         <LockedToolPreview toolKey={toolKey} />
       </div>
       <div aria-hidden="true" className="absolute inset-0 bg-background/70 pointer-events-none" />
+      <div className="absolute inset-0 overflow-y-auto p-6 sm:p-8 flex flex-col xl:flex-row xl:items-center justify-center gap-6">
       <div className="relative flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-2">
           <Lock className="w-4 h-4 text-[#2EFD7A]" />
@@ -54,6 +56,7 @@ export default function LockedToolCard({ access, onCompleteMove, toolKey }) {
             {saving ? 'Saving…' : 'I did this move'}
           </button>
         )}
+      </div>
       </div>
     </div>
   );
