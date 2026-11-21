@@ -28,6 +28,8 @@ import {
   summarize, weeklyCashflow, buildSampleTransactions, SAMPLE_BALANCE,
 } from '@/lib/moneyData';
 
+const WIDE_TOOLS = ['spending', 'calendar'];
+
 const LIABILITIES = ['credit_card', 'loan', 'mortgage', 'line_of_credit'];
 
 function netBalance(accounts) {
@@ -169,7 +171,11 @@ export default function Money() {
         {openTools.length > 0 && (
           <motion.div variants={itemVariants}>
             <MoneySection id="tools" kicker="Unlocked" title="Your tools">
-              {openTools.map(t => <div key={t.key} id={t.key} className="scroll-mt-6">{t.node}</div>)}
+              <div className="grid lg:grid-cols-2 gap-6 items-start">
+                {openTools.map(t => (
+                  <div key={t.key} id={t.key} className={`scroll-mt-6 min-w-0 ${WIDE_TOOLS.includes(t.key) ? 'lg:col-span-2' : ''}`}>{t.node}</div>
+                ))}
+              </div>
             </MoneySection>
           </motion.div>
         )}
@@ -177,11 +183,13 @@ export default function Money() {
         {lockedTools.length > 0 && (
           <motion.div variants={itemVariants}>
             <MoneySection id="locked" kicker="Coming up on your path" title="Tools to unlock">
-              {lockedTools.map(t => (
-                <div key={t.key} id={t.key} className="scroll-mt-6">
-                  <LockedToolCard toolKey={t.key} access={t.access} onCompleteMove={learning.completeMove} />
-                </div>
-              ))}
+              <div className="grid lg:grid-cols-2 gap-6 items-start">
+                {lockedTools.map(t => (
+                  <div key={t.key} id={t.key} className="scroll-mt-6 min-w-0">
+                    <LockedToolCard toolKey={t.key} access={t.access} onCompleteMove={learning.completeMove} />
+                  </div>
+                ))}
+              </div>
             </MoneySection>
           </motion.div>
         )}

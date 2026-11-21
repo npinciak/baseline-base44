@@ -10,7 +10,7 @@ export default function RecurringList({ recurring }) {
       {recurring.length === 0 ? (
         <div className="bg-white/[0.03] border border-dashed border-white/10 rounded-2xl p-8 text-center text-white/50 text-sm">No recurring expenses detected yet</div>
       ) : (
-        <div className="bg-white/[0.03] border border-white/10 backdrop-blur-sm rounded-2xl overflow-hidden divide-y divide-white/10">
+        <div className="bg-white/[0.03] border border-white/10 backdrop-blur-sm rounded-2xl max-h-[420px] overflow-y-auto divide-y divide-white/10">
           {recurring.map(({ name, avg, count, category }) => (
             <div key={name} className="flex items-center gap-4 px-5 py-4">
               <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{ background: `${CATEGORY_COLORS[category] || '#6B7280'}22` }}>
