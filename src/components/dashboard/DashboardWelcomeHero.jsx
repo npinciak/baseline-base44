@@ -153,11 +153,13 @@ export default function DashboardWelcomeHero({ name, stats, chapters, onComplete
         {/* Clean dark progress summary card (no roadmap image) */}
         <div className="lg:col-span-5 relative rounded-2xl overflow-hidden border border-white/10 bg-white/[0.03] flex flex-col justify-between p-5">
           <div className="flex items-center justify-between gap-2">
-            <span className="text-[11px] uppercase tracking-widest font-semibold text-white/55">
-              {upcomingMod ? 'Up Next' : isMoveStage ? 'Action Step' : 'Path Mastery'}
-            </span>
+            {!upcomingMod && (
+              <span className="text-[11px] uppercase tracking-widest font-semibold text-white/55">
+                {isMoveStage ? 'Action Step' : 'Path Mastery'}
+              </span>
+            )}
             {upcomingMod && (
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#2EA0FD]/10 border border-[#2EA0FD]/35 text-xs font-bold text-[#2EA0FD]">
+              <span className="ml-auto inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#2EA0FD]/10 border border-[#2EA0FD]/35 text-xs font-bold text-[#2EA0FD]">
                 <Coins className="w-3.5 h-3.5" />
                 +{LESSON_REWARD} BC
               </span>
