@@ -11,7 +11,7 @@ export default function LockedToolCard({ access, onCompleteMove, toolKey }) {
   const markDone = async () => { setSaving(true); await onCompleteMove(chapter); setSaving(false); };
 
   return (
-    <div className="relative isolate overflow-hidden rounded-2xl border border-border bg-card min-h-[18rem] h-full">
+    <div className="relative isolate overflow-hidden rounded-3xl border border-white/10 bg-black min-h-[18rem] h-full">
       {/* Preview sits in normal flow so the locked card matches the unlocked tool's size */}
       <div aria-hidden="true" inert="" className="pointer-events-none select-none blur-sm opacity-50">
         <LockedToolPreview toolKey={toolKey} />

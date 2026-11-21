@@ -1,4 +1,6 @@
 import { useMemo, useState } from 'react';
+import { Workflow } from 'lucide-react';
+import FeaturePanel from '@/components/money/FeaturePanel';
 
 const W = 900;
 const H = 440;
@@ -105,21 +107,19 @@ export default function SankeyCashflow({ txs }) {
   }, [left, right, total]);
 
   return (
-    <div className="bg-white/[0.03] border border-white/10 backdrop-blur-sm rounded-2xl p-5">
-      <div className="flex items-center justify-between mb-2">
-        <h3 className="text-white font-semibold">Cashflow</h3>
-        <div className="flex gap-1 bg-white/[0.05] rounded-lg p-1">
-          {[30, 90].map(d => (
-            <button
-              key={d}
-              onClick={() => setDays(d)}
-              className={`px-3 py-1 rounded-md text-xs font-semibold transition-colors ${days === d ? 'bg-[#2EFD7A] text-black' : 'text-white/60 hover:text-white'}`}
-            >
-              {d}D
-            </button>
-          ))}
-        </div>
+    <FeaturePanel icon={Workflow} kicker="Money flow" action={
+      <div className="flex gap-1 bg-white/[0.05] rounded-lg p-1">
+        {[30, 90].map(d => (
+          <button
+            key={d}
+            onClick={() => setDays(d)}
+            className={`px-3 py-1 rounded-md text-xs font-semibold transition-colors ${days === d ? 'bg-[#2EFD7A] text-black' : 'text-white/60 hover:text-white'}`}
+          >
+            {d}D
+          </button>
+        ))}
       </div>
+    }>
       {!nodes ? (
         <p className="text-white/50 text-sm py-10 text-center">No activity in this period.</p>
       ) : (
@@ -150,6 +150,6 @@ export default function SankeyCashflow({ txs }) {
           {nodes.R.map((n, i) => <Label key={`rl${i}`} n={n} side="right" />)}
         </svg>
       )}
-    </div>
+    </FeaturePanel>
   );
 }

@@ -1,5 +1,5 @@
 // One layout for unlocked and locked tools, so both views keep identical widths.
-export const WIDE_TOOLS = ['spending', 'calendar', 'cashflow', 'money_flow', 'coach', 'strategies', 'forecast'];
+export const WIDE_TOOLS = ['spending', 'calendar', 'cashflow', 'money_flow', 'coach', 'strategies', 'forecast', 'networth'];
 
 export default function ToolGrid({ tools, render }) {
   return (

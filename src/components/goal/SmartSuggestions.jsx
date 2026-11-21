@@ -3,8 +3,9 @@ import { Lightbulb } from 'lucide-react';
 import { SUGGESTIONS, SUGGESTION_CATEGORIES, isGoodFit } from '@/lib/smartSuggestions';
 import { ICON_BOX, BTN_T } from '@/lib/goalStyles';
 import SuggestionCard from '@/components/goal/SuggestionCard';
+import { PANEL_SHELL } from '@/components/money/FeaturePanel';
 
-export default function SmartSuggestions({ goalType, monthsLeft, showFit = true }) {
+export default function SmartSuggestions({ goalType, monthsLeft, showFit = true, panel = false }) {
   const [cat, setCat] = useState('saving');
   const items = useMemo(() => SUGGESTIONS
     .filter(s => s.category === cat)
@@ -12,7 +13,7 @@ export default function SmartSuggestions({ goalType, monthsLeft, showFit = true 
     .sort((a, b) => Number(b.fit) - Number(a.fit)), [cat, goalType, monthsLeft, showFit]);
 
   return (
-    <div className="rounded-[20px] border border-[#26303a] bg-gradient-to-br from-[#12161a] to-[#0b0e11] p-[22px] shadow-[0_18px_40px_rgba(0,0,0,.45),inset_0_1px_0_rgba(255,255,255,.04)] text-[#e9efec]">
+    <div className={panel ? `${PANEL_SHELL} p-5 sm:p-7` : 'rounded-[20px] border border-[#26303a] bg-gradient-to-br from-[#12161a] to-[#0b0e11] p-[22px] shadow-[0_18px_40px_rgba(0,0,0,.45),inset_0_1px_0_rgba(255,255,255,.04)] text-[#e9efec]'}>
       <div className="flex flex-wrap items-end justify-between gap-3 mb-4">
         <div className="flex items-center gap-3">
           <div className={ICON_BOX}><Lightbulb className="w-4 h-4 text-[#2efd7a]" /></div>

@@ -8,14 +8,13 @@ import GoalsBanner from '@/components/money/GoalsBanner';
 import FinancialCalendar from '@/components/FinancialCalendar';
 import AmbientBackdrop from '@/components/dashboard/AmbientBackdrop';
 import ForecastChart from '@/components/money/ForecastChart';
-import SpendingDonut from '@/components/money/SpendingDonut';
+import SpendingTool from '@/components/money/SpendingTool';
 import CashflowBars from '@/components/money/CashflowBars';
 import BalanceTool from '@/components/money/BalanceTool';
 import TransactionList from '@/components/money/TransactionList';
 import ConnectedOverview from '@/components/money/ConnectedOverview';
 import SankeyCashflow from '@/components/money/SankeyCashflow';
 import AssetsBreakdown, { SAMPLE_ACCOUNTS } from '@/components/money/AssetsBreakdown';
-import CategoryList from '@/components/money/CategoryList';
 import RecurringList from '@/components/money/RecurringList';
 import LockedToolCard from '@/components/money/LockedToolCard';
 import { toolAccess } from '@/lib/curriculum';
@@ -23,7 +22,6 @@ import MoneySection from '@/components/money/MoneySection';
 import ToolGrid from '@/components/money/ToolGrid';
 import useLearningState from '@/hooks/useLearningState';
 import useUserStats from '@/hooks/useUserStats';
-import DebtRatioTool from '@/components/money/DebtRatioTool';
 import CreditScoreTool from '@/components/money/CreditScoreTool';
 import MoneyCoach from '@/components/coach/MoneyCoach';
 import SmartSuggestions from '@/components/goal/SmartSuggestions';
@@ -115,12 +113,8 @@ export default function Money() {
   const balanceTool = { key: 'balance', node: <BalanceTool balance={balance} accountCount={shownAccounts.length} />, access: toolAccess('balance', learning.chapters, learning.isAdmin) };
   const transactionsTool = { key: 'transactions', node: <TransactionList transactions={txs} />, access: toolAccess('transactions', learning.chapters, learning.isAdmin) };
   const tools = [
-    { key: 'spending', node: (
-      <div className="grid lg:grid-cols-2 gap-6">
-        <SpendingDonut categoryList={categoryList} total={grandTotal} />
-        <CategoryList categoryList={categoryList} grandTotal={grandTotal} expenses={expenses} />
-      </div>
-    ) },
+    { key: 'forecast', node: <ForecastChart startBalance={balance} dailyIncome={summary.dailyIncome} dailySpend={summary.dailySpend} isAdmin={learning.isAdmin} /> },
+    { key: 'spending', node: <SpendingTool categoryList={categoryList} grandTotal={grandTotal} expenses={expenses} /> },
     { key: 'cashflow', node: <CashflowBars weeks={weeks} /> },
     { key: 'money_flow', node: <SankeyCashflow txs={txs} /> },
     { key: 'recurring', node: <RecurringList recurring={recurring} /> },
@@ -129,18 +123,9 @@ export default function Money() {
       <FinancialCalendar balance={isSample || accounts.length ? balance : null} txs={txs} isSample={isSample} />
     ) },
     { key: 'networth', node: <AssetsBreakdown accounts={shownAccounts} /> },
-
-    { key: 'debt_ratio', node: <DebtRatioTool accounts={shownAccounts} summary={summary} recurring={recurring} /> },
     { key: 'coach', node: <MoneyCoach txs={txs} isSample={isSample} overrides={overrides} /> },
-    { key: 'strategies', node: <SmartSuggestions showFit={false} /> },
+    { key: 'strategies', node: <SmartSuggestions showFit={false} panel /> },
   ].map(t => ({ ...t, access: toolAccess(t.key, learning.chapters, learning.isAdmin) }));
-  const rank = (t) => (t.access.final ? Infinity : t.access.chapter?.number ?? 999);
-  const forecastAccess = toolAccess('forecast', learning.chapters, learning.isAdmin);
-  const forecastUnlocked = forecastAccess.unlocked;
-  const openTools = tools.filter(t => t.access.unlocked);
-  const lockedTools = [...tools, { key: 'forecast', access: forecastAccess }]
-    .filter(t => !t.access.unlocked && t.key !== 'debt_ratio')
-    .sort((a, b) => rank(a) - rank(b));
 
   return (
     <div className="relative min-h-screen bg-black px-4 py-8 overflow-hidden">
@@ -164,9 +149,6 @@ export default function Money() {
         </motion.div>
 
 
-        {forecastUnlocked && <motion.div variants={itemVariants} id="forecast" className="scroll-mt-6">
-          <ForecastChart startBalance={balance} dailyIncome={summary.dailyIncome} dailySpend={summary.dailySpend} isAdmin={learning.isAdmin} />
-        </motion.div>}
 
         {isSample && (
           <motion.div variants={itemVariants} className="flex flex-wrap items-center justify-between gap-4 px-5 py-4 bg-[#2EFD7A]/10 border border-[#2EFD7A]/30 rounded-2xl">
@@ -183,21 +165,12 @@ export default function Money() {
         )}
 
 
-        {openTools.length > 0 && (
-          <motion.div variants={itemVariants}>
-            <div id="tools" className="scroll-mt-6">
-              <ToolGrid tools={openTools} render={t => t.node} />
-            </div>
-          </motion.div>
-        )}
-
-        {lockedTools.length > 0 && (
-          <motion.div variants={itemVariants}>
-            <div id="locked" className="scroll-mt-6">
-              <ToolGrid tools={lockedTools} render={t => <LockedToolCard toolKey={t.key} access={t.access} onCompleteMove={learning.completeMove} />} />
-            </div>
-          </motion.div>
-        )}
+        <motion.div variants={itemVariants}>
+          <div id="tools" className="scroll-mt-6">
+            <ToolGrid tools={tools} render={t => (t.access.unlocked ? t.node
+              : <LockedToolCard toolKey={t.key} access={t.access} onCompleteMove={learning.completeMove} />)} />
+          </div>
+        </motion.div>
       </motion.div>
     </div>
   );

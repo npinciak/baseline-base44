@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Repeat, ChevronDown } from 'lucide-react';
 import { CATEGORY_COLORS, CATEGORY_LABELS } from '@/lib/moneyData';
+import FeaturePanel from '@/components/money/FeaturePanel';
 
 const INITIAL = 5;
 
@@ -9,10 +10,7 @@ export default function RecurringList({ recurring }) {
   const shown = expanded ? recurring : recurring.slice(0, INITIAL);
   const hidden = recurring.length - INITIAL;
   return (
-    <section>
-      <h2 className="text-lg font-heading font-bold mb-4 flex items-center gap-2 text-white">
-        <Repeat className="w-5 h-5 text-[#2EFD7A]" /> Recurring Expenses
-      </h2>
+    <FeaturePanel icon={Repeat} kicker="Recurring expenses">
       {recurring.length === 0 ? (
         <div className="bg-white/[0.03] border border-dashed border-white/10 rounded-2xl p-8 text-center text-white/50 text-sm">No recurring expenses detected yet</div>
       ) : (
@@ -37,6 +35,6 @@ export default function RecurringList({ recurring }) {
           )}
         </div>
       )}
-    </section>
+    </FeaturePanel>
   );
 }

@@ -5,6 +5,7 @@ import CoachCleanup from '@/components/coach/CoachCleanup';
 import CoachTrends from '@/components/coach/CoachTrends';
 import CoachAsk from '@/components/coach/CoachAsk';
 import CoachSummaryRow from '@/components/coach/CoachSummaryRow';
+import { PANEL_SHELL } from '@/components/money/FeaturePanel';
 import { suggestCleanups, findTrends, dataFreshness, addSampleMess } from '@/lib/coachInsights';
 
 const TABS = [
@@ -26,7 +27,7 @@ export default function MoneyCoach({ txs, isSample, overrides }) {
   const askAbout = (f) => { setFocus(f); setTab('ask'); };
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#04170d] via-black to-[#06142a]">
+    <div className={PANEL_SHELL}>
       <CoachSummaryRow open={open} onToggle={() => setOpen(o => !o)} cleanupCount={cleanups.length} trendCount={trends.length}
         onOpenTab={(t) => { setTab(t); setOpen(true); }}
         onQuickAsk={(q) => { setTab('ask'); setPending(q); setOpen(true); }} />

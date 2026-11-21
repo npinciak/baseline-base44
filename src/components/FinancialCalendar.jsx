@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Plus, ChevronLeft, ChevronRight, Info } from 'lucide-react';
+import { Plus, ChevronLeft, ChevronRight, Info, CalendarDays } from 'lucide-react';
+import { PANEL_SHELL } from '@/components/money/FeaturePanel';
 import {
   format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, eachDayOfInterval, addMonths, parseISO,
 } from 'date-fns';
@@ -93,7 +94,7 @@ export default function FinancialCalendar({ balance = null, txs = [], isSample =
 
   if (loading) {
     return (
-      <div className="bg-white/[0.03] border border-white/10 backdrop-blur-sm rounded-2xl p-6">
+      <div className={`${PANEL_SHELL} p-6`}>
         <div className="w-6 h-6 border-2 border-white/10 border-t-[#2EFD7A] rounded-full animate-spin mx-auto" />
       </div>
     );
@@ -102,10 +103,10 @@ export default function FinancialCalendar({ balance = null, txs = [], isSample =
   const known = balance != null;
 
   return (
-    <div className="bg-white/[0.03] border border-white/10 backdrop-blur-sm rounded-2xl overflow-hidden">
-      <div className="flex items-center justify-between gap-3 px-5 pt-5 pb-3">
+    <div className={PANEL_SHELL}>
+      <div className="flex items-center justify-between gap-3 px-5 sm:px-7 pt-5 sm:pt-7 pb-3">
         <div className="min-w-0">
-          <h2 className="text-lg font-heading font-bold text-white">Financial Calendar</h2>
+          <p className="flex items-center gap-2 text-[11px] uppercase tracking-[0.25em] text-[#2EFD7A] font-semibold mb-1"><CalendarDays className="w-4 h-4" /> Financial calendar</p>
           <div className="flex items-center gap-1 -ml-1.5">
             <button onClick={() => changeMonth(-1)} className="p-1 text-white/60 hover:text-white"><ChevronLeft className="w-4 h-4" /></button>
             <span className="text-xs text-white/70 w-28 text-center">{format(month, 'MMMM yyyy')}</span>
