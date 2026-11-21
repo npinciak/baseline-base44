@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import { Sparkles } from 'lucide-react';
-import ConnectBankButton from '@/components/ConnectBankButton';
+import BankBalanceSection from '@/components/money/BankBalanceSection';
 import GoalsBanner from '@/components/money/GoalsBanner';
 import FinancialCalendar from '@/components/FinancialCalendar';
 import AmbientBackdrop from '@/components/dashboard/AmbientBackdrop';
@@ -138,7 +138,10 @@ export default function Money() {
             <h1 className="text-3xl sm:text-4xl font-display font-extrabold text-white mb-1">Money Hub</h1>
             <p className="text-white/60">See where your money is going, and where it could take you.</p>
           </div>
-          {!isSample && <ConnectBankButton onConnected={load} locked={!bankUnlocked} />}
+        </motion.div>
+
+        <motion.div variants={itemVariants}>
+          <BankBalanceSection connected={!isSample} balance={balance} accountCount={accounts.length} locked={!bankUnlocked} onConnected={load} />
         </motion.div>
 
         <GoalsBanner learning={learning} />
@@ -154,7 +157,6 @@ export default function Money() {
                   : 'Finish the Banking Basics lessons on BasePath to unlock bank linking.'}
               </span>
             </div>
-            <ConnectBankButton onConnected={load} locked={!bankUnlocked} />
           </motion.div>
         )}
 

@@ -6,6 +6,7 @@ import { getDisplayName, getInitial } from '@/lib/displayName';
 import { getLevelInfo, getLifetimeCoins } from '@/lib/coinLevels';
 import useAdminViewMode from '@/hooks/useAdminViewMode';
 import AdminViewToggle from '@/components/dashboard/AdminViewToggle';
+import { savePendingBaseScore } from '@/lib/saveBaseScore';
 
 export default function Layout() {
   const [user, setUser] = useState(null);
@@ -44,7 +45,9 @@ export default function Layout() {
 
   useEffect(() => {
     if (!user) return;
-    base44.entities.UserStats.filter({ user_id: user.id }).then(r => r[0] && setStats(r[0]));
+    savePendingBaseScore(user).then(saved => saved
+      ? setStats(saved)
+      : base44.entities.UserStats.filter({ user_id: user.id }).then(r => r[0] && setStats(r[0])));
     base44.functions.invoke('getWallet', {}).then(r => setWalletBalance(r?.data?.balance ?? 0)).catch(() => {});
     base44.functions.invoke('curriculumReview', { mode: 'check' }).then(r => setIsOwner(!!r?.data?.allowed)).catch(() => {});
   }, [user]);
@@ -58,7 +61,7 @@ export default function Layout() {
     { to: '/dashboard', icon: LayoutDashboard, label: 'Home', iconColor: 'text-[#2EA0FD]' },
     { to: '/money', icon: Wallet, label: 'Money', iconColor: 'text-[#2EFD7A]' },
     { to: '/basecamp', icon: ShoppingBag, label: 'Basecamp', iconColor: 'text-[#2EA0FD]' },
-    { to: '/profile', icon: User, label: 'Profile', iconColor: 'text-[#2EA0FD]' },
+    { to: '/profile', icon: User, label: 'Profile', iconColor: 'text-[#2EFD7A]' },
   ];
 
   return (
@@ -175,7 +178,7 @@ export default function Layout() {
         <div className="p-4 border-t border-white/10">
           {user && (
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-[#2EA0FD]/15 border border-[#2EA0FD]/40 flex items-center justify-center text-[#2EA0FD] font-bold text-sm">
+              <div className="w-9 h-9 rounded-full bg-[#2EFD7A]/15 border border-[#2EFD7A]/40 flex items-center justify-center text-[#2EFD7A] font-bold text-sm">
                 {getInitial(user, profile)}
               </div>
               <div className="flex-1 min-w-0">
