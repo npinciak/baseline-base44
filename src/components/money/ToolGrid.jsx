@@ -3,7 +3,7 @@ export const WIDE_TOOLS = ['spending', 'calendar', 'cashflow', 'money_flow', 'co
 
 export default function ToolGrid({ tools, render }) {
   return (
-    <div className="grid lg:grid-cols-2 gap-6 items-start">
+    <div className="grid lg:grid-cols-2 gap-6 items-stretch">
       {tools.map(t => (
         <div key={t.key} id={t.key} className={`scroll-mt-6 min-w-0 ${WIDE_TOOLS.includes(t.key) ? 'lg:col-span-2' : ''}`}>
           {render(t)}

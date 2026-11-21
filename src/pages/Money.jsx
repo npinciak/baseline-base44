@@ -139,7 +139,7 @@ export default function Money() {
   const forecastUnlocked = forecastAccess.unlocked;
   const openTools = tools.filter(t => t.access.unlocked);
   const lockedTools = [...tools, { key: 'forecast', access: forecastAccess }]
-    .filter(t => !t.access.unlocked)
+    .filter(t => !t.access.unlocked && t.key !== 'debt_ratio')
     .sort((a, b) => rank(a) - rank(b));
 
   return (

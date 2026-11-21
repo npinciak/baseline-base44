@@ -35,7 +35,7 @@ export default function AssetsBreakdown({ accounts }) {
   if (!total) return null;
 
   return (
-    <div className="bg-white/[0.03] border border-white/10 backdrop-blur-sm rounded-2xl p-5">
+    <div className="bg-white/[0.03] border border-white/10 backdrop-blur-sm rounded-2xl p-5 h-full">
       <h3 className="text-white font-semibold mb-4">
         Assets <span className="text-white/50 font-normal">· {fmt(total)}</span>
       </h3>

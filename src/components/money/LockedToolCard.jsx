@@ -1,21 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Lock, Check, BookOpen, Zap, ArrowRight } from 'lucide-react';
+import { Lock, Check, BookOpen, ArrowRight } from 'lucide-react';
 import LockedToolPreview from '@/components/money/LockedToolPreview';
-
-function Step({ done, Icon, color, title, sub }) {
-  return (
-    <div className="flex items-center gap-3">
-      <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: done ? `${color}26` : 'rgba(255,255,255,0.05)' }}>
-        {done ? <Check className="w-4 h-4" style={{ color }} /> : <Icon className="w-4 h-4 text-white/50" />}
-      </div>
-      <div className="min-w-0">
-        <p className={`text-sm leading-tight ${done ? 'text-white' : 'text-white/80'}`}>{title}</p>
-        <p className="text-xs text-white/50 mt-0.5">{sub}</p>
-      </div>
-    </div>
-  );
-}
 
 /** Shown in place of an advanced Money tool until its chapter lessons and money move are done. */
 export default function LockedToolCard({ access, onCompleteMove, toolKey }) {
@@ -25,25 +11,30 @@ export default function LockedToolCard({ access, onCompleteMove, toolKey }) {
   const markDone = async () => { setSaving(true); await onCompleteMove(chapter); setSaving(false); };
 
   return (
-    <div className="relative isolate overflow-hidden rounded-2xl border border-border bg-card min-h-[18rem]">
+    <div className="relative isolate overflow-hidden rounded-2xl border border-border bg-card min-h-[18rem] h-full">
       {/* Preview sits in normal flow so the locked card matches the unlocked tool's size */}
       <div aria-hidden="true" inert="" className="pointer-events-none select-none blur-sm opacity-50">
         <LockedToolPreview toolKey={toolKey} />
       </div>
       <div aria-hidden="true" className="absolute inset-0 bg-background/70 pointer-events-none" />
-      <div className="absolute inset-0 overflow-y-auto p-6 sm:p-8 flex flex-col xl:flex-row xl:items-center justify-center gap-6">
-      <div className="relative flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-2">
-          <Lock className="w-4 h-4 text-[#2EFD7A]" />
-          <span className="text-[11px] tracking-widest uppercase font-semibold text-[#2EFD7A]">Unlock this tool</span>
+      <div className="absolute inset-0 overflow-y-auto p-6 sm:p-8 flex flex-col justify-center items-start gap-4">
+        <div className="flex items-center gap-2">
+          <Lock className="w-4 h-4 text-[#2EFD7A] shrink-0" />
+          <span className="text-[11px] tracking-widest uppercase font-semibold text-[#2EFD7A] whitespace-nowrap">Unlock this tool</span>
         </div>
-        <h3 className="text-white text-xl font-semibold">{label}</h3>
-        <p className="text-white/60 text-sm mt-1 max-w-md">{blurb}</p>
-      </div>
-      <div className="relative min-w-0 xl:w-80 space-y-3">
-        <Step done={chapter.learned} Icon={BookOpen} color="#2EFD7A" title={`Chapter ${chapter.number}: ${chapter.title}`}
-          sub={chapter.comingSoon ? 'Lessons coming soon' : `${chapter.lessonsDone} of ${chapter.modules.length} lessons done`} />
-        <Step done={chapter.moveDone} Icon={Zap} color="#2EFD7A" title={chapter.move.title} sub="Complete all chapter lessons, then this money move" />
+        <div>
+          <h3 className="text-white text-xl font-semibold">{label}</h3>
+          <p className="text-white/60 text-sm mt-1 max-w-md">{blurb}</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-white/5">
+            {chapter.learned ? <Check className="w-4 h-4 text-[#2EFD7A]" /> : <BookOpen className="w-4 h-4 text-white/50" />}
+          </div>
+          <div className="min-w-0">
+            <p className="text-sm text-white/80">Chapter {chapter.number}: {chapter.title}</p>
+            {chapter.comingSoon && <p className="text-xs text-white/50 mt-0.5">Lessons coming soon</p>}
+          </div>
+        </div>
         {!chapter.learned && !chapter.comingSoon && (
           <Link to={chapter.unlocked && next ? `/lesson/${next.id}` : '/dashboard'}
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#2EFD7A] text-black text-sm font-semibold hover:bg-[#2EFD7A]/90 transition-all">
@@ -53,10 +44,9 @@ export default function LockedToolCard({ access, onCompleteMove, toolKey }) {
         {chapter.unlocked && chapter.learned && !chapter.moveDone && (
           <button onClick={markDone} disabled={saving}
             className="px-4 py-2 rounded-full bg-[#2EFD7A] text-black text-sm font-semibold hover:bg-[#2EFD7A]/90 disabled:opacity-50 transition-all">
-            {saving ? 'Saving…' : 'I did this move'}
+            {saving ? 'Saving…' : `I did this: ${chapter.move.title}`}
           </button>
         )}
-      </div>
       </div>
     </div>
   );
