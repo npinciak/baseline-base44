@@ -9,6 +9,11 @@ import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { formatDistanceToNow } from 'date-fns';
 import ImagePickerModal from '@/components/ImagePickerModal';
 import ConnectBankButton from '@/components/ConnectBankButton';
+import GoalCheer from '@/components/goal/GoalCheer';
+import GoalPlanner from '@/components/goal/GoalPlanner';
+import GoalWhyCard from '@/components/goal/GoalWhyCard';
+import GoalGuidance from '@/components/goal/GoalGuidance';
+import useGoalPlan from '@/hooks/useGoalPlan';
 
 const GOAL_TYPES = [
   { value: 'vacation', label: 'Go on Vacation' },
@@ -93,6 +98,7 @@ export default function GoalDetail() {
   const [imagePickerTarget, setImagePickerTarget] = useState('edit');
   const [relevantModules, setRelevantModules] = useState([]);
   const [userProgress, setUserProgress] = useState([]);
+  const goalPlan = useGoalPlan(goalId);
 
   useEffect(() => {
     const init = async () => {
@@ -269,6 +275,8 @@ export default function GoalDetail() {
               )}
             </div>
 
+            <GoalCheer saved={saved} target={target} />
+
             {/* Action strip under image */}
             <div className="flex items-center justify-between px-5 py-3 border-t border-white/10">
               <div className="flex items-center gap-2">
@@ -289,6 +297,13 @@ export default function GoalDetail() {
               </button>
             </div>
           </div>
+
+          {!goalPlan.loading && (
+            <>
+              <GoalPlanner goal={goal} plan={goalPlan.plan} saving={goalPlan.saving} onSave={goalPlan.save} />
+              <GoalWhyCard motivation={goalPlan.plan?.motivation} saving={goalPlan.saving} onSave={goalPlan.save} />
+            </>
+          )}
 
           {/* Link Account card */}
           <div className="bg-white/[0.03] border border-white/10 backdrop-blur-sm text-white rounded-2xl p-5">
@@ -357,6 +372,8 @@ export default function GoalDetail() {
               )}
             </div>
           </div>
+
+          {!goalPlan.loading && <GoalGuidance goal={goal} plan={goalPlan.plan} />}
 
           {/* My Base Plan card */}
           <div className="bg-white/[0.03] border border-white/10 backdrop-blur-sm text-white rounded-2xl p-5">
