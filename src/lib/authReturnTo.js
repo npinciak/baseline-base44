@@ -11,6 +11,13 @@
 // Signed-in users land on the dashboard, not the public marketing page at "/".
 const DEFAULT_DESTINATION = "/dashboard";
 
+// Where a finished sign-in or sign-up should land: the page that asked for it,
+// else the learner's home. safeReturnTo already falls back to the dashboard, so
+// a bare /login never drops the signed-in user on the marketing homepage.
+export function postAuthDestination() {
+  return safeReturnTo();
+}
+
 export function safeReturnTo() {
   const params = new URLSearchParams(window.location.search);
   // ProtectedRoute's redirectToLogin sends the destination as from_url.

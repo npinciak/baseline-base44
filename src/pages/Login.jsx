@@ -1,12 +1,14 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
+import { useAuth } from "@/lib/AuthContext";
+import AuthLoadingScreen from "@/components/AuthLoadingScreen";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LogIn, Mail, Lock, Loader2 } from "lucide-react";
 import AuthLayout from "@/components/AuthLayout";
 import GoogleIcon from "@/components/GoogleIcon";
-import { safeReturnTo } from "@/lib/authReturnTo";
+import { postAuthDestination } from "@/lib/authReturnTo";
 import { loginWithMfa } from "@/lib/authMfa";
 import { signInWithProvider } from "@/lib/authMfaFlow";
 import MfaFlow from "@/components/MfaFlow";
@@ -19,9 +21,14 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
 
   const [challenge, setChallenge] = useState(null);
+  const { isAuthenticated, isLoadingAuth } = useAuth();
+
+  if (isLoadingAuth) return <AuthLoadingScreen />;
+  if (isAuthenticated) return <Navigate to={postAuthDestination()} replace />;
+
   const handleGoogle = () => {
     setError("");
-    signInWithProvider("google", safeReturnTo()).catch(err => setError(err.message || "Unable to continue with Google"));
+    signInWithProvider("google", postAuthDestination()).catch(err => setError(err.message || "Unable to continue with Google"));
   };
 
   const handleSubmit = async (e) => {
@@ -31,14 +38,14 @@ export default function Login() {
     try {
       const result = await loginWithMfa(email, password);
       if (result.mfa_required) { setChallenge(result); return; }
-      window.location.href = safeReturnTo();
+      window.location.href = postAuthDestination();
     } catch (err) {
       setError(err.message || "Failed to log in");
       setLoading(false);
     }
   };
 
-  if (challenge) return <MfaScreen><MfaFlow challenge={challenge} returnTo={safeReturnTo()} /></MfaScreen>;
+  if (challenge) return <MfaScreen><MfaFlow challenge={challenge} returnTo={postAuthDestination()} /></MfaScreen>;
 
   return (
     <AuthLayout
