@@ -5,7 +5,6 @@ import { Telescope, Zap, RotateCcw } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import FeaturePanel from '@/components/money/FeaturePanel';
 import GoalSlider from '@/components/money/GoalSlider';
-import ForecastProgressHero from '@/components/money/ForecastProgressHero';
 import ScenarioChips from '@/components/money/ScenarioChips';
 import { money } from '@/lib/goalPlan';
 import { monthlyFromPlan, monthsToTarget, balanceSeries, monthLabel, fullDate } from '@/lib/goalForecast';
@@ -87,7 +86,6 @@ export default function ForecastChart({ live = false }) {
         ))}
       </div>
     )}>
-      <ForecastProgressHero goal={goal} saved={saved} target={target} monthly={monthly} rate={rate} />
       <div className="flex flex-wrap items-end justify-between gap-4 mb-2">
         <div>
           <p className="text-white/60 text-sm">At this pace, you could reach <span className="text-white font-semibold">{goal.name}</span> by</p>
