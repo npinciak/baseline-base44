@@ -28,7 +28,7 @@ import {
   summarize, weeklyCashflow, buildSampleTransactions, SAMPLE_BALANCE,
 } from '@/lib/moneyData';
 
-const WIDE_TOOLS = ['spending', 'calendar'];
+const WIDE_TOOLS = ['spending', 'calendar', 'cashflow'];
 
 const LIABILITIES = ['credit_card', 'loan', 'mortgage', 'line_of_credit'];
 
