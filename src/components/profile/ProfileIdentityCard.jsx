@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { useToast } from '@/components/ui/use-toast';
 import { getDisplayName, getInitial } from '@/lib/displayName';
 
-export default function ProfileIdentityCard({ user, profile, levelInfo, walletBalance, onUpdated }) {
+export default function ProfileIdentityCard({ user, profile, levelInfo, onUpdated, children }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState('');
   const [saving, setSaving] = useState(false);
@@ -45,7 +45,7 @@ export default function ProfileIdentityCard({ user, profile, levelInfo, walletBa
   };
 
   return (
-    <div className="bg-white/[0.03] border border-white/10 backdrop-blur-sm rounded-3xl p-6 mb-6">
+    <div className="bg-gradient-to-br from-[#2EFD7A]/[0.08] via-white/[0.03] to-[#2EA0FD]/[0.08] border border-white/10 backdrop-blur-sm rounded-3xl p-6">
       <div className="flex items-center gap-5">
         <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#2EFD7A]/30 to-[#2EFD7A]/10 border border-[#2EFD7A]/20 flex items-center justify-center text-3xl font-display font-extrabold text-[#2EFD7A] shrink-0">
           {initial}
@@ -106,19 +106,7 @@ export default function ProfileIdentityCard({ user, profile, levelInfo, walletBa
         </div>
       </div>
 
-      <div className="mt-5">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-xs text-white/60">
-            {levelInfo?.next ? `Level ${level} → Level ${levelInfo.next.level} (${levelInfo.next.title})` : 'Summit Level Reached'}
-          </span>
-          <span className="text-xs font-semibold text-[#2EFD7A]">
-            {(levelInfo?.lifetimeCoins || 0).toLocaleString()} {levelInfo?.next ? `/ ${levelInfo.next.minLifetimeCoins.toLocaleString()}` : ''} Lifetime BC · {(walletBalance ?? 0).toLocaleString()} Spendable
-          </span>
-        </div>
-        <div className="h-3 bg-white/10 rounded-full overflow-hidden">
-          <div className="h-full rounded-full bg-gradient-to-r from-[#2EFD7A] to-[#2EA0FD] transition-all duration-700" style={{ width: `${Math.max(levelInfo?.progressPct || 0, 4)}%` }} />
-        </div>
-      </div>
+      {children}
     </div>
   );
 }

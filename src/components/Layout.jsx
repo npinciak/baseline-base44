@@ -7,6 +7,7 @@ import { getLevelInfo, getLifetimeCoins } from '@/lib/coinLevels';
 import useAdminViewMode from '@/hooks/useAdminViewMode';
 import AdminViewToggle from '@/components/dashboard/AdminViewToggle';
 import { savePendingBaseScore } from '@/lib/saveBaseScore';
+import { applyBasePathProgress } from '@/lib/baseScoreProgress';
 
 export default function Layout() {
   const [user, setUser] = useState(null);
@@ -42,12 +43,24 @@ export default function Layout() {
 
   const [walletBalance, setWalletBalance] = useState(null);
   const [isOwner, setIsOwner] = useState(false);
+  const [scoreInputs, setScoreInputs] = useState({ progress: [], moves: [] });
+
+  useEffect(() => {
+    const onSaved = (e) => e.detail?.stats && setStats(e.detail.stats);
+    window.addEventListener('basescore-saved', onSaved);
+    return () => window.removeEventListener('basescore-saved', onSaved);
+  }, []);
 
   useEffect(() => {
     if (!user) return;
-    savePendingBaseScore(user).then(saved => saved
-      ? setStats(saved)
-      : base44.entities.UserStats.filter({ user_id: user.id }).then(r => r[0] && setStats(r[0])));
+    const loadStats = () => base44.entities.UserStats.filter({ user_id: user.id }).then(r => r[0] && setStats(r[0]));
+    savePendingBaseScore(user)
+      .then(saved => (saved ? setStats(saved) : loadStats()))
+      .catch(err => { console.error('BaseScore save failed', err); loadStats(); });
+    Promise.all([
+      base44.entities.UserProgress.filter({ user_id: user.id }),
+      base44.entities.MoneyMoveCompletion.filter({ user_id: user.id }),
+    ]).then(([progress, moves]) => setScoreInputs({ progress, moves })).catch(() => {});
     base44.functions.invoke('getWallet', {}).then(r => setWalletBalance(r?.data?.balance ?? 0)).catch(() => {});
     base44.functions.invoke('curriculumReview', { mode: 'check' }).then(r => setIsOwner(!!r?.data?.allowed)).catch(() => {});
   }, [user]);
@@ -55,6 +68,7 @@ export default function Layout() {
   const { viewMode, setViewMode, isRealAdmin, effectiveIsAdmin, isLearnerView } = useAdminViewMode(user);
   const levelInfo = getLevelInfo(getLifetimeCoins(stats));
   const xpProgress = levelInfo.progressPct;
+  const baseScore = applyBasePathProgress(stats, scoreInputs.progress, scoreInputs.moves)?.base_score ?? null;
   const canAccessDevTools = !isLearnerView && (effectiveIsAdmin || isOwner);
 
   const navItems = [
@@ -106,8 +120,8 @@ export default function Layout() {
               className="mt-4 flex items-center justify-between gap-3 text-sm hover:bg-white/5 p-2 -mx-2 rounded-lg transition-colors cursor-pointer group"
             >
               <dt className="text-muted-foreground group-hover:text-white/80 transition-colors">BaseScore</dt>
-              <dd className="font-semibold text-primary tabular-nums" aria-label={stats.base_score == null ? 'BaseScore not yet available' : `BaseScore ${stats.base_score} out of 500`}>
-                {stats.base_score ?? '—'}{stats.base_score != null && <span className="text-xs font-normal text-muted-foreground"> / 500</span>}
+              <dd className="font-semibold text-primary tabular-nums" aria-label={baseScore == null ? 'BaseScore not yet available' : `BaseScore ${baseScore} out of 500`}>
+                {baseScore ?? '—'}{baseScore != null && <span className="text-xs font-normal text-muted-foreground"> / 500</span>}
               </dd>
             </NavLink>
           </div>

@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import { ArrowRight, ArrowLeft, PiggyBank, Unlock, TrendingUp, Award, BookOpen, Sprout, GraduationCap, BarChart2 } from 'lucide-react';
 import BaselineWordmark from '@/components/BaselineWordmark';
+import { readPendingBaseScore, clearPendingBaseScore } from '@/lib/saveBaseScore';
 
 const GOALS = [
   { value: 'save_money', label: 'Save More Money', icon: PiggyBank },
