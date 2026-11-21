@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { PiggyBank } from 'lucide-react';
+import FeaturePanel from '@/components/money/FeaturePanel';
 import GoalsCarousel from '@/components/money/GoalsCarousel';
 import MoneyGoalForm from '@/components/money/MoneyGoalForm';
 import GoalUpgradePrompt from '@/components/money/GoalUpgradePrompt';
@@ -11,11 +13,7 @@ export default function GoalsBanner({ learning }) {
   const state = useMoneyGoals(learning);
   const available = state.unlocked;
   return (
-    <section id="goals" className="scroll-mt-6 min-w-0 rounded-2xl bg-card/60 border border-border p-3 sm:p-4 space-y-2 text-foreground">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-sm font-semibold">Savings goals</h2>
-        {available && !state.loading && <Button size="sm" className="bg-gradient-to-br from-[#022C22] via-[#065F46] to-[#047857] text-white font-semibold border border-[#10B981]/40 shadow-[0_0_16px_rgba(6,95,70,0.45)] hover:brightness-110 transition-all" disabled={!!state.error} onClick={state.open}>{state.forceEmergency ? 'Set up emergency fund' : 'New goal'}</Button>}
-      </div>
+    <FeaturePanel id="goals" icon={PiggyBank} kicker="Savings goals" className="space-y-3" action={available && !state.loading && <Button size="sm" className="bg-gradient-to-br from-[#022C22] via-[#065F46] to-[#047857] text-white font-semibold border border-[#10B981]/40 shadow-[0_0_16px_rgba(6,95,70,0.45)] hover:brightness-110 transition-all" disabled={!!state.error} onClick={state.open}>{state.forceEmergency ? 'Set up emergency fund' : 'New goal'}</Button>}>
       {state.loading ? <p role="status" className="text-muted-foreground">Loading your goals…</p> : <>
         {state.error && !state.creating && <div role="alert"><p>{state.error}</p><Button variant="outline" onClick={state.load}>Try again</Button></div>}
         {!state.unlocked && <p className="text-sm text-muted-foreground">Complete every lesson in Money In, then set up your emergency fund as its money move. <Link to="/dashboard" className="text-[#2EFD7A] underline">Continue BasePath</Link></p>}
@@ -29,6 +27,6 @@ export default function GoalsBanner({ learning }) {
       </>}
       {state.creating && <MoneyGoalForm emergency={state.forceEmergency} saving={state.saving} error={state.error} onClose={() => state.setCreating(false)} onSave={state.save} />}
       {state.upgrade && <GoalUpgradePrompt onClose={() => state.setUpgrade(false)} />}
-    </section>
+    </FeaturePanel>
   );
 }

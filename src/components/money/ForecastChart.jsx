@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceDot, CartesianGrid } from 'recharts';
 import ScenarioSlider from '@/components/money/ScenarioSlider';
+import FeaturePanel from '@/components/money/FeaturePanel';
 import { Telescope, TrendingUp, TrendingDown, Sparkles, Lock } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { getLifetimeCoins } from '@/lib/coinLevels';
@@ -71,12 +72,9 @@ export default function ForecastChart({ startBalance, dailyIncome, dailySpend, i
   const up = gain >= 0;
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-[#06142a] via-black to-black p-5 sm:p-7 shadow-[0_0_60px_-15px_rgba(46,253,122,0.35)]">
+    <FeaturePanel icon={Telescope} kicker="Future view">
       <div className="flex flex-wrap items-start justify-between gap-4 mb-2">
         <div>
-          <p className="flex items-center gap-2 text-[11px] uppercase tracking-[0.25em] text-[#2EFD7A] font-semibold mb-2">
-            <Telescope className="w-4 h-4" /> Future view
-          </p>
           <p className="text-white/60 text-sm">Where you could be on {dayLabel(days)}</p>
           <motion.p key={`${days}-${Math.round(end)}`} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="text-4xl sm:text-6xl font-display font-extrabold text-white leading-tight">
             {fmt(end)}
@@ -174,6 +172,6 @@ export default function ForecastChart({ startBalance, dailyIncome, dailySpend, i
 
         <p className="text-[11px] text-white/60 mt-3">A sandbox projection from your recent income and spending. Nothing here changes your real transactions.</p>
       </div>
-    </div>
+    </FeaturePanel>
   );
 }
