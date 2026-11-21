@@ -45,7 +45,7 @@ export default function MountainHero({ balance, camps }) {
         </div>
       </div>
 
-      <svg viewBox="0 0 800 270" className="relative z-0 w-full -mt-6 sm:-mt-10" role="img" aria-label="Mountain climbing progress">
+      <svg viewBox="0 0 800 270" className="relative z-0 w-full" role="img" aria-label="Mountain climbing progress">
         <defs>
           <linearGradient id="mtBack" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#12335f" /><stop offset="100%" stopColor="#050d1c" /></linearGradient>
           <linearGradient id="mtFront" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#1b4f8f" /><stop offset="100%" stopColor="#060f20" /></linearGradient>
