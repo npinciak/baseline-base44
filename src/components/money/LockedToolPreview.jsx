@@ -1,4 +1,6 @@
 import RecurringList from '@/components/money/RecurringList';
+import BalanceTool from '@/components/money/BalanceTool';
+import TransactionList from '@/components/money/TransactionList';
 import SpendingDonut from '@/components/money/SpendingDonut';
 import CategoryList from '@/components/money/CategoryList';
 import CashflowBars from '@/components/money/CashflowBars';
@@ -26,6 +28,8 @@ const grandTotal = categories.reduce((s, c) => s + c.total, 0);
 // Mirrors the unlocked tool layouts on the Money page so the locked card keeps the same footprint.
 export default function LockedToolPreview({ toolKey }) {
   switch (toolKey) {
+    case 'balance': return <BalanceTool balance={SAMPLE_BALANCE} accountCount={SAMPLE_ACCOUNTS.length} />;
+    case 'transactions': return <TransactionList transactions={sample} />;
     case 'recurring': return <RecurringList recurring={recurring} />;
     case 'spending': return (
       <div className="grid lg:grid-cols-2 gap-6">

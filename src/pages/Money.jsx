@@ -10,7 +10,8 @@ import AmbientBackdrop from '@/components/dashboard/AmbientBackdrop';
 import ForecastChart from '@/components/money/ForecastChart';
 import SpendingDonut from '@/components/money/SpendingDonut';
 import CashflowBars from '@/components/money/CashflowBars';
-import ConnectedOverview from '@/components/money/ConnectedOverview';
+import BalanceTool from '@/components/money/BalanceTool';
+import TransactionList from '@/components/money/TransactionList';
 import SankeyCashflow from '@/components/money/SankeyCashflow';
 import AssetsBreakdown, { SAMPLE_ACCOUNTS } from '@/components/money/AssetsBreakdown';
 import CategoryList from '@/components/money/CategoryList';
@@ -111,6 +112,8 @@ export default function Money() {
   const bankUnlocked = Boolean(learning.isAdmin) || Boolean(bankingChapter?.learned);
   const shownAccounts = isSample ? SAMPLE_ACCOUNTS : accounts;
   const tools = [
+    { key: 'balance', node: <BalanceTool balance={balance} accountCount={shownAccounts.length} /> },
+    { key: 'transactions', node: <TransactionList transactions={txs} /> },
     { key: 'recurring', node: <RecurringList recurring={recurring} /> },
     { key: 'spending', node: (
       <div className="grid lg:grid-cols-2 gap-6">
@@ -155,11 +158,6 @@ export default function Money() {
 
         <GoalsBanner learning={learning} />
 
-        {!isSample && <motion.div variants={itemVariants}>
-          <MoneySection id="overview" kicker="Where you stand" title="Your money today">
-            <ConnectedOverview balance={balance} accountCount={accounts.length} transactions={txs} />
-          </MoneySection>
-        </motion.div>}
 
         {forecastUnlocked && <motion.div variants={itemVariants} id="forecast" className="scroll-mt-6">
           <ForecastChart startBalance={balance} dailyIncome={summary.dailyIncome} dailySpend={summary.dailySpend} isAdmin={learning.isAdmin} />

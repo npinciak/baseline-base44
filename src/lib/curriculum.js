@@ -64,6 +64,8 @@ export function chapterFor({ topic, position = 'last' }) {
 // Tools without a chapter are always available. `group` drives the inventory on the Money page.
 export const MONEY_TOOLS = {
   goals: { label: 'Savings Goals', group: 'plan', chapter: 'money-in', decision: 'keep', blurb: 'Build your emergency fund. Additional goals require a subscription.', audit: 'Free: one emergency fund. Paid: additional goals. Initial setup is the chapter money move, not an early tool unlock.' },
+  balance: { label: 'Total Balance', group: 'track', chapter: 'banking', decision: 'keep', blurb: 'See your combined balance across linked accounts.', audit: 'Unlock after Banking Basics and its connect-your-bank money move.' },
+  transactions: { label: 'Recent Transactions', group: 'track', chapter: 'goals', decision: 'keep', blurb: 'Review every purchase and deposit, filtered by money in or out.', audit: 'Unlock after Setting Goals. Read-only view of bank history.' },
   recurring: { label: 'Recurring Bills', group: 'track', chapter: 'money-out', decision: 'keep', blurb: 'Spot the charges that repeat every month.', audit: 'Confirm repeating charges against bank statements. Detection is an estimate, not a confirmed bill schedule.' },
   spending: { label: 'Spending Breakdown', group: 'track', chapter: 'needs-wants', decision: 'keep', blurb: 'Understand where your money goes, category by category.', audit: 'Apply Needs vs. Wants. Categorization needs review; a spending chart is not a budget.' },
   calendar: { label: 'Financial Calendar', group: 'plan', chapter: 'renting-smart', decision: 'keep', blurb: 'Plan bill dates, paydays and savings day by day.', audit: 'Unlock after Renting Your Place and its lease-dates money move.' },
@@ -90,7 +92,7 @@ export const TOOL_GROUPS = [
 ];
 
 export const TOOL_LINKS = {
-  overview: '/money#overview', recurring: '/money#recurring', spending: '/money#spending',
+  overview: '/money#balance', balance: '/money#balance', transactions: '/money#transactions', recurring: '/money#recurring', spending: '/money#spending',
   networth: '/money#networth', cashflow: '/money#cashflow', coach: '/money#coach', strategies: '/money#strategies', money_flow: '/money#money_flow', forecast: '/money#forecast', calendar: '/money#calendar',
   goals: '/money#goals', profile: '/basescore', credit_score: '/money#credit_score',
   debt_ratio: '/money#debt_ratio', risk: '/money#risk', knowledge: '/money#knowledge',
