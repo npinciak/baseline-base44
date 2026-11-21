@@ -127,7 +127,9 @@ export default function Money() {
   const forecastAccess = toolAccess('forecast', learning.chapters, learning.isAdmin);
   const forecastUnlocked = forecastAccess.unlocked;
   const openTools = tools.filter(t => t.access.unlocked);
-  const lockedTools = [...tools, { key: 'forecast', access: forecastAccess }].filter(t => !t.access.unlocked);
+  const lockedTools = [...tools, { key: 'forecast', access: forecastAccess }]
+    .filter(t => !t.access.unlocked)
+    .sort((a, b) => (a.access.chapter?.number ?? Infinity) - (b.access.chapter?.number ?? Infinity));
 
   return (
     <div className="relative min-h-screen bg-black px-4 py-8 overflow-hidden">
