@@ -143,13 +143,13 @@ export default function Money() {
           <BankBalanceSection connected={false} balance={balance} accountCount={accounts.length} locked={!bankUnlocked} onConnected={load} />
         </motion.div>}
 
+        <GoalsBanner learning={learning} />
+
         {!isSample && <motion.div variants={itemVariants}>
           <MoneySection id="overview" kicker="Where you stand" title="Your money today">
             <ConnectedOverview balance={balance} accountCount={accounts.length} transactions={txs} />
           </MoneySection>
         </motion.div>}
-
-        <GoalsBanner learning={learning} />
 
         {isSample && (
           <motion.div variants={itemVariants} className="flex flex-wrap items-center justify-between gap-4 px-5 py-4 bg-[#2EFD7A]/10 border border-[#2EFD7A]/30 rounded-2xl">
