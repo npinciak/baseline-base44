@@ -37,12 +37,8 @@ export default function LockedToolPreview({ toolKey }) {
         <SankeyCashflow txs={sample} />
       </div>
     );
-    case 'calendar': return (
-      <div className="space-y-6">
-        <FinancialCalendar balance={SAMPLE_BALANCE} txs={sample} isSample readOnlyPreview />
-        <ForecastChart startBalance={SAMPLE_BALANCE} dailyIncome={summary.dailyIncome} dailySpend={summary.dailySpend} />
-      </div>
-    );
+    case 'calendar': return <FinancialCalendar balance={SAMPLE_BALANCE} txs={sample} isSample readOnlyPreview />;
+    case 'forecast': return <ForecastChart startBalance={SAMPLE_BALANCE} dailyIncome={summary.dailyIncome} dailySpend={summary.dailySpend} />;
     case 'networth': return <AssetsBreakdown accounts={SAMPLE_ACCOUNTS} />;
     case 'debt_ratio': return <DebtRatioTool accounts={SAMPLE_ACCOUNTS} summary={summary} recurring={recurring} />;
     case 'credit_score': return <CreditScoreTool accounts={SAMPLE_ACCOUNTS} creditHealth={66} />;

@@ -59,7 +59,8 @@ export const MONEY_TOOLS = {
   goals: { label: 'Savings Goals', group: 'plan', chapter: 'money-in', decision: 'keep', blurb: 'Build your emergency fund. Additional goals require a subscription.', audit: 'Free: one emergency fund. Paid: additional goals. Initial setup is the chapter money move, not an early tool unlock.' },
   recurring: { label: 'Recurring Bills', group: 'track', chapter: 'money-out', decision: 'keep', blurb: 'Spot the charges that repeat every month.', audit: 'Confirm repeating charges against bank statements. Detection is an estimate, not a confirmed bill schedule.' },
   spending: { label: 'Spending Breakdown', group: 'track', chapter: 'needs-wants', decision: 'keep', blurb: 'Understand where your money goes, category by category.', audit: 'Apply Needs vs. Wants. Categorization needs review; a spending chart is not a budget.' },
-  calendar: { label: 'Calendar & Forecast', group: 'plan', chapter: 'saving-smart', decision: 'keep', blurb: 'Plan bill dates, paydays and savings, then explore your future balance.', audit: 'Unlock after Saving Smart and its deposit money move. Forecasts are sandbox estimates, never changes to bank history.' },
+  calendar: { label: 'Financial Calendar', group: 'plan', chapter: 'saving-smart', decision: 'keep', blurb: 'Plan bill dates, paydays and savings day by day.', audit: 'Unlock after Saving Smart and its deposit money move.' },
+  forecast: { label: 'Future View', group: 'plan', chapter: 'saving-smart', decision: 'keep', blurb: 'See where your balance could be and test "what if" spending changes.', audit: 'Unlock after Saving Smart and its deposit money move. Forecasts are sandbox estimates, never changes to bank history.' },
   cashflow: { label: 'Cashflow', group: 'track', chapter: 'build-budget', decision: 'review', blurb: 'Compare money coming in and going out over time.', audit: 'Owner decision pending: retain the income-versus-outgo time view, or combine it with Calendar. Category flow overlaps Spending Breakdown.' },
   networth: { label: 'Net Worth', group: 'grow', chapter: 'growth', decision: 'review', blurb: 'Compare assets and liabilities across your accounts.', audit: 'Owner decision pending: improve or retire. It is not a credit-utilization destination.' },
   knowledge: { label: 'Financial Knowledge', group: 'score', chapter: null, decision: 'keep', blurb: 'Track learning progress and return to your next lesson.', audit: 'Informational learning summary, not a gated financial tool.' },
@@ -80,7 +81,7 @@ export const TOOL_GROUPS = [
 
 export const TOOL_LINKS = {
   overview: '/money#overview', recurring: '/money#recurring', spending: '/money#spending',
-  networth: '/money#networth', forecast: '/money#calendar', calendar: '/money#calendar',
+  networth: '/money#networth', forecast: '/money#forecast', calendar: '/money#calendar',
   goals: '/money#goals', profile: '/basescore', credit_score: '/money#credit_score',
   debt_ratio: '/money#debt_ratio', risk: '/money#risk', knowledge: '/money#knowledge',
 };

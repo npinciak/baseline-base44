@@ -124,9 +124,10 @@ export default function Money() {
     { key: 'debt_ratio', node: <DebtRatioTool accounts={shownAccounts} summary={summary} recurring={recurring} /> },
     { key: 'credit_score', node: <CreditScoreTool accounts={shownAccounts} creditHealth={stats?.score_credit_health ?? null} /> },
   ].map(t => ({ ...t, access: toolAccess(t.key, learning.chapters, learning.isAdmin) }));
-  const forecastUnlocked = tools.find(t => t.key === 'calendar').access.unlocked;
+  const forecastAccess = toolAccess('forecast', learning.chapters, learning.isAdmin);
+  const forecastUnlocked = forecastAccess.unlocked;
   const openTools = tools.filter(t => t.access.unlocked);
-  const lockedTools = tools.filter(t => !t.access.unlocked);
+  const lockedTools = [...tools, { key: 'forecast', access: forecastAccess }].filter(t => !t.access.unlocked);
 
   return (
     <div className="relative min-h-screen bg-black px-4 py-8 overflow-hidden">
