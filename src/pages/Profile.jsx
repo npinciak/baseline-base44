@@ -6,6 +6,7 @@ import { useToast } from '@/components/ui/use-toast';
 import BaseScoreSection from '@/components/profile/BaseScoreSection';
 import FamilySection from '@/components/profile/FamilySection';
 import JourneySection from '@/components/profile/JourneySection';
+import TrophyCase from '@/components/profile/TrophyCase';
 import ProfileIdentityCard from '@/components/profile/ProfileIdentityCard';
 import LevelBenefitsPanel from '@/components/levels/LevelBenefitsPanel';
 import AmbientBackdrop from '@/components/dashboard/AmbientBackdrop';
@@ -31,6 +32,7 @@ export default function Profile() {
   const [walletBalance, setWalletBalance] = useState(0);
   const [payloadModules, setPayloadModules] = useState([]);
   const [moves, setMoves] = useState([]);
+  const [trophies, setTrophies] = useState([]);
   const [activatingShield, setActivatingShield] = useState(false);
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState(null);
@@ -68,7 +70,7 @@ export default function Profile() {
       setUser(u);
       const profileRes = await base44.functions.invoke('getUserProfile', {}).catch(() => null);
       setProfile(profileRes?.data?.profile || null);
-      const [statsArr, allBadges, ubArr, prog, mods, goalsRes, walletRes, payloadRes, movesArr] = await Promise.all([
+      const [statsArr, allBadges, ubArr, prog, mods, goalsRes, walletRes, payloadRes, movesArr, trophyArr] = await Promise.all([
         base44.entities.UserStats.filter({ user_id: u.id }),
         base44.entities.Badge.list(),
         base44.entities.UserBadge.filter({ user_id: u.id }),
@@ -78,7 +80,9 @@ export default function Profile() {
         base44.functions.invoke('getWallet', {}).catch(() => ({ data: { balance: 0 } })),
         base44.functions.invoke('getPayloadLessons', {}).catch(() => ({ data: { modules: [] } })),
         base44.entities.MoneyMoveCompletion.filter({ user_id: u.id }).catch(() => []),
+        base44.entities.GoalTrophy.filter({ user_id: u.id }, '-archived_at').catch(() => []),
       ]);
+      setTrophies(trophyArr || []);
       setStats(statsArr[0] || null);
       setBadges(allBadges);
       setUserBadges(ubArr);
@@ -106,7 +110,8 @@ export default function Profile() {
     recentProgress.map(p => modules.find(m => m.id === p.module_id)?.topic_tag).filter(Boolean)
   )];
 
-  const activeGoal = goals.find(g => (g.current_amount || 0) < g.target_amount) || goals[0];
+  const openGoals = goals.filter(g => !g.archived);
+  const activeGoal = openGoals.find(g => (g.current_amount || 0) < g.target_amount) || openGoals[0];
 
   const chapters = buildChapters(payloadModules, progress, moves);
   const completedUnitsCount = chapters.reduce((s, c) => s + c.lessonsDone, 0);
@@ -193,6 +198,11 @@ export default function Profile() {
         {/* My Journey (For Kids) */}
         <motion.div variants={itemVariants} className="mb-6">
           <JourneySection stats={stats} goal={activeGoal} earnedBadges={earnedBadges} />
+        </motion.div>
+
+        {/* Trophy Case: retired savings goals */}
+        <motion.div variants={itemVariants} id="trophies" className="scroll-mt-6">
+          <TrophyCase trophies={trophies} />
         </motion.div>
 
         {/* Family Dashboard (For Parents) */}

@@ -50,7 +50,10 @@ export default async function(req) {
     const goals = await goalsRes.json();
     if (!goalsRes.ok || !Array.isArray(goals)) return Response.json({error:'Could not load savings goals.'},{status:502});
     const subscription = await goalSubscription(base44,user);
-    return Response.json({ goals, userProfileId, subscription });
+    const trophies = await base44.asServiceRole.entities.GoalTrophy.filter({ user_id: user.id });
+    const archivedIds = new Set(trophies.map(t => t.supabase_goal_id));
+    const withStatus = goals.map(g => ({ ...g, archived: archivedIds.has(g.id) }));
+    return Response.json({ goals: withStatus, userProfileId, subscription });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }

@@ -1,0 +1,69 @@
+{
+  "name": "GoalTrophy",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "supabase_goal_id": {
+      "type": "string",
+      "description": "ID of the completed savings goal"
+    },
+    "name": {
+      "type": "string"
+    },
+    "target_amount": {
+      "type": "number"
+    },
+    "currency_code": {
+      "type": "string",
+      "default": "USD"
+    },
+    "image": {
+      "type": "string"
+    },
+    "archived_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 1000
+    }
+  },
+  "required": [
+    "user_id",
+    "supabase_goal_id",
+    "name",
+    "target_amount"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -21,7 +21,8 @@ export default function GoalsBanner({ learning }) {
         {!state.unlocked && <p className="text-sm text-muted-foreground">Complete every lesson in Money In, then set up your emergency fund as its money move. <Link to="/dashboard" className="text-[#2EFD7A] underline">Continue BasePath</Link></p>}
         {state.forceEmergency && !state.goals.length && <p className="text-sm text-muted-foreground">Your first money move: set up an emergency fund.</p>}
         {state.emergency && state.unlocked && state.chapter && !state.chapter.moveDone && <Button className={GREEN_BTN} disabled={state.saving} onClick={state.confirmEmergency}>{state.saving ? 'Saving…' : 'Use my emergency fund for this money move'}</Button>}
-        {state.toolUnlocked && state.goals.length > 0 && <GoalsCarousel goals={state.goals} />}
+        {state.toolUnlocked && state.activeGoals.length > 0 && <GoalsCarousel goals={state.activeGoals} onArchive={state.archive} archivingId={state.archivingId} />}
+        {state.toolUnlocked && state.goals.length > 0 && !state.activeGoals.length && <p className="text-sm text-muted-foreground">All your goals are in your <Link to="/profile#trophies" className="text-[#2EFD7A] underline">Trophy Case</Link>. Start a new one when you're ready.</p>}
         {!state.paid && <p className="text-xs text-muted-foreground">Free: one emergency fund. Additional goals require an active subscription.</p>}
         {state.forceEmergency && state.goals.length > 0 && <p className="text-sm text-muted-foreground">Your existing goals are preserved. You can rename one to Emergency Fund, or remove an old goal before creating your free emergency fund.</p>}
         {!state.goals.length && state.unlocked && !state.error && <p className="text-sm text-muted-foreground">{state.forceEmergency ? 'No goals yet. Choose your emergency-fund target to get started.' : 'No goals yet. Create a savings goal to get started.'}</p>}
