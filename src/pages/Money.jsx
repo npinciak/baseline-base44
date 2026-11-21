@@ -21,7 +21,6 @@ import { toolAccess } from '@/lib/curriculum';
 import MoneySection from '@/components/money/MoneySection';
 import useLearningState from '@/hooks/useLearningState';
 import useUserStats from '@/hooks/useUserStats';
-import KnowledgeTool from '@/components/money/KnowledgeTool';
 import DebtRatioTool from '@/components/money/DebtRatioTool';
 import CreditScoreTool from '@/components/money/CreditScoreTool';
 
@@ -122,7 +121,6 @@ export default function Money() {
     ) },
     { key: 'networth', node: <AssetsBreakdown accounts={shownAccounts} /> },
 
-    { key: 'knowledge', node: <KnowledgeTool chapters={learning.chapters} knowledgeScore={stats?.score_financial_knowledge ?? null} /> },
     { key: 'debt_ratio', node: <DebtRatioTool accounts={shownAccounts} summary={summary} recurring={recurring} /> },
     { key: 'credit_score', node: <CreditScoreTool accounts={shownAccounts} creditHealth={stats?.score_credit_health ?? null} /> },
   ].map(t => ({ ...t, access: toolAccess(t.key, learning.chapters, learning.isAdmin) }));
