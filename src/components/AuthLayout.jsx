@@ -156,7 +156,7 @@ export default function AuthLayout({ icon: Icon, title, subtitle, footer, second
             </div>
           )}
 
-          {subtitle && <p className="text-white/50 mt-1 text-xs">{subtitle}</p>}
+          {subtitle && <p className="text-white/50 mt-3 text-xs">{subtitle}</p>}
         </motion.div>
 
         <motion.div
