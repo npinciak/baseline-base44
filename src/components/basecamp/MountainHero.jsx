@@ -4,7 +4,6 @@ import { Coins } from 'lucide-react';
 import useCountUp from '@/hooks/useCountUp';
 
 const TRAIL = 'M40 238 C 150 238, 170 205, 260 198 S 390 168, 430 140 S 520 92, 560 56';
-const ROMAN = ['I', 'II', 'III', 'IV', 'V'];
 
 export default function MountainHero({ balance, camps }) {
   const pathRef = useRef(null);
@@ -31,7 +30,7 @@ export default function MountainHero({ balance, camps }) {
           <p className="text-white/60 text-sm max-w-sm">
             {nextIdx === -1
               ? "You've reached the summit. Every reward is unlocked."
-              : `${(camps[nextIdx] - balance).toLocaleString()} Base Coins to reach Camp ${ROMAN[nextIdx]}.`}
+              : `${(camps[nextIdx] - balance).toLocaleString()} Base Coins to your next checkpoint.`}
           </p>
         </div>
         <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-black/40 backdrop-blur px-4 py-3">
@@ -59,10 +58,11 @@ export default function MountainHero({ balance, camps }) {
         <polygon points="545,38 520,62 536,58 548,70 560,58 575,64" fill="#e8f4ff" opacity="0.9" />
         <path ref={pathRef} d={TRAIL} fill="none" stroke="rgba(255,255,255,0.25)" strokeWidth="3" strokeDasharray="2 8" strokeLinecap="round" />
         <motion.path d={TRAIL} fill="none" stroke="url(#trail)" strokeWidth="4" strokeLinecap="round" initial={{ pathLength: 0 }} animate={{ pathLength: progress }} transition={{ duration: 1.4, ease: 'easeOut' }} style={{ filter: 'drop-shadow(0 0 6px rgba(43,249,233,0.8))' }} />
-        {pts?.camps.map((c, i) => (
+        {pts?.camps.map((c) => (
           <g key={c.cost} transform={`translate(${c.x},${c.y})`}>
             <circle r="7" fill={balance >= c.cost ? '#2BF9E9' : '#0b1b33'} stroke="#fff" strokeWidth="2" />
-            <text y="-14" textAnchor="middle" fill="#fff" fontSize="12" fontWeight="700">Camp {ROMAN[i]}</text>
+            <line x1="0" y1="-7" x2="0" y2="-33" stroke="#fff" strokeWidth="2" />
+            <polygon points="0,-33 18,-27 0,-21" fill="#2EFD7A" />
             <text y="24" textAnchor="middle" fill="rgba(255,255,255,0.55)" fontSize="10">{c.cost.toLocaleString()} BC</text>
           </g>
         ))}
@@ -72,10 +72,6 @@ export default function MountainHero({ balance, camps }) {
             <circle r="8" fill="#fff" stroke="#2EA0FD" strokeWidth="3" />
           </motion.g>
         )}
-        <g transform="translate(560,56)">
-          <line x1="0" y1="0" x2="0" y2="-26" stroke="#fff" strokeWidth="2" />
-          <polygon points="0,-26 18,-20 0,-14" fill="#2EFD7A" />
-        </g>
       </svg>
     </div>
   );
