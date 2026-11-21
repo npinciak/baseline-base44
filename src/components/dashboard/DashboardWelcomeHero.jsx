@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Coins, Flame, Sparkles, CheckCircle2, Shield } from 'lucide-react';
+import { ArrowRight, Flame, Sparkles, CheckCircle2, Shield } from 'lucide-react';
 import { LESSON_REWARD } from '@/lib/coinEconomy';
 import { TOOL_LINKS, nextLesson } from '@/lib/curriculum';
-import { getLevelInfo, getLifetimeCoins } from '@/lib/coinLevels';
 
 function timeGreeting() {
   const h = new Date().getHours();
@@ -19,10 +18,6 @@ export default function DashboardWelcomeHero({ name, stats, chapters, onComplete
   const activeChapter = chapters.find((c) => c.unlocked && !c.comingSoon && (!c.learned || (c.move && !c.moveDone)));
   const totalLessons = chapters.reduce((s, c) => s + c.modules.length, 0);
   const doneLessons = chapters.reduce((s, c) => s + c.lessonsDone, 0);
-  const overallPct = totalLessons > 0 ? Math.round((doneLessons / totalLessons) * 100) : 0;
-
-  const lifetimeCoins = getLifetimeCoins(stats, doneLessons);
-  const levelInfo = getLevelInfo(lifetimeCoins);
   const streak = stats?.current_streak || 0;
 
   const isMoveStage = !upcomingMod && activeChapter?.learned && activeChapter?.move && !activeChapter?.moveDone;
@@ -81,8 +76,8 @@ export default function DashboardWelcomeHero({ name, stats, chapters, onComplete
         }}
       />
 
-      <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
-        <div className="lg:col-span-7 flex flex-col justify-between gap-6">
+      <div className="relative z-10">
+        <div className="flex flex-col justify-between gap-6">
           <div>
             <div className="flex flex-wrap items-center gap-2 mb-3">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#2EFD7A]/15 text-[#2EFD7A] border border-[#2EFD7A]/30">
@@ -150,58 +145,6 @@ export default function DashboardWelcomeHero({ name, stats, chapters, onComplete
           </div>
         </div>
 
-        {/* Clean dark progress summary card (no roadmap image) */}
-        <div className="lg:col-span-5 relative rounded-2xl overflow-hidden border border-white/10 bg-white/[0.03] flex flex-col justify-between p-5">
-          <div className="flex items-center justify-between gap-2">
-            {!upcomingMod && (
-              <span className="text-[11px] uppercase tracking-widest font-semibold text-white/55">
-                {isMoveStage ? 'Action Step' : 'Path Mastery'}
-              </span>
-            )}
-            {upcomingMod && (
-              <span className="ml-auto inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#2EA0FD]/10 border border-[#2EA0FD]/35 text-xs font-bold text-[#2EA0FD]">
-                <Coins className="w-3.5 h-3.5" />
-                +{LESSON_REWARD} BC
-              </span>
-            )}
-          </div>
-
-          <div className="mt-6 space-y-4">
-            {upcomingMod ? (
-              <div>
-                <p className="text-white font-bold text-base leading-snug">{upcomingMod.title}</p>
-                <p className="text-xs text-white/55 mt-1">
-                  {activeChapter?.lessonsDone || 0} of {activeChapter?.modules?.length || 0} lessons done in {activeChapter?.title}
-                </p>
-              </div>
-            ) : isMoveStage ? (
-              <div>
-                <p className="text-white font-bold text-base leading-snug">{activeChapter.move.title}</p>
-                <p className="text-xs text-white/55 mt-1 line-clamp-2">{activeChapter.move.detail}</p>
-              </div>
-            ) : (
-              <div>
-                <p className="text-white font-bold text-base">All {totalLessons} lessons completed</p>
-                <p className="text-xs text-white/55 mt-1">New chapters unlock automatically as they launch.</p>
-              </div>
-            )}
-
-            <div className="pt-3 border-t border-white/10">
-              <div className="flex items-center justify-between text-xs text-white/65 mb-1.5">
-                <Link to="/profile#levels" className="hover:text-[#2EFD7A] transition-colors font-semibold text-white/85">
-                  Lv {levelInfo.current.level} · {levelInfo.current.title} →
-                </Link>
-                <span>{doneLessons}/{totalLessons} lessons ({overallPct}%)</span>
-              </div>
-              <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
-                <div
-                  className="h-full rounded-full bg-gradient-to-r from-[#2EFD7A] to-[#2EA0FD] transition-all duration-500"
-                  style={{ width: `${Math.max(overallPct, 4)}%` }}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </section>
   );
