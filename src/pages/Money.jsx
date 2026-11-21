@@ -193,9 +193,9 @@ export default function Money() {
 
         {lockedTools.length > 0 && (
           <motion.div variants={itemVariants}>
-            <MoneySection id="locked" kicker="Coming up on your path" title="Tools to unlock">
+            <div id="locked" className="scroll-mt-6">
               <ToolGrid tools={lockedTools} render={t => <LockedToolCard toolKey={t.key} access={t.access} onCompleteMove={learning.completeMove} />} />
-            </MoneySection>
+            </div>
           </motion.div>
         )}
       </motion.div>
