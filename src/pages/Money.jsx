@@ -115,7 +115,6 @@ export default function Money() {
   const balanceTool = { key: 'balance', node: <BalanceTool balance={balance} accountCount={shownAccounts.length} />, access: toolAccess('balance', learning.chapters, learning.isAdmin) };
   const transactionsTool = { key: 'transactions', node: <TransactionList transactions={txs} />, access: toolAccess('transactions', learning.chapters, learning.isAdmin) };
   const tools = [
-    { key: 'recurring', node: <RecurringList recurring={recurring} /> },
     { key: 'spending', node: (
       <div className="grid lg:grid-cols-2 gap-6">
         <SpendingDonut categoryList={categoryList} total={grandTotal} />
@@ -124,13 +123,14 @@ export default function Money() {
     ) },
     { key: 'cashflow', node: <CashflowBars weeks={weeks} /> },
     { key: 'money_flow', node: <SankeyCashflow txs={txs} /> },
+    { key: 'recurring', node: <RecurringList recurring={recurring} /> },
+    { key: 'credit_score', node: <CreditScoreTool accounts={shownAccounts} creditHealth={stats?.score_credit_health ?? null} /> },
     { key: 'calendar', node: (
       <FinancialCalendar balance={isSample || accounts.length ? balance : null} txs={txs} isSample={isSample} />
     ) },
     { key: 'networth', node: <AssetsBreakdown accounts={shownAccounts} /> },
 
     { key: 'debt_ratio', node: <DebtRatioTool accounts={shownAccounts} summary={summary} recurring={recurring} /> },
-    { key: 'credit_score', node: <CreditScoreTool accounts={shownAccounts} creditHealth={stats?.score_credit_health ?? null} /> },
     { key: 'coach', node: <MoneyCoach txs={txs} isSample={isSample} overrides={overrides} /> },
     { key: 'strategies', node: <SmartSuggestions showFit={false} /> },
   ].map(t => ({ ...t, access: toolAccess(t.key, learning.chapters, learning.isAdmin) }));
@@ -185,9 +185,9 @@ export default function Money() {
 
         {openTools.length > 0 && (
           <motion.div variants={itemVariants}>
-            <MoneySection id="tools" kicker="Unlocked" title="Your tools">
+            <div id="tools" className="scroll-mt-6">
               <ToolGrid tools={openTools} render={t => t.node} />
-            </MoneySection>
+            </div>
           </motion.div>
         )}
 
