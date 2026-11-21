@@ -14,7 +14,7 @@ export default function GoalsBanner({ learning }) {
     <section id="goals" className="scroll-mt-6 min-w-0 rounded-2xl bg-card/60 border border-border p-3 sm:p-4 space-y-2 text-foreground">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-sm font-semibold">Savings goals</h2>
-        {available && !state.loading && <Button size="sm" className="bg-gradient-to-br from-[#065F46] via-[#10B981] to-[#2EFD7A] text-white font-semibold [text-shadow:0_1px_2px_rgba(0,0,0,0.45)] shadow-[0_0_18px_rgba(16,185,129,0.35)] hover:brightness-110 transition-all" disabled={!!state.error} onClick={state.open}>{state.forceEmergency ? 'Set up emergency fund' : 'New goal'}</Button>}
+        {available && !state.loading && <Button size="sm" className="bg-gradient-to-br from-[#022C22] via-[#065F46] to-[#047857] text-white font-semibold border border-[#10B981]/40 shadow-[0_0_16px_rgba(6,95,70,0.45)] hover:brightness-110 transition-all" disabled={!!state.error} onClick={state.open}>{state.forceEmergency ? 'Set up emergency fund' : 'New goal'}</Button>}
       </div>
       {state.loading ? <p role="status" className="text-muted-foreground">Loading your goals…</p> : <>
         {state.error && !state.creating && <div role="alert"><p>{state.error}</p><Button variant="outline" onClick={state.load}>Try again</Button></div>}

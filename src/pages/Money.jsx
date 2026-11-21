@@ -98,6 +98,8 @@ export default function Money() {
     );
   }
 
+  const bankingChapter = learning.chapters.find(c => c.id === 'banking');
+  const bankUnlocked = Boolean(learning.isAdmin) || Boolean(bankingChapter?.learned);
   const shownAccounts = isSample ? SAMPLE_ACCOUNTS : accounts;
   const tools = [
     { key: 'recurring', node: <RecurringList recurring={recurring} /> },
@@ -136,7 +138,7 @@ export default function Money() {
             <h1 className="text-3xl sm:text-4xl font-display font-extrabold text-white mb-1">Money Hub</h1>
             <p className="text-white/60">See where your money is going, and where it could take you.</p>
           </div>
-          {!isSample && <ConnectBankButton onConnected={load} />}
+          {!isSample && <ConnectBankButton onConnected={load} locked={!bankUnlocked} />}
         </motion.div>
 
         <GoalsBanner learning={learning} />
@@ -145,9 +147,14 @@ export default function Money() {
           <motion.div variants={itemVariants} className="flex flex-wrap items-center justify-between gap-4 px-5 py-4 bg-[#2EFD7A]/10 border border-[#2EFD7A]/30 rounded-2xl">
             <div className="flex items-center gap-3 text-sm text-white">
               <Sparkles className="w-5 h-5 text-[#2EFD7A] shrink-0" />
-              <span>You're exploring <strong>sample data</strong>. Link your bank to see your real numbers and future.</span>
+              <span>
+                You're exploring <strong>sample data</strong>.{' '}
+                {bankUnlocked
+                  ? 'Link your bank to see your real numbers and future.'
+                  : 'Finish the Banking Basics lessons on BasePath to unlock bank linking.'}
+              </span>
             </div>
-            <ConnectBankButton onConnected={load} />
+            <ConnectBankButton onConnected={load} locked={!bankUnlocked} />
           </motion.div>
         )}
 
