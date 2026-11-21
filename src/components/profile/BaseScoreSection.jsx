@@ -9,7 +9,7 @@ export default function BaseScoreSection({ stats, knowledgeHref = '/dashboard', 
   const rows = (
     <div className="space-y-1">
       {SCORE_CATEGORIES.map((cat) => (
-        <ScoreCategoryRow key={cat.key} cat={cat} score={stats?.[cat.key] ?? null} href={cat.href || knowledgeHref} />
+        <ScoreCategoryRow key={cat.key} cat={cat} score={stats?.[cat.key] ?? null} growth={stats?.score_growth?.[cat.key] || 0} href={cat.href || knowledgeHref} />
       ))}
     </div>
   );
@@ -56,6 +56,11 @@ export default function BaseScoreSection({ stats, knowledgeHref = '/dashboard', 
           <span className="inline-block mb-3 text-xs font-bold px-3 py-1 rounded-full bg-[#2EFD7A]/15 text-[#2EFD7A] border border-[#2EFD7A]/30">
             {standingFor(score)}
           </span>
+          <p className="text-white/50 text-xs mb-4">
+            {stats.score_gained > 0
+              ? <>Assessment {stats.assessment_score} <span className="text-[#2EFD7A] font-semibold">+{stats.score_gained} from your BasePath</span></>
+              : 'Finish lessons and Money Moves to grow your score.'}
+          </p>
           </div>
           {rows}
         </div>

@@ -161,33 +161,62 @@ export default function BaseScoreQuiz() {
   const [showResult, setShowResult] = useState(false);
   const [score, setScore] = useState(0);
   const [signedIn, setSignedIn] = useState(false);
+  const [pending, setPending] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState("");
+  const [lastResult, setLastResult] = useState(null);
 
   const step = STEPS[currentStep];
   const selected = answers[step.key];
   const total = STEPS.length;
 
   if (showResult) {
-    return <BaseScoreResult score={score} onContinue={() => navigate(signedIn ? "/basescore" : "/register")} />;
+    return (
+      <BaseScoreResult
+        score={score}
+        pending={pending}
+        saving={saving}
+        saveError={saveError}
+        onRetry={() => persist(lastResult)}
+        onContinue={() => navigate(signedIn ? "/basescore" : "/register")}
+      />
+    );
   }
 
   const handleSelect = (option) => {
     setAnswers((prev) => ({ ...prev, [step.key]: option }));
   };
 
-  const handleNext = () => {
+  const persist = async (result) => {
+    setSaving(true);
+    setSaveError("");
+    try {
+      const res = await saveBaseScore(result);
+      setSignedIn(!res.pending);
+      setPending(res.pending);
+    } catch (err) {
+      console.error("BaseScore save failed", err);
+      setSaveError("We couldn't save your score to your account. It's kept on this device and will save the next time you open Baseline.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleNext = async () => {
     if (currentStep < total - 1) {
       setDirection(1);
       setCurrentStep((s) => s + 1);
     } else {
       sessionStorage.setItem("basescore_quiz", JSON.stringify(answers));
       const finalScore = calculateScore(answers);
+      const result = { base_score: finalScore, ...calculateCategories(answers) };
       setScore(finalScore);
-      saveBaseScore({ base_score: finalScore, ...calculateCategories(answers) })
-        .then((saved) => setSignedIn(!!saved));
+      setLastResult(result);
       base44.analytics.track({
         eventName: "basescore_quiz_completed",
         properties: { score: finalScore },
       });
+      await persist(result);
       setShowResult(true);
     }
   };
@@ -333,10 +362,10 @@ export default function BaseScoreQuiz() {
 
                 <button
                   onClick={handleNext}
-                  disabled={!selected}
+                  disabled={!selected || saving}
                   className="flex items-center gap-2.5 px-8 py-3.5 rounded-full bg-[#2EFD7A] text-black text-sm font-semibold tracking-wide hover:bg-[#2EFD7A]/90 transition-all duration-200 disabled:opacity-25 disabled:cursor-not-allowed"
                 >
-                  {currentStep === total - 1 ? "See My Score" : "Next"}
+                  {currentStep === total - 1 ? (saving ? "Saving..." : "See My Score") : "Next"}
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>

@@ -1,12 +1,12 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import BaseScoreSection from '@/components/profile/BaseScoreSection';
-import useUserStats from '@/hooks/useUserStats';
+import useBaseScore from '@/hooks/useBaseScore';
 import useLearningState from '@/hooks/useLearningState';
 import { nextLesson } from '@/lib/curriculum';
 
 export default function BaseScore() {
-  const { loading, stats } = useUserStats();
+  const { loading, stats } = useBaseScore();
   const learning = useLearningState();
 
   if (loading || learning.loading) {
