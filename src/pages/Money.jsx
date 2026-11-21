@@ -117,16 +117,14 @@ export default function Money() {
       </div>
     ) },
     { key: 'calendar', node: (
-      <div className="space-y-6">
-        <FinancialCalendar balance={isSample || accounts.length ? balance : null} txs={txs} isSample={isSample} />
-        <ForecastChart startBalance={balance} dailyIncome={summary.dailyIncome} dailySpend={summary.dailySpend} isAdmin={learning.isAdmin} />
-      </div>
+      <FinancialCalendar balance={isSample || accounts.length ? balance : null} txs={txs} isSample={isSample} />
     ) },
     { key: 'networth', node: <AssetsBreakdown accounts={shownAccounts} /> },
 
     { key: 'debt_ratio', node: <DebtRatioTool accounts={shownAccounts} summary={summary} recurring={recurring} /> },
     { key: 'credit_score', node: <CreditScoreTool accounts={shownAccounts} creditHealth={stats?.score_credit_health ?? null} /> },
   ].map(t => ({ ...t, access: toolAccess(t.key, learning.chapters, learning.isAdmin) }));
+  const forecastUnlocked = tools.find(t => t.key === 'calendar').access.unlocked;
   const openTools = tools.filter(t => t.access.unlocked);
   const lockedTools = tools.filter(t => !t.access.unlocked);
 
@@ -151,6 +149,10 @@ export default function Money() {
           <MoneySection id="overview" kicker="Where you stand" title="Your money today">
             <ConnectedOverview balance={balance} accountCount={accounts.length} transactions={txs} />
           </MoneySection>
+        </motion.div>}
+
+        {forecastUnlocked && <motion.div variants={itemVariants} id="forecast" className="scroll-mt-6">
+          <ForecastChart startBalance={balance} dailyIncome={summary.dailyIncome} dailySpend={summary.dailySpend} isAdmin={learning.isAdmin} />
         </motion.div>}
 
         {isSample && (
