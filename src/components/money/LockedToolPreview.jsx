@@ -9,6 +9,7 @@ import DebtRatioTool from '@/components/money/DebtRatioTool';
 import CreditScoreTool from '@/components/money/CreditScoreTool';
 import FinancialCalendar from '@/components/FinancialCalendar';
 import MoneyCoach from '@/components/coach/MoneyCoach';
+import SmartSuggestions from '@/components/goal/SmartSuggestions';
 import { buildSampleTransactions, detectRecurring, summarize, weeklyCashflow, SAMPLE_BALANCE, CATEGORY_COLORS, CATEGORY_LABELS } from '@/lib/moneyData';
 
 const sample = buildSampleTransactions();
@@ -40,6 +41,7 @@ export default function LockedToolPreview({ toolKey }) {
     case 'debt_ratio': return <DebtRatioTool accounts={SAMPLE_ACCOUNTS} summary={summary} recurring={recurring} />;
     case 'credit_score': return <CreditScoreTool accounts={SAMPLE_ACCOUNTS} creditHealth={66} />;
     case 'coach': return <MoneyCoach txs={sample} isSample />;
+    case 'strategies': return <SmartSuggestions showFit={false} />;
     default: return null;
   }
 }

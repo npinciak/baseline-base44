@@ -23,6 +23,7 @@ import useUserStats from '@/hooks/useUserStats';
 import DebtRatioTool from '@/components/money/DebtRatioTool';
 import CreditScoreTool from '@/components/money/CreditScoreTool';
 import MoneyCoach from '@/components/coach/MoneyCoach';
+import SmartSuggestions from '@/components/goal/SmartSuggestions';
 import useCategoryOverrides from '@/hooks/useCategoryOverrides';
 
 import {
@@ -30,7 +31,7 @@ import {
   summarize, weeklyCashflow, buildSampleTransactions, SAMPLE_BALANCE,
 } from '@/lib/moneyData';
 
-const WIDE_TOOLS = ['spending', 'calendar', 'cashflow', 'money_flow', 'coach'];
+const WIDE_TOOLS = ['spending', 'calendar', 'cashflow', 'money_flow', 'coach', 'strategies'];
 
 const LIABILITIES = ['credit_card', 'loan', 'mortgage', 'line_of_credit'];
 
@@ -127,6 +128,7 @@ export default function Money() {
     { key: 'debt_ratio', node: <DebtRatioTool accounts={shownAccounts} summary={summary} recurring={recurring} /> },
     { key: 'credit_score', node: <CreditScoreTool accounts={shownAccounts} creditHealth={stats?.score_credit_health ?? null} /> },
     { key: 'coach', node: <MoneyCoach txs={txs} isSample={isSample} overrides={overrides} /> },
+    { key: 'strategies', node: <SmartSuggestions showFit={false} /> },
   ].map(t => ({ ...t, access: toolAccess(t.key, learning.chapters, learning.isAdmin) }));
   const rank = (t) => (t.access.final ? Infinity : t.access.chapter?.number ?? 999);
   const forecastAccess = toolAccess('forecast', learning.chapters, learning.isAdmin);

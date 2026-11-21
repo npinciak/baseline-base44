@@ -53,6 +53,13 @@ export const CHAPTERS = [
     move: { key: 'check-expense-ratio', title: 'Check one index fund’s fee', detail: 'Look up a broad index fund’s expense ratio (aim under 0.15%) and confirm any IRA cash is invested.' } },
 ];
 
+// Resolves a tool's unlock chapter from the curriculum instead of a fixed id, so the gate
+// moves automatically as chapters are added or reordered. `last` = deepest chapter on that topic.
+export function chapterFor({ topic, position = 'last' }) {
+  const matches = CHAPTERS.filter((c) => c.topic === topic);
+  return (position === 'first' ? matches[0] : matches[matches.length - 1])?.id ?? null;
+}
+
 // Money tools: unlock once the chapter's money move is done (which requires its lessons).
 // Tools without a chapter are always available. `group` drives the inventory on the Money page.
 export const MONEY_TOOLS = {
@@ -71,6 +78,7 @@ export const MONEY_TOOLS = {
   budget_builder: { label: 'Budget Builder', group: 'plan', chapter: 'build-budget', decision: 'planned', blurb: 'Turn needs, wants and savings lessons into a spending plan.', audit: 'Candidate only: set category limits, compare planned versus actual, and choose a realistic savings amount. Not implemented.' },
   debt_payoff: { label: 'Debt Payoff Planner', group: 'plan', chapter: 'debt-traps', decision: 'planned', blurb: 'Apply interest lessons to a debt repayment plan.', audit: 'Candidate only: balances, APRs, minimum payments, snowball versus avalanche, payoff date and total interest. Not implemented.' },
   coach: { label: 'Money Coach', group: 'plan', chapter: 'smart-portfolios', decision: 'keep', final: true, blurb: 'Your personal money assistant: cleans up transactions, spots trends and answers questions.', audit: 'Final unlock after Smart Portfolios. Suggestions only; never changes bank history or moves money.' },
+  strategies: { label: 'Smart Saving Strategies', group: 'grow', chapter: chapterFor({ topic: 'investing' }), unlockRule: 'After your final investing chapter', decision: 'keep', blurb: 'Explore partner accounts and tools that can help you reach goals faster.', audit: 'Partner referrals. Unlocks after the last investing chapter, resolved from the curriculum so it follows new investing content automatically. Educational, not a recommendation.' },
   investment_planning: { label: 'Investment Planning', group: 'grow', chapter: 'smart-portfolios', decision: 'planned', blurb: 'Apply compounding and diversification to a long-term plan.', audit: 'Candidate only: contribution, horizon and return scenarios, with clear uncertainty. No trading or personalized investment advice. Not implemented.' },
 };
 
@@ -83,7 +91,7 @@ export const TOOL_GROUPS = [
 
 export const TOOL_LINKS = {
   overview: '/money#overview', recurring: '/money#recurring', spending: '/money#spending',
-  networth: '/money#networth', cashflow: '/money#cashflow', coach: '/money#coach', money_flow: '/money#money_flow', forecast: '/money#forecast', calendar: '/money#calendar',
+  networth: '/money#networth', cashflow: '/money#cashflow', coach: '/money#coach', strategies: '/money#strategies', money_flow: '/money#money_flow', forecast: '/money#forecast', calendar: '/money#calendar',
   goals: '/money#goals', profile: '/basescore', credit_score: '/money#credit_score',
   debt_ratio: '/money#debt_ratio', risk: '/money#risk', knowledge: '/money#knowledge',
 };

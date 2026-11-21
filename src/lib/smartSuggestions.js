@@ -45,6 +45,11 @@ export const SUGGESTIONS = [
     note: 'Meant for retirement. Early withdrawals have penalties.' },
 ];
 
+// Partner referral destinations, configured per strategy id once a partnership is signed.
+// Example: hysa: { partner: 'Partner Bank', url: 'https://partner.example/baseline' }
+// Strategies without an entry show "Partner coming soon" instead of a link.
+export const PARTNER_REFERRALS = {};
+
 export function isGoodFit(s, goalType, monthsLeft) {
   if (s.fits?.includes(goalType)) return true;
   if (s.horizon === 'short') return monthsLeft == null || monthsLeft <= 36;

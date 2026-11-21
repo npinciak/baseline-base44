@@ -12,6 +12,9 @@ import BasePlanModules from '@/components/goal/BasePlanModules';
 import SmartSuggestions from '@/components/goal/SmartSuggestions';
 import GoalEditModal, { GOAL_TYPES } from '@/components/goal/GoalEditModal';
 import useGoalPlan from '@/hooks/useGoalPlan';
+import useLearningState from '@/hooks/useLearningState';
+import LockedToolCard from '@/components/money/LockedToolCard';
+import { toolAccess } from '@/lib/curriculum';
 import { CARD, ICON_BOX, BTN_T } from '@/lib/goalStyles';
 
 const GOAL_TOPIC_MAP = {
@@ -36,6 +39,8 @@ export default function GoalDetail() {
   const [relevantModules, setRelevantModules] = useState([]);
   const [userProgress, setUserProgress] = useState([]);
   const goalPlan = useGoalPlan(goalId);
+  const learning = useLearningState();
+  const strategiesAccess = toolAccess('strategies', learning.chapters || [], learning.isAdmin);
 
   useEffect(() => {
     const init = async () => {
@@ -200,7 +205,9 @@ export default function GoalDetail() {
           </div>
 
           <div className="lg:col-span-3 goal-rise [animation-delay:.35s]">
-            <SmartSuggestions goalType={goal.goal_type} monthsLeft={monthsLeft} />
+            {!learning.loading && (strategiesAccess.unlocked
+              ? <SmartSuggestions goalType={goal.goal_type} monthsLeft={monthsLeft} />
+              : strategiesAccess.chapter && <LockedToolCard toolKey="strategies" access={strategiesAccess} onCompleteMove={learning.completeMove} />)}
           </div>
         </div>
       </div>
