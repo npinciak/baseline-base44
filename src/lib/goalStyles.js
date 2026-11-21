@@ -1,0 +1,5 @@
+export const CARD = 'rounded-[20px] border border-[#232a2e] bg-gradient-to-b from-[#14181b] to-[#0e1113] shadow-[0_18px_40px_rgba(0,0,0,.45),inset_0_1px_0_rgba(255,255,255,.04)] text-[#e9efec]';
+export const ICON_BOX = 'w-[34px] h-[34px] rounded-[10px] bg-[#2efd7a]/[0.14] flex items-center justify-center shrink-0';
+export const BTN_T = 'transition-[background,box-shadow,color,border-color] duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#2efd7a] focus-visible:outline-offset-2';
+export const FIELD = 'w-full bg-[#0a0d0f] border border-[#232a2e] rounded-xl px-[14px] py-[11px] text-[13px] text-white placeholder:text-white/30 focus:outline-none focus:border-[#2efd7a] transition-colors';
+export const FALLBACK_GOAL_IMAGE = 'https://media.base44.com/images/public/6a3542676f9044e70b439a84/165096ab5_generated_abd787ad.jpg';
