@@ -70,6 +70,7 @@ export const MONEY_TOOLS = {
   risk: { label: 'Risk Appetite', group: 'grow', chapter: 'investing-basics', decision: 'removed', blurb: 'Removed from Money tools.', audit: 'Rejected by owner. Historical assessment data is preserved; no standalone Risk Appetite tool.' },
   budget_builder: { label: 'Budget Builder', group: 'plan', chapter: 'build-budget', decision: 'planned', blurb: 'Turn needs, wants and savings lessons into a spending plan.', audit: 'Candidate only: set category limits, compare planned versus actual, and choose a realistic savings amount. Not implemented.' },
   debt_payoff: { label: 'Debt Payoff Planner', group: 'plan', chapter: 'debt-traps', decision: 'planned', blurb: 'Apply interest lessons to a debt repayment plan.', audit: 'Candidate only: balances, APRs, minimum payments, snowball versus avalanche, payoff date and total interest. Not implemented.' },
+  coach: { label: 'Money Coach', group: 'plan', chapter: 'smart-portfolios', decision: 'keep', final: true, blurb: 'Your personal money assistant: cleans up transactions, spots trends and answers questions.', audit: 'Final unlock after Smart Portfolios. Suggestions only; never changes bank history or moves money.' },
   investment_planning: { label: 'Investment Planning', group: 'grow', chapter: 'smart-portfolios', decision: 'planned', blurb: 'Apply compounding and diversification to a long-term plan.', audit: 'Candidate only: contribution, horizon and return scenarios, with clear uncertainty. No trading or personalized investment advice. Not implemented.' },
 };
 
@@ -82,7 +83,7 @@ export const TOOL_GROUPS = [
 
 export const TOOL_LINKS = {
   overview: '/money#overview', recurring: '/money#recurring', spending: '/money#spending',
-  networth: '/money#networth', cashflow: '/money#cashflow', money_flow: '/money#money_flow', forecast: '/money#forecast', calendar: '/money#calendar',
+  networth: '/money#networth', cashflow: '/money#cashflow', coach: '/money#coach', money_flow: '/money#money_flow', forecast: '/money#forecast', calendar: '/money#calendar',
   goals: '/money#goals', profile: '/basescore', credit_score: '/money#credit_score',
   debt_ratio: '/money#debt_ratio', risk: '/money#risk', knowledge: '/money#knowledge',
 };

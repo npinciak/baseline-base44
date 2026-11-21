@@ -22,13 +22,15 @@ import useLearningState from '@/hooks/useLearningState';
 import useUserStats from '@/hooks/useUserStats';
 import DebtRatioTool from '@/components/money/DebtRatioTool';
 import CreditScoreTool from '@/components/money/CreditScoreTool';
+import MoneyCoach from '@/components/coach/MoneyCoach';
+import useCategoryOverrides from '@/hooks/useCategoryOverrides';
 
 import {
   CATEGORY_COLORS, CATEGORY_LABELS, normalizeMxTransaction, detectRecurring,
   summarize, weeklyCashflow, buildSampleTransactions, SAMPLE_BALANCE,
 } from '@/lib/moneyData';
 
-const WIDE_TOOLS = ['spending', 'calendar', 'cashflow', 'money_flow'];
+const WIDE_TOOLS = ['spending', 'calendar', 'cashflow', 'money_flow', 'coach'];
 
 const LIABILITIES = ['credit_card', 'loan', 'mortgage', 'line_of_credit'];
 
@@ -75,7 +77,12 @@ export default function Money() {
 
   const isSample = transactions.length === 0;
   const sample = useMemo(() => buildSampleTransactions(), []);
-  const txs = isSample ? sample : transactions;
+  const overrides = useCategoryOverrides();
+  const txs = useMemo(() => {
+    if (isSample) return sample;
+    const map = Object.fromEntries(overrides.active.map(o => [o.transaction_id, o.new_category]));
+    return transactions.map(t => (map[t.id] ? { ...t, category: map[t.id], original_category: t.category } : t));
+  }, [isSample, sample, transactions, overrides.active]);
   const balance = isSample ? SAMPLE_BALANCE : netBalance(accounts);
 
   const summary = useMemo(() => summarize(txs), [txs]);
@@ -119,13 +126,15 @@ export default function Money() {
 
     { key: 'debt_ratio', node: <DebtRatioTool accounts={shownAccounts} summary={summary} recurring={recurring} /> },
     { key: 'credit_score', node: <CreditScoreTool accounts={shownAccounts} creditHealth={stats?.score_credit_health ?? null} /> },
+    { key: 'coach', node: <MoneyCoach txs={txs} isSample={isSample} overrides={overrides} /> },
   ].map(t => ({ ...t, access: toolAccess(t.key, learning.chapters, learning.isAdmin) }));
+  const rank = (t) => (t.access.final ? Infinity : t.access.chapter?.number ?? 999);
   const forecastAccess = toolAccess('forecast', learning.chapters, learning.isAdmin);
   const forecastUnlocked = forecastAccess.unlocked;
   const openTools = tools.filter(t => t.access.unlocked);
   const lockedTools = [...tools, { key: 'forecast', access: forecastAccess }]
     .filter(t => !t.access.unlocked)
-    .sort((a, b) => (a.access.chapter?.number ?? Infinity) - (b.access.chapter?.number ?? Infinity));
+    .sort((a, b) => rank(a) - rank(b));
 
   return (
     <div className="relative min-h-screen bg-black px-4 py-8 overflow-hidden">
