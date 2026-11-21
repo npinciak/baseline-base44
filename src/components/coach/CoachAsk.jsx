@@ -21,24 +21,9 @@ export default function CoachAsk({ txs, isSample, focus, clearFocus, thread, set
     setThread(t => [...t, { role: 'user', text: q }]);
     setLoading(true);
     const context = buildQuestionContext(q, txs, focus);
-    const res = await base44.integrations.Core.InvokeLLM({
-      prompt: `You are Baseline's Money Coach for students and young adults. Answer the question using ONLY the context below.
-Rules: be friendly and brief (under 100 words). Cite specific numbers or transactions from the context as evidence.
-Clearly separate what the data shows from estimates. If the context does not contain enough information, say so plainly.
-Never recommend specific investments, never claim to move money or change accounts, and never invent transactions.
-${isSample ? 'This is SAMPLE data, mention that once.' : ''}
-Also suggest 2 short follow-up questions (under 8 words each) the user might ask next.
-Conversation so far:
-${history || '(none)'}
-Context (JSON): ${JSON.stringify(context)}
-Question: ${q}`,
-      response_json_schema: {
-        type: 'object',
-        properties: { answer: { type: 'string' }, follow_ups: { type: 'array', items: { type: 'string' } } },
-        required: ['answer'],
-      },
-    });
-    setThread(t => [...t, { role: 'coach', text: res.answer, followUps: (res.follow_ups || []).slice(0, 2), used: context.transactions.length }]);
+    const res = await base44.functions.invoke('moneyCoachAsk', { question: q, history, context, isSample });
+    const reply = res?.data || {};
+    setThread(t => [...t, { role: 'coach', text: reply.answer, followUps: (reply.follow_ups || []).slice(0, 2), used: context.transactions.length }]);
     setLoading(false);
   };
 
