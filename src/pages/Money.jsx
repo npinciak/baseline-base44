@@ -113,7 +113,7 @@ export default function Money() {
   const balanceTool = { key: 'balance', node: <BalanceTool balance={balance} accountCount={shownAccounts.length} />, access: toolAccess('balance', learning.chapters, learning.isAdmin) };
   const transactionsTool = { key: 'transactions', node: <TransactionList transactions={txs} />, access: toolAccess('transactions', learning.chapters, learning.isAdmin) };
   const tools = [
-    { key: 'forecast', node: <ForecastChart startBalance={balance} dailyIncome={summary.dailyIncome} dailySpend={summary.dailySpend} isAdmin={learning.isAdmin} /> },
+    { key: 'forecast', node: <ForecastChart live /> },
     { key: 'spending', node: <SpendingTool categoryList={categoryList} grandTotal={grandTotal} expenses={expenses} /> },
     { key: 'cashflow', node: <CashflowBars weeks={weeks} /> },
     { key: 'money_flow', node: <SankeyCashflow txs={txs} /> },

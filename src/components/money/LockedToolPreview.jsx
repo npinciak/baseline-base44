@@ -33,7 +33,7 @@ export default function LockedToolPreview({ toolKey }) {
     case 'cashflow': return <CashflowBars weeks={weeklyCashflow(sample)} />;
     case 'money_flow': return <SankeyCashflow txs={sample} />;
     case 'calendar': return <FinancialCalendar balance={SAMPLE_BALANCE} txs={sample} isSample readOnlyPreview />;
-    case 'forecast': return <ForecastChart startBalance={SAMPLE_BALANCE} dailyIncome={summary.dailyIncome} dailySpend={summary.dailySpend} />;
+    case 'forecast': return <ForecastChart />;
     case 'networth': return <AssetsBreakdown accounts={SAMPLE_ACCOUNTS} />;
     case 'credit_score': return <CreditScoreTool accounts={SAMPLE_ACCOUNTS} creditHealth={66} />;
     case 'coach': return <MoneyCoach txs={sample} isSample />;
