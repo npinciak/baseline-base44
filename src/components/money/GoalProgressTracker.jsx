@@ -2,10 +2,10 @@ import { Link } from 'react-router-dom';
 import { ArrowUpRight } from 'lucide-react';
 import GoalTimeline from '@/components/money/GoalTimeline';
 
-function encouragement(percent, toNext, nextStop, money) {
+function encouragement(percent, current, target, money) {
   if (percent >= 100) return 'You did it. This goal is fully funded.';
-  if (percent === 0) return `Your first ${money.format(toNext)} unlocks the ${nextStop}% milestone. Every journey starts here.`;
-  return `Just ${money.format(toNext)} more to hit ${nextStop}%. Keep the momentum going.`;
+  if (current === 0) return 'Every journey starts with the first dollar.';
+  return `${money.format(target - current)} to go. Keep the momentum going.`;
 }
 
 export default function GoalProgressTracker({ goal }) {
@@ -13,8 +13,6 @@ export default function GoalProgressTracker({ goal }) {
   const target = Math.max(0, Number(goal.target_amount) || 0);
   const percent = target ? Math.min(100, Math.round(current / target * 100)) : 0;
   const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: goal.currency_code || 'USD', maximumFractionDigits: 0 });
-  const nextStop = [25, 50, 75, 100].find(s => s > percent) || 100;
-  const toNext = Math.max(0, target * nextStop / 100 - current);
   const subject = `${goal.goal_type || ''} ${goal.name || ''}`.toLowerCase();
   const fallback = /vacation|travel|france|india|screening/.test(subject)
     ? 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&auto=format&fit=crop'
@@ -45,9 +43,9 @@ export default function GoalProgressTracker({ goal }) {
           <p className="text-5xl sm:text-6xl font-display font-extrabold tabular-nums leading-none bg-gradient-to-br from-[#2EFD7A] to-[#10B981] bg-clip-text text-transparent">{percent}%</p>
         </div>
         <div role="progressbar" aria-label={`${goal.name} savings progress`} aria-valuenow={percent} aria-valuemin={0} aria-valuemax={100}>
-          <GoalTimeline percent={percent} target={target} money={money} />
+          <GoalTimeline percent={percent} />
         </div>
-        <p className="text-sm text-white/70">{encouragement(percent, toNext, nextStop, money)}</p>
+        <p className="text-sm text-white/70">{encouragement(percent, current, target, money)}</p>
       </div>
     </Link>
   );
