@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Wallet } from 'lucide-react';
 import { CATEGORY_COLORS, CATEGORY_LABELS } from '@/lib/moneyData';
-import FeaturePanel from '@/components/money/FeaturePanel';
 
 const PAGE = 25;
 
@@ -11,17 +10,20 @@ export default function TransactionList({ transactions }) {
   const filtered = transactions.filter(tx => (filter === 'income' ? tx.is_income : filter === 'expenses' ? !tx.is_income : true));
   const shown = filtered.slice(0, limit);
   const pick = (f) => { setFilter(f); setLimit(PAGE); };
-  const filters = (
-    <div className="flex gap-1 bg-white/[0.05] rounded-lg p-0.5">
-      {['all', 'expenses', 'income'].map(f => (
-        <button key={f} onClick={() => pick(f)} className={`px-2.5 py-1 rounded-md text-[11px] font-semibold capitalize transition-all ${filter === f ? 'bg-[#2EFD7A] text-black' : 'text-white/50 hover:text-white'}`}>
-          {f}
-        </button>
-      ))}
-    </div>
-  );
   return (
-    <FeaturePanel icon={Wallet} kicker="Recent transactions" action={filters}>
+    <section>
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+        <h2 className="text-base font-heading font-bold flex items-center gap-2 text-white">
+          <Wallet className="w-4 h-4 text-[#2EFD7A]" /> Recent Transactions
+        </h2>
+        <div className="flex gap-1 bg-white/[0.05] rounded-lg p-0.5">
+          {['all', 'expenses', 'income'].map(f => (
+            <button key={f} onClick={() => pick(f)} className={`px-2.5 py-1 rounded-md text-[11px] font-semibold capitalize transition-all ${filter === f ? 'bg-[#2EFD7A] text-black' : 'text-white/50 hover:text-white'}`}>
+              {f}
+            </button>
+          ))}
+        </div>
+      </div>
       {shown.length === 0 ? (
         <div className="bg-white/[0.03] border border-dashed border-white/10 rounded-2xl p-6 text-center text-white/50 text-sm">No transactions found</div>
       ) : (
@@ -48,6 +50,6 @@ export default function TransactionList({ transactions }) {
           )}
         </div>
       )}
-    </FeaturePanel>
+    </section>
   );
 }
