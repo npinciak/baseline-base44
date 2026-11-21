@@ -133,7 +133,7 @@ export default function Money() {
       <motion.div variants={containerVariants} initial="hidden" animate="show" className="relative z-10 w-full min-w-0 max-w-6xl mx-auto space-y-6">
         <motion.div variants={itemVariants} className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h1 className="text-3xl sm:text-4xl font-display font-extrabold text-white mb-1">Mission Control</h1>
+            <h1 className="text-3xl sm:text-4xl font-display font-extrabold text-white mb-1">Money Hub</h1>
             <p className="text-white/60">See where your money is going, and where it could take you.</p>
           </div>
           {!isSample && <ConnectBankButton onConnected={load} />}
