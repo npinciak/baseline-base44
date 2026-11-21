@@ -6,7 +6,6 @@ import { formatDistanceToNow, differenceInMonths } from 'date-fns';
 import ImagePickerModal from '@/components/ImagePickerModal';
 import ConnectBankButton from '@/components/ConnectBankButton';
 import GoalPlanner from '@/components/goal/GoalPlanner';
-import GoalWhyCard from '@/components/goal/GoalWhyCard';
 import GoalGuidance from '@/components/goal/GoalGuidance';
 import GoalHeroCard from '@/components/goal/GoalHeroCard';
 import BasePlanModules from '@/components/goal/BasePlanModules';
@@ -198,7 +197,6 @@ export default function GoalDetail() {
               )}
             </div>
             {!goalPlan.loading && <GoalGuidance goal={goal} plan={goalPlan.plan} />}
-            {!goalPlan.loading && <GoalWhyCard motivation={goalPlan.plan?.motivation} saving={goalPlan.saving} onSave={goalPlan.save} />}
           </div>
 
           <div className="lg:col-span-3 goal-rise [animation-delay:.35s]">
