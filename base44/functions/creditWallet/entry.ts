@@ -1,5 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.54';
-import { LESSON_REWARD } from '../../shared/coinEconomy.ts';
+import { lessonCoins } from '../../shared/coinEconomy.ts';
+import { goalSubscription } from '../../shared/goalPolicy.ts';
 
 function isUuid(value) {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
@@ -41,6 +42,9 @@ export default async function(req) {
     if (!profiles?.length) return Response.json({ error: 'Profile not found' }, { status: 404 });
     const userProfileId = profiles[0].id;
 
+    // Plus members earn more spendable coins; the plan is verified here, never sent by the caller.
+    const { paid } = await goalSubscription(base44, user);
+    const LESSON_REWARD = lessonCoins(paid);
     // Record the award first so a repeat call can't double-credit.
     await base44.asServiceRole.entities.CoinAward.create({ user_id: user.id, module_id, amount: LESSON_REWARD });
 

@@ -6,6 +6,7 @@ import { ArrowRight, CheckCircle, Coins, X } from 'lucide-react';
 import AmbientBackdrop from '@/components/dashboard/AmbientBackdrop';
 import { CHAPTERS } from '@/lib/curriculum';
 import { getLevelInfo } from '@/lib/coinLevels';
+import { LESSON_REWARD } from '@/lib/coinEconomy';
 import useAdminViewMode, { getStoredAdminViewMode } from '@/hooks/useAdminViewMode';
 
 export default function LessonView() {
@@ -129,7 +130,8 @@ export default function LessonView() {
             : daysDiff === 0
               ? (s.current_streak || 1)
               : 1;
-        const newXp = (s.total_xp || 0) + xp;
+        // Levels move the same amount per lesson on every plan; only spendable coins differ.
+        const newXp = (s.total_xp || 0) + (xp > 0 ? LESSON_REWARD : 0);
         const newLevel = getLevelInfo(newXp).current.level;
         await base44.entities.UserStats.update(s.id, {
           total_xp: newXp,

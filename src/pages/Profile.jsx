@@ -251,7 +251,7 @@ export default function Profile() {
                 <div key={mod.id} className="flex items-center gap-3 p-3 bg-white/[0.03] border border-white/10 rounded-xl">
                   <CheckCircle className="w-5 h-5 text-[#2EFD7A] shrink-0" />
                   <span className="text-sm font-medium text-white">{mod.title}</span>
-                  <span className="ml-auto text-xs text-[#2EFD7A] font-semibold">+{LESSON_REWARD} BC</span>
+                  <span className="ml-auto text-xs text-[#2EFD7A] font-semibold">+{mod.xp_reward ?? LESSON_REWARD} BC</span>
                 </div>
               ))}
             </div>

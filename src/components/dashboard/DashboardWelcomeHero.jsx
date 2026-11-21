@@ -32,7 +32,7 @@ export default function DashboardWelcomeHero({ name, stats, chapters, onComplete
   if (upcomingMod && activeChapter) {
     const remainingInChapter = activeChapter.modules.length - activeChapter.lessonsDone;
     if (doneLessons === 0) {
-      promptCopy = `Start with "${upcomingMod.title}" to earn your first +${LESSON_REWARD} BaseCoins and kick off ${activeChapter.title}.`;
+      promptCopy = `Start with "${upcomingMod.title}" to earn your first +${upcomingMod.xp_reward ?? LESSON_REWARD} BaseCoins and kick off ${activeChapter.title}.`;
       ctaLabel = 'Start First Lesson';
     } else if (remainingInChapter === 1) {
       promptCopy = `One lesson left in ${activeChapter.title}. Finish "${upcomingMod.title}" to unlock this chapter's Money Move.`;

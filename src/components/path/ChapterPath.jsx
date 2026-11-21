@@ -1,5 +1,9 @@
 import { motion } from 'framer-motion';
 import { CheckCircle, Lock } from 'lucide-react';
+import { isCheckpoint } from '@/lib/curriculum';
+
+// Each loop has a job: learn the idea, apply it, then go deeper before the chapter wraps up.
+const LOOP_ROLES = ['Learn', 'Apply', 'Go deeper', 'Wrap-up'];
 
 const W = 300, LEFT_X = 72, RIGHT_X = 228, NODE_R = 30, STEP = 130;
 const nodeX = (i) => (i % 2 === 0 ? LEFT_X : RIGHT_X);
@@ -45,7 +49,10 @@ export default function ChapterPath({ units, meta, unlocked = true, isAdmin = fa
               <Icon className={`w-6 h-6 ${open ? 'text-black' : 'text-white/30'}`} />
             </motion.button>
             <div className="mt-2 text-center" style={{ width: 96, marginLeft: -(48 - NODE_R) }}>
-              <p className={`font-medium leading-tight ${open ? 'text-white' : 'text-white/50'}`} style={{ fontSize: 11 }}>{u.title}</p>
+              <p className={`uppercase tracking-wider font-bold ${open ? 'text-white/45' : 'text-white/25'}`} style={{ fontSize: 9 }}>
+                {isCheckpoint(u.id) ? 'Checkpoint' : `Loop ${i + 1} · ${LOOP_ROLES[Math.min(i, LOOP_ROLES.length - 1)]}`}
+              </p>
+              <p className={`font-medium leading-tight ${open ? 'text-white' : 'text-white/50'}`} style={{ fontSize: 11 }}>{u.title.replace(/^Checkpoint: /, '')}</p>
               <p className={`font-semibold ${open ? 'text-[#2EFD7A]' : 'text-[#2EFD7A]/55'}`} style={{ fontSize: 10 }}>+{u.xp_reward} BC</p>
             </div>
           </motion.div>

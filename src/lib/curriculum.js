@@ -5,7 +5,7 @@ export const CHAPTERS = [
     move: { key: 'create-emergency-fund', title: 'Set up your emergency fund', detail: 'Create a savings goal for unexpected expenses on Money. Choose a target and start building your cushion.', tool: 'goals' } },
   { id: 'banking', title: 'Banking Basics', topic: 'saving', units: [100, 103, 106, 94],
     move: { key: 'connect-bank', title: 'Connect your bank account', detail: 'Link your checking or savings account on Money Hub so your real numbers show up.', tool: 'overview', unlocks: 'Bank account linking' } },
-  { id: 'goals', title: 'Setting Goals', topic: 'saving', units: [19, 22, 16],
+  { id: 'goals', title: 'Setting Goals', topic: 'saving', units: [19, 22, 16, 'bl-goals-checkpoint'],
     move: { key: 'create-goal', title: 'Create your first savings goal', detail: 'Pick something you want and give it a target amount and date.', tool: 'goals' } },
   { id: 'saving-smart', title: 'Saving Smart', topic: 'saving', units: [178, 'bl-insurance', 181, 184],
     move: { key: 'first-deposit', title: 'Make a deposit toward your goal', detail: 'Move any amount, even $5, into savings and log it on your goal.', tool: 'goals' } },
@@ -23,7 +23,7 @@ export const CHAPTERS = [
     move: { key: 'choose-style', title: 'Choose your investing style', detail: 'Decide whether active or passive investing fits you better, and write down why.' } },
   { id: 'credit-101', title: 'Credit 101', topic: 'credit', units: [52, 58, 196, 208],
     move: { key: 'credit-rules', title: 'Write your personal credit rules', detail: "Write down when you will, and won't, use credit." } },
-  { id: 'debt', title: 'Interest & Debt', topic: 'debt', units: [55, 61, 160],
+  { id: 'debt', title: 'Interest & Debt', topic: 'debt', units: [55, 61, 160, 'bl-debt-checkpoint'],
     move: { key: 'true-cost', title: 'Find the true cost of buying on credit', detail: 'Pick something you want and work out what it costs at 20% APR paid over a year.' } },
   { id: 'credit-score', title: 'Credit Scores', topic: 'credit', units: [64, 67, 70, 115],
     move: { key: 'check-basescore', title: 'Check your BaseScore', detail: 'See where you stand today and which area to work on first.', tool: 'profile' } },
@@ -33,23 +33,23 @@ export const CHAPTERS = [
     move: { key: 'starter-credit-plan', title: 'Choose a starter credit plan', detail: 'Decide which first step fits you: authorized user, secured card, or student card.' } },
   { id: 'buying-car', section: 'Big Milestones', title: 'Buying a Car', topic: 'debt', units: [154, 157, 163, 166],
     move: { key: 'price-a-car', title: 'Price a car by its total cost', detail: 'Pick a car and add up price, insurance, gas and interest for one year.' } },
-  { id: 'home-basics', title: 'Home Basics', topic: 'saving', units: [127, 130, 133],
+  { id: 'home-basics', title: 'Home Basics', topic: 'saving', units: [127, 130, 133, 'bl-home-checkpoint'],
     move: { key: 'rent-vs-own', title: 'Compare renting and owning', detail: 'Look up rent and a home price near you and compare the monthly costs.' } },
-  { id: 'home-budget', title: 'Home Buying Budget', topic: 'saving', units: [136, 139, 142],
+  { id: 'home-budget', title: 'Home Buying Budget', topic: 'saving', units: [136, 139, 142, 'bl-home-budget-checkpoint'],
     move: { key: 'home-budget', title: 'Estimate a home price you could afford', detail: 'Use the 28% rule on a future salary to estimate a price range.' } },
-  { id: 'home-closing', title: 'Offer to Closing', topic: 'saving', units: [145, 148, 151],
+  { id: 'home-closing', title: 'Offer to Closing', topic: 'saving', units: [145, 148, 151, 'bl-closing-checkpoint'],
     move: { key: 'closing-checklist', title: 'Make a closing-day checklist', detail: 'List every cost and step between making an offer and getting the keys.' } },
   { id: 'taxes-filing', section: 'Student & Young Adult Playbook', title: 'Taxes & Filing', topic: 'taxes', units: ['bl-tax-brackets', 'bl-tax-forms', 'bl-deductions-credits', 'bl-filing-free'],
     move: { key: 'prep-tax-folder', title: 'Create a simple tax folder', detail: 'Make one folder for W-2s, 1099s and school 1098 forms—and set aside 25% of any side-gig pay.' } },
-  { id: 'job-benefits', title: 'First Job & Benefits', topic: 'budgeting', units: ['bl-total-comp', 'bl-health-plans', 'bl-hsa-fsa'],
+  { id: 'job-benefits', title: 'First Job & Benefits', topic: 'budgeting', units: ['bl-total-comp', 'bl-health-plans', 'bl-hsa-fsa', 'bl-benefits-checkpoint'],
     move: { key: 'score-job-benefits', title: 'Check your health & match options', detail: 'Compare staying on a parent plan vs. employer coverage, and confirm any 401(k) match percentage.' } },
-  { id: 'student-loans', title: 'Student Loans', topic: 'debt', units: ['bl-loan-types', 'bl-grace-interest', 'bl-repayment-plans'],
+  { id: 'student-loans', title: 'Student Loans', topic: 'debt', units: ['bl-loan-types', 'bl-grace-interest', 'bl-repayment-plans', 'bl-loans-checkpoint'],
     move: { key: 'list-student-loans', title: 'List your loans by rate & type', detail: 'Note each loan’s servicer, interest rate, and whether it is federal subsidized, unsubsidized, or private.' } },
-  { id: 'renting-smart', title: 'Renting Your Place', topic: 'budgeting', units: ['bl-move-in-math', 'bl-lease-clauses', 'bl-deposit-back'],
+  { id: 'renting-smart', title: 'Renting Your Place', topic: 'budgeting', units: ['bl-move-in-math', 'bl-lease-clauses', 'bl-deposit-back', 'bl-renting-checkpoint'],
     move: { key: 'lease-check', title: 'Check move-in costs & notice dates', detail: 'Add up deposit + first month’s rent + renters insurance, or calendar your current lease’s notice deadline.', tool: 'calendar' } },
-  { id: 'debt-traps', title: 'Payoff & Trap Defense', topic: 'credit', units: ['bl-snowball-avalanche', 'bl-bnpl-traps', 'bl-chargebacks'],
+  { id: 'debt-traps', title: 'Payoff & Trap Defense', topic: 'credit', units: ['bl-snowball-avalanche', 'bl-bnpl-traps', 'bl-chargebacks', 'bl-payoff-checkpoint'],
     move: { key: 'audit-installments', title: 'Audit Pay-in-4 & card security', detail: 'Check for any active installment plans and switch your main money logins to authenticator-app MFA.' } },
-  { id: 'smart-portfolios', title: 'Smart Portfolios', topic: 'investing', units: ['bl-fund-fees', 'bl-account-order', 'bl-staying-course'],
+  { id: 'smart-portfolios', title: 'Smart Portfolios', topic: 'investing', units: ['bl-fund-fees', 'bl-account-order', 'bl-staying-course', 'bl-portfolio-checkpoint'],
     move: { key: 'check-expense-ratio', title: 'Check one index fund’s fee', detail: 'Look up a broad index fund’s expense ratio (aim under 0.15%) and confirm any IRA cash is invested.' } },
 ];
 
@@ -108,6 +108,8 @@ export function nextLesson(chapters) {
   return null;
 }
 
+export const isCheckpoint = (unitId) => String(unitId).endsWith('-checkpoint');
+
 export function buildChapters(modules, progress, moves) {
   const byId = Object.fromEntries(modules.map((m) => [m.id, m]));
   const done = new Set(progress.filter((p) => p.completed).map((p) => p.lesson_id));
@@ -128,10 +130,14 @@ export function buildChapters(modules, progress, moves) {
       ...m, topic_tag: c.topic, completed: m.lessons.length > 0 && m.lessons.every((l) => done.has(l.id)),
     }));
     const lessonsDone = units.filter((u) => u.completed).length;
-    const allUnitsPresent = units.length === c.units.length;
+    // Checkpoints were added after launch, so unlocking still depends on the core lessons only.
+    // That way learners who already finished a chapter are never locked out again.
+    const coreIds = c.units.filter((u) => !isCheckpoint(u)).map(String);
+    const coreDone = coreIds.every((id) => units.some((u) => u.id === id && u.completed));
     const chapter = {
       ...c, number: i + 1, modules: units, lessonsDone, comingSoon: units.length === 0,
-      learned: allUnitsPresent && units.length > 0 && lessonsDone === units.length,
+      learned: coreIds.length > 0 && coreDone,
+      mastered: units.length === c.units.length && lessonsDone === units.length,
       moveDone: !!c.move && moveSet.has(c.move.key),
       legacyTakeHomeDone: c.id === 'money-in' && moveSet.has('find-take-home'),
       unlocked: prev ? prev.unlocked && prev.learned && (!prev.move || prev.moveDone) : true,

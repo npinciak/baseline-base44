@@ -5,6 +5,8 @@ import { Telescope, Zap, RotateCcw } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import FeaturePanel from '@/components/money/FeaturePanel';
 import GoalSlider from '@/components/money/GoalSlider';
+import ForecastProgressHero from '@/components/money/ForecastProgressHero';
+import ScenarioChips from '@/components/money/ScenarioChips';
 import { money } from '@/lib/goalPlan';
 import { monthlyFromPlan, monthsToTarget, balanceSeries, monthLabel, fullDate } from '@/lib/goalForecast';
 
@@ -85,9 +87,10 @@ export default function ForecastChart({ live = false }) {
         ))}
       </div>
     )}>
+      <ForecastProgressHero goal={goal} saved={saved} target={target} monthly={monthly} rate={rate} />
       <div className="flex flex-wrap items-end justify-between gap-4 mb-2">
         <div>
-          <p className="text-white/60 text-sm">You could reach <span className="text-white font-semibold">{goal.name}</span> by</p>
+          <p className="text-white/60 text-sm">At this pace, you could reach <span className="text-white font-semibold">{goal.name}</span> by</p>
           <motion.p key={scenM} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="text-4xl sm:text-6xl font-display font-extrabold text-white leading-tight">
             {scenM === null ? 'Not yet' : scenM === 0 ? 'Today' : fullDate(scenM)}
           </motion.p>
@@ -96,12 +99,6 @@ export default function ForecastChart({ live = false }) {
               : scenM === null ? <span className="text-white/60 font-normal">Add a monthly amount to see a date.</span>
               : <span className="text-white/60 font-normal">{scenM} month{scenM === 1 ? '' : 's'} at your current plan</span>}
           </p>
-        </div>
-        <div className="text-right">
-          <p className="text-white/50 text-xs">{money(saved)} of {money(target)}</p>
-          <div className="w-40 h-1.5 bg-white/10 rounded-full overflow-hidden mt-1.5 ml-auto">
-            <div className="h-full bg-[#2EFD7A] rounded-full" style={{ width: `${pct}%` }} />
-          </div>
         </div>
       </div>
 
@@ -128,6 +125,11 @@ export default function ForecastChart({ live = false }) {
       </div>
 
       <div className="mt-4 rounded-2xl border border-white/10 bg-white/[0.04] p-4 space-y-5">
+        <div>
+          <p className="text-white font-semibold text-sm mb-2">Try a hopeful scenario</p>
+          <ScenarioChips saved={saved} target={target} baseMonthly={baseMonthly} baseMonths={baseM} monthly={monthly} rate={rate}
+            onPick={(s) => { setMonthly(Math.min(s.monthly, contribMax)); setRate(s.rate); }} />
+        </div>
         <div className="grid md:grid-cols-2 gap-6">
           <GoalSlider label="What if my growth rate changes?" valueLabel={`${rate.toFixed(1)}% / yr`} value={rate} onChange={setRate}
             min={0} max={12} step={0.5} minLabel="0% (cash)" maxLabel="12%" />
