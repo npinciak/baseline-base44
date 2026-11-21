@@ -10,12 +10,11 @@ import AmbientBackdrop from '@/components/dashboard/AmbientBackdrop';
 import ForecastChart from '@/components/money/ForecastChart';
 import SpendingDonut from '@/components/money/SpendingDonut';
 import CashflowBars from '@/components/money/CashflowBars';
-import MoneyKpis from '@/components/money/MoneyKpis';
+import ConnectedOverview from '@/components/money/ConnectedOverview';
 import SankeyCashflow from '@/components/money/SankeyCashflow';
 import AssetsBreakdown, { SAMPLE_ACCOUNTS } from '@/components/money/AssetsBreakdown';
 import CategoryList from '@/components/money/CategoryList';
 import RecurringList from '@/components/money/RecurringList';
-import TransactionList from '@/components/money/TransactionList';
 import LockedToolCard from '@/components/money/LockedToolCard';
 import { toolAccess } from '@/lib/curriculum';
 import MoneySection from '@/components/money/MoneySection';
@@ -140,9 +139,15 @@ export default function Money() {
           </div>
         </motion.div>
 
-        <motion.div variants={itemVariants}>
-          <BankBalanceSection connected={!isSample} balance={balance} accountCount={accounts.length} locked={!bankUnlocked} onConnected={load} />
-        </motion.div>
+        {isSample && <motion.div variants={itemVariants}>
+          <BankBalanceSection connected={false} balance={balance} accountCount={accounts.length} locked={!bankUnlocked} onConnected={load} />
+        </motion.div>}
+
+        {!isSample && <motion.div variants={itemVariants}>
+          <MoneySection id="overview" kicker="Where you stand" title="Your money today">
+            <ConnectedOverview balance={balance} accountCount={accounts.length} transactions={txs} />
+          </MoneySection>
+        </motion.div>}
 
         <GoalsBanner learning={learning} />
 
@@ -160,12 +165,6 @@ export default function Money() {
           </motion.div>
         )}
 
-        {bankUnlocked && <motion.div variants={itemVariants}>
-          <MoneySection id="overview" kicker="Where you stand" title="Your money today">
-            <MoneyKpis balance={balance} income={summary.income} spent={summary.spent} days={summary.days} />
-            <TransactionList transactions={txs} />
-          </MoneySection>
-        </motion.div>}
 
         {openTools.length > 0 && (
           <motion.div variants={itemVariants}>
