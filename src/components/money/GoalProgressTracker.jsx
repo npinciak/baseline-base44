@@ -22,7 +22,7 @@ export default function GoalProgressTracker({ goal }) {
         ? 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=600&auto=format&fit=crop'
         : 'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=600&auto=format&fit=crop';
   return (
-    <Link to={`/money/goals/${goal.id}`} aria-label={`Manage ${goal.name}, ${percent}% saved`} className="group relative flex flex-col sm:flex-row min-w-0 overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-[#022C22]/70 via-black to-black text-foreground transition-all hover:border-[#2EFD7A]/40 hover:shadow-[0_0_40px_rgba(16,185,129,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2EFD7A] focus-visible:ring-inset">
+    <Link to={`/money/goals/${goal.id}`} aria-label={`Manage ${goal.name}, ${percent}% saved`} className="group relative flex flex-col sm:flex-row min-w-0 overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-[#022C22]/70 via-black to-black text-foreground transition-all hover:-translate-y-0.5 hover:border-[#2EFD7A]/40 hover:shadow-[0_0_40px_rgba(16,185,129,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2EFD7A] focus-visible:ring-inset">
       <div className="relative sm:w-56 h-36 sm:h-auto shrink-0 overflow-hidden">
         <img src={goal.image || fallback} alt={goal.name} onError={event => { event.currentTarget.onerror = null; event.currentTarget.src = fallback; }} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
         <div className="absolute inset-0 bg-gradient-to-t sm:bg-gradient-to-r from-transparent via-black/20 to-black/90" />
@@ -33,7 +33,6 @@ export default function GoalProgressTracker({ goal }) {
             <p className="text-[11px] uppercase tracking-widest text-white/45">Your goal</p>
             <h3 className="text-xl sm:text-2xl font-display font-bold text-white truncate">{goal.name}</h3>
           </div>
-          <ArrowUpRight className="w-5 h-5 text-white/30 group-hover:text-[#2EFD7A] transition-colors shrink-0" />
         </div>
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
@@ -45,7 +44,12 @@ export default function GoalProgressTracker({ goal }) {
         <div role="progressbar" aria-label={`${goal.name} savings progress`} aria-valuenow={percent} aria-valuemin={0} aria-valuemax={100}>
           <GoalTimeline percent={percent} />
         </div>
-        <p className="text-sm text-white/70">{encouragement(percent, current, target, money)}</p>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="text-sm text-white/70">{encouragement(percent, current, target, money)}</p>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#2EFD7A] text-black px-4 py-2 text-xs font-bold shadow-[0_0_20px_rgba(46,253,122,0.25)] transition-all group-hover:shadow-[0_0_28px_rgba(46,253,122,0.5)] group-hover:gap-2.5">
+            Open my plan <ArrowUpRight className="w-3.5 h-3.5" />
+          </span>
+        </div>
       </div>
     </Link>
   );

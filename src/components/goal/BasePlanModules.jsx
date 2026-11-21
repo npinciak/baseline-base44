@@ -14,8 +14,12 @@ const TOPIC_COLORS = {
   retirement: 'bg-yellow-500/20 text-yellow-400',
 };
 
-export default function BasePlanModules({ modules, isCompleted }) {
+const COLS = { 1: 'sm:grid-cols-1', 2: 'sm:grid-cols-2', 3: 'sm:grid-cols-3' };
+
+export default function BasePlanModules({ modules: all, isCompleted }) {
   const navigate = useNavigate();
+  // Smart saving is covered by the strategies section below.
+  const modules = all.filter(m => !/smart saving/i.test(m.title || ''));
   return (
     <div className="pt-[18px] border-t border-[#1f4a35]">
       <h4 className="text-[15px] font-bold mb-3">My Base Plan</h4>
@@ -25,7 +29,7 @@ export default function BasePlanModules({ modules, isCompleted }) {
           <p className="mt-2 text-xs text-[#8a9a93]">No relevant lessons found.</p>
         </div>
       ) : (
-        <div className="grid sm:grid-cols-3 gap-3">
+        <div className={`grid gap-3 ${COLS[Math.min(modules.length, 3)]}`}>
           {modules.map(mod => {
             const Icon = TOPIC_ICONS[mod.topic_tag] || BookOpen;
             return (
