@@ -133,7 +133,7 @@ export default function Profile() {
         </motion.div>
 
         <div className="grid lg:grid-cols-5 gap-6 items-start">
-          <motion.div variants={itemVariants} className="lg:col-span-3">
+          <motion.div variants={itemVariants} className="lg:col-span-3 min-w-0">
             <LevelBenefitsPanel
               lifetimeCoins={lifetimeCoins}
               walletBalance={walletBalance}
@@ -154,7 +154,7 @@ export default function Profile() {
             />
           </motion.div>
 
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 min-w-0 space-y-6">
             <motion.div variants={itemVariants}>
               <ProfileAchievements badges={badges} earnedBadgeIds={earnedBadgeIds} trophies={trophies} />
             </motion.div>
